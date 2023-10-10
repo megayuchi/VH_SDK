@@ -1,0 +1,152 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="pch">
+      <UniqueIdentifier>{6b56db3a-59b9-424b-8b94-d2ff440c8dd5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interface">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="DisplayPanel">
+      <UniqueIdentifier>{e15ebdc4-3906-43af-9823-0965f110d419}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="png">
+      <UniqueIdentifier>{fd049469-6f14-408a-90f2-b118c28ce528}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Util">
+      <UniqueIdentifier>{61c35231-5ac1-4377-992b-f3749ad46020}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="VoxelUtil">
+      <UniqueIdentifier>{67cb3046-0f4a-4651-a9fc-bc68596bac80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Contents">
+      <UniqueIdentifier>{d2f48015-8295-4e87-a565-40f8e4aef947}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Contents\VoxelEditor">
+      <UniqueIdentifier>{6fa6c02b-77c7-43f7-af49-a6ffc79658c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameHook">
+      <UniqueIdentifier>{f0fd3ac1-9833-4212-8316-4ed7de5d34f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Contents\Game">
+      <UniqueIdentifier>{563857a9-bcaf-4550-9e36-ff9d81acf983}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h">
+      <Filter>pch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\IGameHookController.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\typedef.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="GameHook.h">
+      <Filter>GameHook</Filter>
+    </ClInclude>
+    <ClInclude Include="DisplayPanel.h">
+      <Filter>DisplayPanel</Filter>
+    </ClInclude>
+    <ClInclude Include="lodepng.h">
+      <Filter>png</Filter>
+    </ClInclude>
+    <ClInclude Include="Util.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="FlightObject.h">
+      <Filter>Contents\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Game.h">
+      <Filter>Contents\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="game_typedef.h">
+      <Filter>Contents\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>Contents\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageData.h">
+      <Filter>Contents\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="QueryPerfCounter.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\util\VoxelUtil.h">
+      <Filter>VoxelUtil</Filter>
+    </ClInclude>
+    <ClInclude Include="..\util\stdafx.h">
+      <Filter>VoxelUtil</Filter>
+    </ClInclude>
+    <ClInclude Include="VoxelEditor.h">
+      <Filter>Contents\VoxelEditor</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>pch</Filter>
+    </ClCompile>
+    <ClCompile Include="GameHook.cpp">
+      <Filter>GameHook</Filter>
+    </ClCompile>
+    <ClCompile Include="DisplayPanel.cpp">
+      <Filter>DisplayPanel</Filter>
+    </ClCompile>
+    <ClCompile Include="lodepng.cpp">
+      <Filter>png</Filter>
+    </ClCompile>
+    <ClCompile Include="Util.cpp">
+      <Filter>Util</Filter>
+    </ClCompile>
+    <ClCompile Include="FlightObject.cpp">
+      <Filter>Contents\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Game.cpp">
+      <Filter>Contents\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>Contents\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageData.cpp">
+      <Filter>Contents\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="QueryPerfCounter .cpp">
+      <Filter>Util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\util\VoxelUtil.cpp">
+      <Filter>VoxelUtil</Filter>
+    </ClCompile>
+    <ClCompile Include="VoxelEditor.cpp">
+      <Filter>Contents\VoxelEditor</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\include\math.inl">
+      <Filter>Interface</Filter>
+    </None>
+    <None Include="..\include\emul_x86_generic.inl">
+      <Filter>Interface</Filter>
+    </None>
+    <None Include="..\include\emul_x86_simd.inl">
+      <Filter>Interface</Filter>
+    </None>
+    <None Include="GameHook.def">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="..\include\BooleanTable.inl">
+      <Filter>Interface</Filter>
+    </None>
+  </ItemGroup>
+</Project>

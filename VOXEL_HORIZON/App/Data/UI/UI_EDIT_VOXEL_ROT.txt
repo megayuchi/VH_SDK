@@ -1,0 +1,181 @@
+*UI_VERSION 100
+*UI_DIALOG
+{
+	*ID GAME_UI_ID_DIALOG_ROT_VOXELS
+	*POSITION (579, 355)
+	*SIZE (460, 258)
+	*CAPTION "Rotate"
+	*FONT_COLOR (FFFFD700)
+	*BORDER (0)
+	*UI_TEXTBOX
+	{
+		*ID UI_ID_STATIC_AXIS_ROT_VOXELS
+		*POSITION (18, 75)
+		*SIZE (50, 29)
+		*FONT_HEIGHT (20)
+		*FONT_COLOR (FF00FF00)
+		*CAPTION "Axis"
+		*IMAGE "" (0, 0, 0, 0)
+		*MAX_INPUT_LEN (32)
+		*ENABLE_INPUT (0)
+		*GRAYED (0)
+	}
+	*UI_TEXTBOX
+	{
+		*ID UI_ID_STATIC_ANGLE_ROT_VOXELS
+		*POSITION (18, 148)
+		*SIZE (60, 29)
+		*FONT_HEIGHT (20)
+		*FONT_COLOR (FF00FF00)
+		*CAPTION "Angle"
+		*IMAGE "" (0, 0, 0, 0)
+		*MAX_INPUT_LEN (32)
+		*ENABLE_INPUT (0)
+		*GRAYED (0)
+	}
+	*UI_BUTTON
+	{
+		*ID ID_DLG_ROT_BUTTON_AXIS_Z0
+		*POSITION (90, 80)
+		*SIZE (88, 20)
+		*FONT_HEIGHT (13)
+		*CAPTION "Z-Min(X)"
+		*IMAGE "UI_CommonButton.dds" (0, 0, 73, 20)
+		*IMAGE "UI_CommonButton.dds" (0, 48, 73, 20)
+		*IMAGE "UI_CommonButton.dds" (0, 72, 73, 20)
+		*AS_CHECKBOX (0)
+	}
+	*UI_BUTTON
+	{
+		*ID ID_DLG_ROT_BUTTON_AXIS_Z1
+		*POSITION (180, 80)
+		*SIZE (88, 20)
+		*FONT_HEIGHT (13)
+		*CAPTION "Z-Max(X)"
+		*IMAGE "UI_CommonButton.dds" (0, 0, 73, 20)
+		*IMAGE "UI_CommonButton.dds" (0, 48, 73, 20)
+		*IMAGE "UI_CommonButton.dds" (0, 72, 73, 20)
+		*AS_CHECKBOX (0)
+	}
+	*UI_BUTTON
+	{
+		*ID ID_DLG_ROT_BUTTON_AXIS_X0
+		*POSITION (270, 80)
+		*SIZE (88, 20)
+		*FONT_HEIGHT (13)
+		*CAPTION "X-Min(Z)0"
+		*IMAGE "UI_CommonButton.dds" (0, 0, 73, 20)
+		*IMAGE "UI_CommonButton.dds" (0, 48, 73, 20)
+		*IMAGE "UI_CommonButton.dds" (0, 72, 73, 20)
+		*AS_CHECKBOX (0)
+	}
+	*UI_BUTTON
+	{
+		*ID ID_DLG_ROT_BUTTON_AXIS_X1
+		*POSITION (360, 80)
+		*SIZE (88, 20)
+		*FONT_HEIGHT (13)
+		*CAPTION "X-Max(Z)"
+		*IMAGE "UI_CommonButton.dds" (0, 0, 73, 20)
+		*IMAGE "UI_CommonButton.dds" (0, 48, 73, 20)
+		*IMAGE "UI_CommonButton.dds" (0, 72, 73, 20)
+		*AS_CHECKBOX (0)
+	}
+	*UI_BUTTON
+	{
+		*ID ID_DLG_ROT_BUTTON_AXIS_Y
+		*POSITION (90, 117)
+		*SIZE (88, 20)
+		*FONT_HEIGHT (13)
+		*CAPTION "Y-Center(XY)"
+		*IMAGE "UI_CommonButton.dds" (0, 0, 73, 20)
+		*IMAGE "UI_CommonButton.dds" (0, 48, 73, 20)
+		*IMAGE "UI_CommonButton.dds" (0, 72, 73, 20)
+		*AS_CHECKBOX (0)
+	}
+	*UI_BUTTON
+	{
+		*ID ID_DLG_ROT_BUTTON_ANGLE_90
+		*POSITION (90, 154)
+		*SIZE (88, 20)
+		*FONT_HEIGHT (13)
+		*CAPTION "90"
+		*IMAGE "UI_CommonButton.dds" (0, 0, 73, 20)
+		*IMAGE "UI_CommonButton.dds" (0, 48, 73, 20)
+		*IMAGE "UI_CommonButton.dds" (0, 72, 73, 20)
+		*AS_CHECKBOX (0)
+	}
+	*UI_BUTTON
+	{
+		*ID ID_DLG_ROT_BUTTON_ANGLE_180
+		*POSITION (180, 154)
+		*SIZE (88, 20)
+		*FONT_HEIGHT (13)
+		*CAPTION "180"
+		*IMAGE "UI_CommonButton.dds" (0, 0, 73, 20)
+		*IMAGE "UI_CommonButton.dds" (0, 48, 73, 20)
+		*IMAGE "UI_CommonButton.dds" (0, 72, 73, 20)
+		*AS_CHECKBOX (0)
+	}
+	*UI_BUTTON
+	{
+		*ID ID_DLG_ROT_BUTTON_ANGLE_270
+		*POSITION (270, 154)
+		*SIZE (88, 20)
+		*FONT_HEIGHT (13)
+		*CAPTION "270"
+		*IMAGE "UI_CommonButton.dds" (0, 0, 73, 20)
+		*IMAGE "UI_CommonButton.dds" (0, 48, 73, 20)
+		*IMAGE "UI_CommonButton.dds" (0, 72, 73, 20)
+		*AS_CHECKBOX (0)
+	}
+	*UI_BUTTON
+	{
+		*ID ID_DLG_ROT_OK
+		*POSITION (130, 204)
+		*SIZE (88, 20)
+		*FONT_HEIGHT (13)
+		*CAPTION "OK"
+		*IMAGE "UI_CommonButton.dds" (0, 0, 73, 20)
+		*IMAGE "UI_CommonButton.dds" (0, 48, 73, 20)
+		*IMAGE "UI_CommonButton.dds" (0, 72, 73, 20)
+		*AS_CHECKBOX (0)
+	}
+	*UI_BUTTON
+	{
+		*ID ID_DLG_ROT_CANCEL
+		*POSITION (220, 204)
+		*SIZE (88, 20)
+		*FONT_HEIGHT (13)
+		*CAPTION "Cancel"
+		*IMAGE "UI_CommonButton.dds" (0, 0, 73, 20)
+		*IMAGE "UI_CommonButton.dds" (0, 48, 73, 20)
+		*IMAGE "UI_CommonButton.dds" (0, 72, 73, 20)
+		*AS_CHECKBOX (0)
+	}
+	*UI_BUTTON
+	{
+		*ID ID_DLG_ROT_CHECK_ANGLE_INVERT
+		*POSITION (372, 154)
+		*SIZE (20, 20)
+		*IMAGE "UI_CommonButton.dds" (0, 120, 20, 20)
+		*IMAGE "UI_CommonButton.dds" (0, 149, 20, 20)
+		*IMAGE "UI_CommonButton.dds" (0, 149, 20, 20)
+		*IMAGE "UI_CommonButton.dds" (38, 120, 20, 20)
+		*IMAGE "UI_CommonButton.dds" (38, 149, 20, 20)
+		*IMAGE "UI_CommonButton.dds" (38, 149, 20, 20)
+		*AS_CHECKBOX (1)
+	}
+	*UI_TEXTBOX
+	{
+		*ID ID_SAMPLE_TEXTBOX
+		*POSITION (398, 154)
+		*SIZE (54, 28)
+		*FONT_HEIGHT (16)
+		*CAPTION "Invert"
+		*IMAGE "" (0, 0, 0, 0)
+		*MAX_INPUT_LEN (32)
+		*ENABLE_INPUT (0)
+		*GRAYED (0)
+	}
+}

@@ -1,0 +1,306 @@
+BEGIN	MOD
+./Data/Character/npc_000/	     1
+NPC_GENERAL.MOD
+END
+
+BEGIN	ANM
+./Data/Character/npc_000/	     4
+NPC_GENERAL_Idle00.ANM
+NPC_GENERAL_Idle01.ANM
+NPC_GENERAL_STand.ANM
+NPC_GENERAL_Talk.ANM
+END
+
+BEGIN	MTL
+./Data/Character/npc_000/	     0
+END
+
+BEGIN	MOD
+./Data/Character/npc_001/	     1
+NPC_WEAPON.MOD
+END
+
+BEGIN	ANM
+./Data/Character/npc_001/	     4
+NPC_WEAPON_Idle00.ANM
+NPC_WEAPON_Idle01.ANM
+NPC_WEAPON_stand.ANM
+NPC_WEAPON_talk.ANM
+END
+
+BEGIN	MTL
+./Data/Character/npc_001/	     0
+END
+
+BEGIN	MOD
+./Data/Character/npc_002/	     1
+NPC_BOUTIQUE.MOD
+END
+
+BEGIN	ANM
+./Data/Character/npc_002/	     4
+NPC_BOUTIQUE_Idle00.ANM
+NPC_BOUTIQUE_Idle01.ANM
+NPC_BOUTIQUE_stand.ANM
+NPC_BOUTIQUE_Talk.ANM
+END
+
+BEGIN	MTL
+./Data/Character/npc_002/	     0
+END
+
+BEGIN	MOD
+./Data/Character/npc_003/	     1
+NPC_ACCESSORY.MOD
+END
+
+BEGIN	ANM
+./Data/Character/npc_003/	     4
+NPC_ACCESSORY_Idle00.ANM
+NPC_ACCESSORY_Idle01.ANM
+NPC_ACCESSORY_Stand.ANM
+NPC_ACCESSORY_Talk.ANM
+END
+
+BEGIN	MTL
+./Data/Character/npc_003/	     0
+END
+
+BEGIN	MOD
+./Data/Character/npc_004/	     1
+NPC_HAIR.MOD
+END
+
+BEGIN	ANM
+./Data/Character/npc_004/	     4
+NPC_HAIR_Idle00.ANM
+NPC_HAIR_Idle01.ANM
+NPC_HAIR_Stand.ANM
+NPC_HAIR_Talk.ANM
+END
+
+BEGIN	MTL
+./Data/Character/npc_004/	     0
+END
+
+BEGIN	MOD
+./Data/Character/npc_005/	     1
+NPC_PROTECTOR.MOD
+END
+
+BEGIN	ANM
+./Data/Character/npc_005/	     4
+NPC_PROTECTOR_Idle00.ANM
+NPC_PROTECTOR_Idle01.ANM
+NPC_PROTECTOR_Stand.ANM
+NPC_PROTECTOR_Talk.ANM
+END
+
+BEGIN	MTL
+./Data/Character/npc_005/	     0
+END
+
+BEGIN	MOD
+./Data/Character/npc_006/	     1
+NPC_GROCERY.MOD
+END
+
+BEGIN	ANM
+./Data/Character/npc_006/	     4
+NPC_GROCERY_Idle00.ANM
+NPC_GROCERY_Idle01.ANM
+NPC_GROCERY_Stand.ANM
+NPC_GROCERY_Talk.ANM
+END
+
+BEGIN	MTL
+./Data/Character/npc_006/	     0
+END
+
+BEGIN	MOD
+./Data/Character/npc_007/	     1
+NPC_WAREHOUSE.MOD
+END
+
+BEGIN	ANM
+./Data/Character/npc_007/	     4
+NPC_WAREHOUSE_Idle00.ANM
+NPC_WAREHOUSE_Idle01.ANM
+NPC_WAREHOUSE_Stand.ANM
+NPC_WAREHOUSE_Talk.ANM
+END
+
+BEGIN	MTL
+./Data/Character/npc_007/	     0
+END
+
+BEGIN	MOD
+./Data/Character/npc_008/	     1
+NPC_CASINO.MOD
+END
+
+BEGIN	ANM
+./Data/Character/npc_008/	     4
+NPC_CASINO_Idle00.ANM
+NPC_CASINO_Idle01.ANM
+NPC_CASINO_Stand.ANM
+NPC_CASINO_Talk.ANM
+END
+
+BEGIN	MTL
+./Data/Character/npc_008/	     0
+END
+
+BEGIN	MOD
+./Data/Character/npc_009/	     1
+NPC_HAMGUARD01.MOD
+END
+
+BEGIN	ANM
+./Data/Character/npc_009/	     4
+NPC_HAMGUARD01_Idle00.ANM
+NPC_HAMGUARD01_Idle01.ANM
+NPC_HAMGUARD01_stand.ANM
+NPC_HAMGUARD01_Talk.ANM
+END
+
+BEGIN	MTL
+./Data/Character/npc_009/	     0
+END
+
+BEGIN	MOD
+./Data/Character/npc_010/	     1
+NPC_HAMGUARD02.MOD
+END
+
+BEGIN	ANM
+./Data/Character/npc_010/	     4
+NPC_HAMGUARD02_Idle00.ANM
+NPC_HAMGUARD02_Idle01.ANM
+NPC_HAMGUARD02_Stand.ANM
+NPC_HAMGUARD02_Talk.ANM
+END
+
+BEGIN	MTL
+./Data/Character/npc_010/	     0
+END
+
+BEGIN	MOD
+./Data/Character/npc_011/	     1
+NPC_MEDIC.MOD
+END
+
+BEGIN	ANM
+./Data/Character/npc_011/	     4
+NPC_MEDIC_Idle00.ANM
+NPC_MEDIC_Idle01.ANM
+NPC_MEDIC_Stand.ANM
+NPC_MEDIC_Talk.ANM
+END
+
+BEGIN	MTL
+./Data/Character/npc_011/	     0
+END
+
+BEGIN	MOD
+./Data/Character/npc_012/	     1
+NPC_SKILL.MOD
+END
+
+BEGIN	ANM
+./Data/Character/npc_012/	     4
+NPC_SKILL_Idle00.ANM
+NPC_SKILL_Idle01.ANM
+NPC_SKILL_Stand.ANM
+NPC_SKILL_Talk.ANM
+END
+
+BEGIN	MTL
+./Data/Character/npc_012/	     0
+END
+
+BEGIN	MOD
+./Data/Character/npc_013/	     1
+NPC_013.mod
+END
+
+BEGIN	ANM
+./Data/Character/npc_013/	     4
+NPC_013_Idle00.ANM
+NPC_013_Idle01.ANM
+NPC_013_Stand.anm
+NPC_013_Talk.anm
+END
+
+BEGIN	MTL
+./Data/Character/npc_013/	     0
+END
+
+BEGIN	MOD
+./Data/Character/npc_014/	     1
+NPC_014.mod
+END
+
+BEGIN	ANM
+./Data/Character/npc_014/	     4
+NPC_014_Idle00.anm
+NPC_014_Idle01.anm
+NPC_014_Stand.anm
+NPC_014_Talk.anm
+END
+
+BEGIN	MTL
+./Data/Character/npc_014/	     0
+END
+
+BEGIN	MOD
+./Data/Character/npc_015/	     1
+NPC_015.mod
+END
+
+BEGIN	ANM
+./Data/Character/npc_015/	     4
+NPC_015_Idle00.anm
+NPC_015_Idle01.anm
+NPC_015_Stand.anm
+NPC_015_talk.anm
+END
+
+BEGIN	MTL
+./Data/Character/npc_015/	     0
+END
+
+BEGIN	MOD
+./Data/Character/npc_026/	     1
+NPC_026.mod
+END
+
+BEGIN	ANM
+./Data/Character/npc_026/	     4
+NPC_026_Idle00.anm
+NPC_026_Idle01.anm
+NPC_026_Stand.anm
+NPC_026_talk.anm
+END
+
+BEGIN	MTL
+./Data/Character/npc_026/	     0
+END
+
+BEGIN	MOD
+./Data/Character/npc_027/	     1
+NPC_027.mod
+END
+
+BEGIN	ANM
+./Data/Character/npc_027/	     4
+NPC_027_Idle00.anm
+NPC_027_Idle01.anm
+NPC_027_Stand.anm
+NPC_027_Talk.anm
+END
+
+BEGIN	MTL
+./Data/Character/npc_027/	     0
+END
+

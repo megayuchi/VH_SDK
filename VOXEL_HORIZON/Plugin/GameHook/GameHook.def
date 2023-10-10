@@ -1,0 +1,7 @@
+LIBRARY     GameHook
+
+DESCRIPTION 'VOXEL HORIZON Plugin GameHook'
+
+EXPORTS
+  DllCreateInstance	PRIVATE
+

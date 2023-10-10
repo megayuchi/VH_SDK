@@ -1,0 +1,81 @@
+*UI_VERSION 100
+*UI_DIALOG
+{
+	*ID ID_DIALOG_VOXEL_EDIT_MENUBAR
+	*POSITION (555, 515)
+	*SIZE (805, 40)
+	*BORDER (0)
+	*UI_BUTTON
+	{
+		*ID ID_BUTTON_VOXEL_EDIT_MENUBAR_LOAD
+		*POSITION (14, 12)
+		*SIZE (88, 20)
+		*FONT_HEIGHT (13)
+		*CAPTION "Load"
+		*IMAGE "UI_CommonButton.dds" (0, 0, 73, 20)
+		*IMAGE "UI_CommonButton.dds" (0, 48, 73, 20)
+		*IMAGE "UI_CommonButton.dds" (0, 72, 73, 20)
+		*AS_CHECKBOX (0)
+	}
+	*UI_BUTTON
+	{
+		*ID ID_BUTTON_VOXEL_EDIT_MENUBAR_SAVE
+		*POSITION (111, 12)
+		*SIZE (88, 20)
+		*FONT_HEIGHT (13)
+		*CAPTION "Save"
+		*IMAGE "UI_CommonButton.dds" (0, 0, 73, 20)
+		*IMAGE "UI_CommonButton.dds" (0, 48, 73, 20)
+		*IMAGE "UI_CommonButton.dds" (0, 72, 73, 20)
+		*AS_CHECKBOX (0)
+	}
+	*UI_BUTTON
+	{
+		*ID ID_BUTTON_VOXEL_EDIT_MENUBAR_SETTINGS
+		*POSITION (660, 12)
+		*SIZE (88, 20)
+		*FONT_HEIGHT (13)
+		*CAPTION "Settings"
+		*IMAGE "UI_CommonButton.dds" (0, 0, 73, 20)
+		*IMAGE "UI_CommonButton.dds" (0, 48, 73, 20)
+		*IMAGE "UI_CommonButton.dds" (0, 72, 73, 20)
+		*AS_CHECKBOX (0)
+	}
+	*UI_BUTTON
+	{
+		*ID ID_VOXEL_EDIT_MENUBAR_CHECKBOX_TRI_LIST
+		*POSITION (491, 12)
+		*SIZE (20, 20)
+		*IMAGE "UI_CommonButton.dds" (0, 120, 20, 20)
+		*IMAGE "UI_CommonButton.dds" (0, 149, 20, 20)
+		*IMAGE "UI_CommonButton.dds" (0, 149, 20, 20)
+		*IMAGE "UI_CommonButton.dds" (38, 120, 20, 20)
+		*IMAGE "UI_CommonButton.dds" (38, 149, 20, 20)
+		*IMAGE "UI_CommonButton.dds" (38, 149, 20, 20)
+		*AS_CHECKBOX (1)
+	}
+	*UI_TEXTBOX
+	{
+		*ID ID_VOXEL_EDIT_MENUBAR_TEXTBOX_DRAW_TRIS
+		*POSITION (518, 12)
+		*SIZE (131, 22)
+		*FONT_HEIGHT (16)
+		*CAPTION "Draw Tris"
+		*IMAGE "" (0, 0, 0, 0)
+		*MAX_INPUT_LEN (32)
+		*ENABLE_INPUT (0)
+		*GRAYED (0)
+	}
+	*UI_BUTTON
+	{
+		*ID ID_VOXEL_EDIT_MENUBAR_BUTTON_CONVERT
+		*POSITION (395, 12)
+		*SIZE (88, 20)
+		*FONT_HEIGHT (13)
+		*CAPTION "Convert"
+		*IMAGE "UI_CommonButton.dds" (0, 0, 73, 20)
+		*IMAGE "UI_CommonButton.dds" (0, 48, 73, 20)
+		*IMAGE "UI_CommonButton.dds" (0, 72, 73, 20)
+		*AS_CHECKBOX (0)
+	}
+}

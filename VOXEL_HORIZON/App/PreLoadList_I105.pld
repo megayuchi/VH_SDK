@@ -1,0 +1,46 @@
+BEGIN	MOD
+./Data/Character/boss_002/	     7
+Boss_002_body.MOD
+Boss_002_targetA.MOD
+Boss_002_targetA_D.MOD
+Boss_002_targetB.MOD
+Boss_002_targetB_D.MOD
+Boss_002_targetC.MOD
+Boss_002_targetC_D.MOD
+END
+
+BEGIN	ANM
+./Data/Character/boss_002/	     3
+Boss_002_Die.ANM
+Boss_002_ST_RKET_Fire.ANM
+Boss_002_ST_RKET_Redy.ANM
+END
+
+BEGIN	MTL
+./Data/Character/boss_002/	     0
+END
+
+BEGIN	MOD
+./Data/Character/mon_032/	     1
+mon_032.MOD
+END
+
+BEGIN	ANM
+./Data/Character/mon_032/	    11
+Mon_032_Die.ANM
+Mon_032_Down00.ANM
+Mon_032_Down01.ANM
+Mon_032_Down02.ANM
+mon_032_F_Rket_fire.ANM
+mon_032_F_Rket_redy.ANM
+Mon_032_Stun.ANM
+mon_032_ST_Idle00.ANM
+mon_032_ST_Idle01.ANM
+mon_032_ST_Rket_fire.ANM
+mon_032_ST_Rket_redy.ANM
+END
+
+BEGIN	MTL
+./Data/Character/mon_032/	     0
+END
+

@@ -1,0 +1,200 @@
+#include "stdafx.h"
+#include "Util.h"
+#include "lodepng.h"
+#include "DisplayPanel.h"
+#include "ImageData.h"
+
+size_t GetFileSize(FILE* fp)
+{
+	size_t OldPos = ftell(fp);
+
+	fseek(fp, 0, SEEK_END);
+	size_t Size = ftell(fp);
+
+	fseek(fp, OldPos, SEEK_SET);
+
+	return Size;
+}
+BOOL CalcClipArea(INT_VECTOR2* pivOutSrcStart, INT_VECTOR2* pivOutDestStart, INT_VECTOR2* pivOutDestSize, const INT_VECTOR2* pivPos, const INT_VECTOR2* pivImageSize, const INT_VECTOR2* pivBufferSize)
+{
+	BOOL	bResult = FALSE;
+	//
+	int dest_start_x = max(pivPos->x, 0);
+	int dest_start_y = max(pivPos->y, 0);
+	dest_start_x = min(dest_start_x, pivBufferSize->x);
+	dest_start_y = min(dest_start_y, pivBufferSize->y);
+
+	int dest_end_x = max(pivPos->x + pivImageSize->x, 0);
+	int dest_end_y = max(pivPos->y + pivImageSize->y, 0);
+	dest_end_x = min(dest_end_x, pivBufferSize->x);
+	dest_end_y = min(dest_end_y, pivBufferSize->y);
+
+	int	width = dest_end_x - dest_start_x;
+	int	height = dest_end_y - dest_start_y;
+
+	if (width <= 0 || height <= 0)
+		goto lb_return;
+
+	int src_start_x = dest_start_x - pivPos->x;
+	int src_start_y = dest_start_y - pivPos->y;
+	pivOutSrcStart->x = src_start_x;
+	pivOutSrcStart->y = src_start_y;
+	pivOutDestStart->x = dest_start_x;
+	pivOutDestStart->y = dest_start_y;
+	pivOutDestSize->x = width;
+	pivOutDestSize->y = height;
+	bResult = TRUE;
+lb_return:
+	return bResult;
+}
+
+
+BOOL IsCollisionRectVsRect(const INT_VECTOR2* pv3MinA, const INT_VECTOR2* pv3MaxA, const INT_VECTOR2* pv3MinB, const INT_VECTOR2* pv3MaxB)
+{
+	const int*	a_min = &pv3MinA->x;
+	const int*	a_max = &pv3MaxA->x;
+	const int*	b_min = &pv3MinB->x;
+	const int*	b_max = &pv3MaxB->x;
+
+	for (DWORD i = 0; i < 2; i++)
+	{
+		if (a_min[i] > b_max[i] || a_max[i] < b_min[i])
+		{
+			return FALSE;
+		}
+	}
+	return TRUE;
+}
+BOOL LoadPngImage(BYTE** ppOutBits, DWORD* pdwOutWidth, DWORD* pdwOutHeight, DWORD* pdwOutColorKey, const char* szFileName)
+{
+	BOOL	bResult = FALSE;
+
+	BYTE*	pRGB = NULL;
+	DWORD	dwImageWidth = 0;
+	DWORD	dwImageHeight = 0;
+	DWORD	dwSrcPitch = 0;
+	DWORD	dwSrcBPP = 0;
+	FILE*	fp = NULL;
+	fopen_s(&fp, szFileName, "rb");
+	if (fp)
+	{
+		size_t FileSize = GetFileSize(fp);
+		BYTE*	pStream = (BYTE*)malloc(FileSize);
+		fread(pStream, FileSize, 1, fp);
+
+		//error = lodepng_decode32(&pRGB, (unsigned int*)&g_dwImageWidth, (unsigned int*)&g_dwImageHeight,pStream,FileSize);
+		//LCT_RGB
+		//LCT_RGBA
+		LodePNGState	state;
+		size_t size = sizeof(state);
+		lodepng_state_init(&state);
+		state.decoder.color_convert = 0;
+
+
+		unsigned int error;
+		error = lodepng_decode(&pRGB, (unsigned int*)&dwImageWidth, (unsigned int*)&dwImageHeight, &state, pStream, FileSize);
+		if (error)
+		{
+			printf("decoder error %u: %s\n", error, lodepng_error_text(error));
+			__debugbreak();
+		}
+
+		if (LCT_RGB == state.info_raw.colortype)
+		{
+			dwSrcBPP = 3;
+		}
+		else if (LCT_RGBA == state.info_raw.colortype)
+		{
+			dwSrcBPP = 4;
+		}
+		else
+		{
+			__debugbreak();
+		}
+
+		free(pStream);
+		fclose(fp);
+	}
+	if (pRGB)
+	{
+		*ppOutBits = pRGB;
+		*pdwOutWidth = dwImageWidth;
+		*pdwOutHeight = dwImageHeight;
+		*pdwOutColorKey = *(DWORD*)pRGB;
+		bResult = TRUE;
+	}
+	return bResult;
+}
+void FreePngImage(BYTE* pBits)
+{
+	free(pBits);
+}
+
+
+BOOL LoadPngImageAsPalettedImage(BYTE** ppOutBits, DWORD* pdwOutWidth, DWORD* pdwOutHeight, DWORD* pdwOutColorKey, const char* szFileName, CDisplayPanel* pDisplayPanel)
+{
+	BOOL	bResult = FALSE;
+
+	DWORD	dwImageWidth = 0;
+	DWORD	dwImageHeight = 0;
+	DWORD*	pRGBABits = nullptr;
+	BYTE*	pPalettedImage = nullptr;
+	if (LoadPngImage((BYTE**)&pRGBABits, &dwImageWidth, &dwImageHeight, pdwOutColorKey, szFileName))
+	{
+		pPalettedImage = (BYTE*)malloc(dwImageWidth * dwImageHeight);
+		pDisplayPanel->Convert32BitsImageTo8BitsPalettedImage(pPalettedImage, pRGBABits, dwImageWidth, dwImageHeight);
+		free(pRGBABits);
+		pRGBABits = nullptr;
+
+		*ppOutBits = pPalettedImage;
+		*pdwOutWidth = dwImageWidth;
+		*pdwOutHeight = dwImageHeight;
+		bResult = TRUE;
+	}
+
+	return bResult;
+}
+void FreePalettedImage(BYTE* pBits)
+{
+	free(pBits);
+}
+
+CImageData* CreateImageData(const char* szFileName, CDisplayPanel* pDisplayPanel, const WCHAR* wchPluginPath, BOOL bCompress)
+{
+	WCHAR	wchOldPath[_MAX_PATH] = {};
+	GetCurrentDirectory(_MAX_PATH, wchOldPath);
+
+	SetCurrentDirectory(wchPluginPath);
+
+	CImageData*	pImgageData = nullptr;
+
+	BYTE*	pRGBABits = nullptr;
+	DWORD	dwImageWidth = 0;
+	DWORD	dwImageHeight = 0;
+	DWORD	dwColorKey = 0;
+	BYTE	bColorKeyIndex = 255;
+	BYTE* pPalettedImage = nullptr;
+	if (LoadPngImage(&pRGBABits, &dwImageWidth, &dwImageHeight, &dwColorKey, szFileName))
+	{
+		pPalettedImage = (BYTE*)malloc(dwImageWidth * dwImageHeight);
+		pDisplayPanel->Convert32BitsImageTo8BitsPalettedImage(pPalettedImage, (DWORD*)pRGBABits, dwImageWidth, dwImageHeight);
+		bColorKeyIndex = pDisplayPanel->Convert32BitsColorToPaletteIndex(dwColorKey);
+
+		free(pRGBABits);
+		pRGBABits = nullptr;
+
+		pImgageData = new CImageData;
+		if (bCompress)
+		{
+			pImgageData->CreateFromPalettedImage(pPalettedImage, dwImageWidth, dwImageHeight, bColorKeyIndex);
+		}
+		else
+		{
+			pImgageData->SetPalettedImage(pPalettedImage, dwImageWidth, dwImageHeight, bColorKeyIndex);
+		}
+		
+	}
+
+	SetCurrentDirectory(wchOldPath);
+	return pImgageData;
+}
