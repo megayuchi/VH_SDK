@@ -19,15 +19,19 @@ Visual Studio 2022 , Windows 10/11
 2. Enter a command or create a shortcut in the following folder path.
 
    use '/dx11' switch for DirectX 11 Renderer
+   
    **Client_x64_release.exe /p /dx11 /ns**
 
    use '/dxr' switch for DirectX Raytracing
+   
    **Client_x64_release.exe /p /dxr /ns**
 
    use '/su' switch To quickly use offline mode
+   
    **Client_x64_release.exe /p /dxr /ns /su**
 
    use '/steam' switch to login with steam account.
+   
    **Client_x64_release.exe /p /dxr /ns /steam**
 
 ### How to load the Plugin in game
