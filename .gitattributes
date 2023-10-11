@@ -1,0 +1,18 @@
+# Declare files that will always have CRLF line endings on checkout.
+*.cpp text eol=crlf
+*.c text eol=crlf
+*.h text eol=crlf
+*.asm text eol=crlf
+*.inl text eol=crlf
+*.def text eol=crlf
+*.sln text eol=crlf
+*.vcxproj text eol=crlf
+*.rc text eol=crlf
+*.txt text eol=crlf
+*.pld text eol=crlf
+*.ini text eol=crlf
+*.cfo text eol=crlf
+*.tgo text eol=crlf
+*.ini text eol=crlf
+
+# Denote all files that are truly binary and should not be modified.

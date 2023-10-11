@@ -51,10 +51,10 @@ VOXEL_HORIZON/Plugin/GameHook/.vs/GameHook/v17/.suo
 VOXEL_HORIZON/Plugin/bin/GameHook_x64_debug.dll
 VOXEL_HORIZON/Plugin/bin/GameHook_x64_debug.lib
 VOXEL_HORIZON/Plugin/GameHook/GameHook.vcxproj.user
-*.user
 VOXEL_HORIZON/Plugin/GameHook/GameHook.vcxproj.user
 VOXEL_HORIZON/Plugin/GameHook/x64/Debug/GameHook.vcxproj.FileListAbsolute.txt
 *.recipe
 *.ilk
 *.DMP
 *.user
+
