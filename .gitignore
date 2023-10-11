@@ -56,3 +56,5 @@ VOXEL_HORIZON/Plugin/GameHook/GameHook.vcxproj.user
 VOXEL_HORIZON/Plugin/GameHook/x64/Debug/GameHook.vcxproj.FileListAbsolute.txt
 *.recipe
 *.ilk
+*.DMP
+*.user
