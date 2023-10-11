@@ -1,7 +1,7 @@
 # VH_SDK
 This is a repository for VOXEL HORIZON's MOD development.
 
-## VOXEL HORIZON in steam store
+## VOXEL HORIZON in steam
 - [store](https://store.steampowered.com/app/1221390/VOXEL_HORIZON/)
 - [community](https://steamcommunity.com/app/1221390/)
 
@@ -18,16 +18,16 @@ Visual Studio 2022 , Windows 10/11
 1. goto to '/VH_SDK/VOXEL_HORIZON/App/'
 2. Enter a command or create a shortcut in the following folder path.
    
-   use '/dx11' switch for DirectX 11 Renderer
+   use '/dx11' switch for DirectX 11 Renderer<br>
    **Client_x64_release.exe /p /dx11 /ns**
 
-   use '/dxr' switch for DirectX Raytracing
+   use '/dxr' switch for DirectX Raytracing<br>
    **Client_x64_release.exe /p /dxr /ns**
 
-   use '/su' switch To quickly use offline mode
+   use '/su' switch To quickly use offline mode<br>
    **Client_x64_release.exe /p /dxr /ns /su**
 
-   use '/steam' switch to login with steam account
+   use '/steam' switch to login with steam account<br>
    **Client_x64_release.exe /p /dxr /ns /steam**
 
 ### How to load the Plugin in game
@@ -36,19 +36,19 @@ Visual Studio 2022 , Windows 10/11
 3. To unload the plugin, enter **unload_plugin**
 
 ### How to load plugin when the game launched
-Use the '/pl' switch to specify the file name of the plugin.
+Use the '/pl' switch to specify the file name of the plugin.<br>
 For example, when the plugin file name is **GameHook_x64_debug.dll**  
 
 1. goto to '/VH_SDK/VOXEL_HORIZON/App/'
-2. Enter a command or create a shortcut in the following folder path.
+2. Enter a command or create a shortcut in the following folder path.<br>
    **Client_x64_release.exe /p /dxr /ns /pl GameHook_x64_debug.dll**
 
 ## How to debug the plugin
 1. Open the Plugin Project in Visual Studio.
-2. Project -> Properties -> Debugging -> Command
+2. Project -> Properties -> Debugging -> Command<br>
    'your dev folder'\VH_SDK\VOXEL_HORIZON\App\Client_x64_release.exe
-4. Project -> Properties -> Debugging -> Working Directory
+4. Project -> Properties -> Debugging -> Working Directory<br>
    'your dev folder'\VH_SDK\VOXEL_HORIZON\App\
-5. Project -> Properties -> Debugging -> Command Arguments
+5. Project -> Properties -> Debugging -> Command Arguments<br>
    /p /dxr /ns /su /pl GameHook_x64_release.dll
 7. Set a breakpoint at the desired location in the code and press 'F5' key to start debugging.
