@@ -11,8 +11,8 @@ Visual Studio 2022 , Windows 10/11
 ## Game Resources
 This repository does not contain any resources from the game.<br>
 The contents of the 'VH_SDK\VOXEL_HORIZON\App\Data_Pak\' and 'VH_SDK\VOXEL_HORIZON\App\Data_Pak\' folders are empty.<br>
-Copy the files and folders in the **VOXEL_HORIZON\App\Data_Pak\** folder downloaded from steam to the **VH_SDK\VOXEL_HORIZON\App\Data_Pak\**.<br>
-Copy the files and folders in the **VOXEL_HORIZON\App\Data\** folder downloaded from steam to the **VH_SDK\VOXEL_HORIZON\App\Data\**.<br>
+Copy the files and folders in the **VOXEL_HORIZON\App\Data_Pak** folder downloaded from steam to the **VH_SDK\VOXEL_HORIZON\App\Data_Pak**.<br>
+Copy the files and folders in the **VOXEL_HORIZON\App\Data** folder downloaded from steam to the **VH_SDK\VOXEL_HORIZON\App\Data**.<br>
 
 ## How to build the plugin
 1. Open 'VH_SDK/VOXEL_HORIZON/Plugin/GameHook/GameHook.sln' in Visual Studio.
