@@ -8,6 +8,12 @@ This is a repository for VOXEL HORIZON's MOD development.
 ## Requirements
 Visual Studio 2022 , Windows 10/11
 
+## Game Resources
+This repository does not contain any resources from the game.<br>
+Therefore, you must copy the Data_Pak folder of VOXEL HORIZON downloaded from Steam to this project folder.<br>
+The contents of the VH_SDK\VOXEL_HORIZON\App\Data_Pak\ folder are empty.<br>
+Copy the files and folders in the **VOXEL_HORIZON\App\Data_Pak\** folder downloaded from steam to the **VH_SDK\VOXEL_HORIZON\App\Data_Pak\**.<br>
+
 ## How to build the plugin
 1. Open 'VH_SDK/VOXEL_HORIZON/Plugin/GameHook/GameHook.sln' in Visual Studio.
 2. Modify the code as you want.
