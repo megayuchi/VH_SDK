@@ -35,8 +35,8 @@
 *.ipdb
 
 
-*.ogg
-*.pak
+
+
 *.tlog
 *.log
 *.idb
@@ -45,6 +45,7 @@
 *.db-wal
 *.db-shm
 *.db
+VOXEL_HORIZON/App/Data_Pak/*.*
 VOXEL_HORIZON/Plugin/GameHook/.vs/GameHook/v17/.suo
 *.vsidx
 VOXEL_HORIZON/Plugin/bin/GameHook_x64_debug.dll
