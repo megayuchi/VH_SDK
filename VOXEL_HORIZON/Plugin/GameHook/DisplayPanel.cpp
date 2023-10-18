@@ -5,8 +5,58 @@
 #include "../include/BooleanTable.inl"
 #include "DisplayPanel.h"
 
+#define USE_SSE
+#define USE_CVT_TABLE
+#define CVT_16BITS
+#define CVT_32BITS
+
+#ifdef CVT_16BITS
+#undef CVT_32BITS
+#endif
+
+//#define USE_32BITS_CVT_TABLE
+
 CDisplayPanel::CDisplayPanel()
 {
+}
+void CDisplayPanel::InitColorConvertingTable(const DWORD* pdwColorTable, DWORD dwColorTableCount)
+{
+#if defined(CVT_16BITS)
+	const DWORD r_count = 32;
+	const DWORD g_count = 64;
+	const DWORD b_count = 32;	
+#elif defined(CVT_32BITS)
+	const DWORD r_count = 256;
+	const DWORD g_count = 256;
+	const DWORD b_count = 256;
+#endif
+	m_pCvtTable = new BYTE[r_count * g_count * b_count];
+	for (DWORD b = 0; b < b_count; b++)
+	{
+		DWORD b_offset = b * r_count * g_count;
+		for (DWORD g = 0; g < g_count; g++)
+		{
+			DWORD	g_offset = g * r_count;
+			for (DWORD r = 0; r < r_count; r++)
+			{
+			#if defined(CVT_16BITS)
+				DWORD dwColor = ((b << 3) << 16) | ((g << 2) << 8) | (r << 3);
+			#elif defined(CVT_32BITS)
+				DWORD dwColor = (b << 16) | (g << 8) | r;
+			#endif
+				BYTE bColorIndex = ::Convert32BitsColorToPaletteIndexRGBA_SSE(pdwColorTable, dwColorTableCount, dwColor);
+				m_pCvtTable[r + g_offset + b_offset] = bColorIndex;
+			}
+		}
+	}
+}
+void CDisplayPanel::CleanupColorConvertingTable()
+{
+	if (m_pCvtTable)
+	{
+		delete[] m_pCvtTable;
+		m_pCvtTable = nullptr;
+	}
 }
 void CDisplayPanel::OnDeleteVoxelObject(IVoxelObjectLite* pVoxelObj)
 {
@@ -72,45 +122,118 @@ BOOL CDisplayPanel::Initialize(IVHController* pVHController, UINT Width, UINT He
 	BOOL	bInsufficient = FALSE;
 	m_dwColorTableCount = m_pVHController->GetColorTableFromPalette(m_pdwColorTable, (DWORD)_countof(m_pdwColorTable), &bInsufficient);
 
+	InitColorConvertingTable(m_pdwColorTable, m_dwColorTableCount);
+
 	return TRUE;
 }
-BYTE CDisplayPanel::Convert32BitsColorToPaletteIndex(DWORD dwSrcColor)
-{
-	DWORD	dwSelectedIndex = 0;
-	float min_dist = (float)INT_MAX;
-	for (DWORD i = 0; i < m_dwColorTableCount; i++)
-	{
-		DWORD sb = (dwSrcColor & 0x00ff0000) >> 16;
-		DWORD sg = (dwSrcColor & 0x0000ff00) >> 8;
-		DWORD sr = (dwSrcColor & 0x000000ff);
-
-		DWORD	dwDestColor = m_pdwColorTable[i];
-		DWORD dr = (dwDestColor & 0x00ff0000) >> 16;
-		DWORD dg = (dwDestColor & 0x0000ff00) >> 8;
-		DWORD db = (dwDestColor & 0x000000ff);
-
-		int r_diff = ((int)sr - (int)dr);
-		int g_diff = ((int)sg - (int)dg);
-		int b_diff = ((int)sb - (int)db);
-
-		float dist = sqrtf((float)(r_diff * r_diff + g_diff * g_diff + b_diff * b_diff));
-		if (min_dist > dist)
-		{
-			min_dist = dist;
-			dwSelectedIndex = i;
-		}
-	}
-	return (BYTE)dwSelectedIndex;
-}
-void CDisplayPanel::Convert32BitsImageTo8BitsPalettedImage(BYTE* pDest, const DWORD* pSrc, DWORD dwWidth, DWORD dwHeight)
+void CDisplayPanel::Convert32BitsImageTo8BitsPalettedImageRGBA(BYTE* pDest, const DWORD* pSrc, DWORD dwWidth, DWORD dwHeight)
 {
 	for (DWORD y = 0; y < dwHeight; y++)
 	{
 		for (DWORD x = 0; x < dwWidth; x++)
 		{
-			pDest[x + y * dwWidth] = Convert32BitsColorToPaletteIndex(pSrc[x + dwWidth * y]);
+			DWORD dwSrcColor = pSrc[x + dwWidth * y];
+		#if defined(USE_CVT_TABLE)
+			DWORD r = (dwSrcColor & 0x000000ff);
+			DWORD g = (dwSrcColor & 0x0000ff00) >> 8;
+			DWORD b = (dwSrcColor & 0x00ff0000) >> 16;
+
+			#if defined(CVT_16BITS)
+				const DWORD r_count = 32;
+				const DWORD g_count = 64;
+				const DWORD b_count = 32;	
+				BYTE bColorIndex = m_pCvtTable[(r >> 3) + (g >> 2) * r_count + (b >> 3) * r_count * g_count];
+			#elif defined(CVT_32BITS)
+				const DWORD r_count = 256;
+				const DWORD g_count = 256;
+				const DWORD b_count = 256;
+				BYTE bColorIndex = m_pCvtTable[r + g * r_count + b * r_count * g_count];
+			#endif
+			
+		#else
+			#ifdef USE_SSE
+				BYTE bColorIndex = ::Convert32BitsColorToPaletteIndexRGBA_SSE(m_pdwColorTable, m_dwColorTableCount, dwSrcColor);
+			#else
+				BYTE bColorIndex = ::Convert32BitsColorToPaletteIndexRGBA_Normal(m_pdwColorTable, m_dwColorTableCount, dwSrcColor);
+			#endif
+		#endif
+			pDest[x + y * dwWidth] = bColorIndex;
 		}
 	}
+}
+void CDisplayPanel::Convert32BitsImageTo8BitsPalettedImageBGRA(BYTE* pDest, const DWORD* pSrc, DWORD dwWidth, DWORD dwHeight)
+{
+	for (DWORD y = 0; y < dwHeight; y++)
+	{
+		for (DWORD x = 0; x < dwWidth; x++)
+		{
+			DWORD dwSrcColor = pSrc[x + dwWidth * y];
+		#if defined(USE_CVT_TABLE)
+			DWORD b = (dwSrcColor & 0x000000ff);
+			DWORD g = (dwSrcColor & 0x0000ff00) >> 8;
+			DWORD r = (dwSrcColor & 0x00ff0000) >> 16;
+
+			#if defined(CVT_16BITS)
+				const DWORD r_count = 32;
+				const DWORD g_count = 64;
+				const DWORD b_count = 32;	
+				BYTE bColorIndex = m_pCvtTable[(r >> 3) + (g >> 2) * r_count + (b >> 3) * r_count * g_count];
+			#elif defined(CVT_32BITS)
+				const DWORD r_count = 256;
+				const DWORD g_count = 256;
+				const DWORD b_count = 256;
+				BYTE bColorIndex = m_pCvtTable[r + g * r_count + b * r_count * g_count];
+			#endif
+			pDest[x + y * dwWidth] = bColorIndex;
+		#else
+			#ifdef USE_SSE
+				BYTE bColorIndex = ::Convert32BitsColorToPaletteIndexBGRA_SSE(m_pdwColorTable, m_dwColorTableCount, dwSrcColor);
+			#else
+				BYTE bColorIndex = ::Convert32BitsColorToPaletteIndexBGRA_Normal(m_pdwColorTable, m_dwColorTableCount, dwSrcColor);
+			#endif
+		#endif
+			pDest[x + y * dwWidth] = bColorIndex;
+		}
+	}
+}
+
+BYTE CDisplayPanel::Convert32BitsColorToPaletteIndexRGBA_CVT(DWORD dwSrcColor)
+{
+	DWORD r = (dwSrcColor & 0x000000ff);
+	DWORD g = (dwSrcColor & 0x0000ff00) >> 8;
+	DWORD b = (dwSrcColor & 0x00ff0000) >> 16;
+
+#if defined(CVT_16BITS)
+	const DWORD r_count = 32;
+	const DWORD g_count = 64;
+	const DWORD b_count = 32;
+	BYTE bColorIndex = m_pCvtTable[(r >> 3) + (g >> 2) * r_count + (b >> 3) * r_count * g_count];
+#elif defined(CVT_32BITS)
+	const DWORD r_count = 256;
+	const DWORD g_count = 256;
+	const DWORD b_count = 256;
+	BYTE bColorIndex = m_pCvtTable[r + g * r_count + b * r_count * g_count];
+#endif
+	return bColorIndex;
+}
+BYTE CDisplayPanel::Convert32BitsColorToPaletteIndexBGRA_CVT(DWORD dwSrcColor)
+{
+	DWORD b = (dwSrcColor & 0x000000ff);
+	DWORD g = (dwSrcColor & 0x0000ff00) >> 8;
+	DWORD r = (dwSrcColor & 0x00ff0000) >> 16;
+
+#if defined(CVT_16BITS)
+	const DWORD r_count = 32;
+	const DWORD g_count = 64;
+	const DWORD b_count = 32;
+	BYTE bColorIndex = m_pCvtTable[(r >> 3) + (g >> 2) * r_count + (b >> 3) * r_count * g_count];
+#elif defined(CVT_32BITS)
+	const DWORD r_count = 256;
+	const DWORD g_count = 256;
+	const DWORD b_count = 256;
+	BYTE bColorIndex = m_pCvtTable[r + g * r_count + b * r_count * g_count];
+#endif
+	return bColorIndex;
 }
 void CDisplayPanel::Set32BitImage(BYTE* pBits, DWORD dwImageWidth, DWORD dwImageHeight)
 {
@@ -123,7 +246,16 @@ void CDisplayPanel::Set32BitImage(BYTE* pBits, DWORD dwImageWidth, DWORD dwImage
 		{
 			DWORD dwSrcOffset = x * 4 + y * dwImageWidth * 4;
 			DWORD dwSrcColor = *(DWORD*)(pBits + dwSrcOffset);
-			BYTE bColorIndex = Convert32BitsColorToPaletteIndex(dwSrcColor);
+		#if defined(USE_CVT_TABLE)
+			BYTE bColorIndex = Convert32BitsColorToPaletteIndexRGBA_CVT(dwSrcColor);
+		#else
+			#if defined(USE_SSE)
+				BYTE bColorIndex = ::Convert32BitsColorToPaletteIndexRGBA_SSE(m_pdwColorTable, m_dwColorTableCount, dwSrcColor);
+			#else
+				BYTE bColorIndex = ::Convert32BitsColorToPaletteIndexRGBA_Normal(m_pdwColorTable, m_dwColorTableCount, dwSrcColor);
+			#endif
+
+		#endif
 
 			int reverse_y = (int)dwImageHeight - y - 1;
 
@@ -386,9 +518,57 @@ void CDisplayPanel::UpdateBitmapToVoxelDataWithSingleLayer(int voxel_z, DWORD dw
 		}
 	}
 }
+BOOL CDisplayPanel::GetScreenPosWithVoxelObjPos(int* piOutX, int* piOutY, IVoxelObjectLite* pVoxelObjSrc, int x, int y)
+{
+	BOOL	bResult = FALSE;
+	for (DWORD obj_y = 0; obj_y < m_VoxelObjHeight; obj_y++)
+	{
+		for (DWORD obj_x = 0; obj_x < m_VoxelObjWidth; obj_x++)
+		{
+			IVoxelObjectLite* pVoxelObjDest = m_ppVoxelObjList[obj_x + m_VoxelObjWidth * obj_y];
+			if (pVoxelObjSrc == pVoxelObjDest)
+			{
+				*piOutX = obj_x * MAX_VOXELS_PER_AXIS + x;
+				*piOutY = (int)m_Height - (int)(obj_y * MAX_VOXELS_PER_AXIS + y) - 1;
+				bResult = TRUE;
+				goto lb_return;
+			}
+		} 
+	}
+lb_return:
+	return bResult;
+}
 
+BYTE CDisplayPanel::Convert32BitsColorToPaletteIndexRGBA(DWORD dwSrcColor)
+{
+#if defined(USE_CVT_TABLE)
+	BYTE bColorIndex = Convert32BitsColorToPaletteIndexRGBA_CVT(dwSrcColor);
+#else
+	#if defined(USE_SSE)
+		BYTE bColorIndex = ::Convert32BitsColorToPaletteIndexRGBA_SSE(m_pdwColorTable, m_dwColorTableCount, dwSrcColor);
+	#else
+		BYTE bColorIndex = ::Convert32BitsColorToPaletteIndexRGBA_Normal(m_pdwColorTable, m_dwColorTableCount, dwSrcColor);
+	#endif
+#endif
+	return bColorIndex;
+}
+BYTE CDisplayPanel::Convert32BitsColorToPaletteIndexBGRA(DWORD dwSrcColor)
+{
+#if defined(USE_CVT_TABLE)
+	BYTE bColorIndex = Convert32BitsColorToPaletteIndexBGRA_CVT(dwSrcColor);
+#else
+	#if defined(USE_SSE)
+		BYTE bColorIndex = ::Convert32BitsColorToPaletteIndexBGRA_SSE(m_pdwColorTable, m_dwColorTableCount, dwSrcColor);
+	#else
+		BYTE bColorIndex = ::Convert32BitsColorToPaletteIndexBGRA_Normal(m_pdwColorTable, m_dwColorTableCount, dwSrcColor);
+	#endif
+#endif
+	return bColorIndex;
+}
 void CDisplayPanel::Cleanup()
 {
+	CleanupColorConvertingTable();
+
 	if (m_ppVoxelObjList)
 	{
 		for (UINT y = 0; y < m_VoxelObjHeight; y++)

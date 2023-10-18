@@ -343,21 +343,8 @@ union BGR_PIXEL
 	};
 	BYTE		bColorFactor[3];
 };
-union ABGR_PIXEL
-{
-	struct
-	{
-		BYTE	b;
-		BYTE	g;
-		BYTE	r;
-		BYTE	a;
 
-	};
-	BYTE		bColorFactor[4];
-};
-
-
-union ARGB
+union BGRA
 {
 	struct
 	{
@@ -1190,5 +1177,18 @@ public:
 
 };
 const DWORD MAX_NOTE_NUM_PER_BLOCK = 8;
+typedef void* WEB_CLIENT_HANDLE;
+
+struct MIDI_DEVICE_INFO
+{
+	WCHAR wchName[128];
+	WCHAR wchID[128];
+};
+
+enum MIDI_SIGNAL_TYPE
+{
+	MIDI_SIGNAL_TYPE_NOTE,
+	MIDI_SIGNAL_TYPE_CONTROL
+};
 
 #endif	// VH_PLUGIN

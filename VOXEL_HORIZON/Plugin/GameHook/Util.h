@@ -37,3 +37,8 @@ BOOL LoadPngImageAsPalettedImage(BYTE** ppOutBits, DWORD* pdwOutWidth, DWORD* pd
 void FreePalettedImage(BYTE* pBits);
 
 CImageData* CreateImageData(const char* szFileName, CDisplayPanel* pDisplayPanel, const WCHAR* wchPluginPath, BOOL bCompress);
+
+BYTE Convert32BitsColorToPaletteIndexRGBA_Normal(const DWORD* pdwColorTable, DWORD dwColorTableCount, DWORD dwSrcColor);
+BYTE Convert32BitsColorToPaletteIndexRGBA_SSE(const DWORD* pdwColorTable, DWORD dwColorTableCount, DWORD dwSrcColor);
+BYTE Convert32BitsColorToPaletteIndexBGRA_Normal(const DWORD* pdwColorTable, DWORD dwColorTableCount, DWORD dwSrcColor);
+BYTE Convert32BitsColorToPaletteIndexBGRA_SSE(const DWORD* pdwColorTable, DWORD dwColorTableCount, DWORD dwSrcColor);

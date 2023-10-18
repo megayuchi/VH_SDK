@@ -16,14 +16,22 @@ class CDisplayPanel
 	UINT	m_VoxelObjHeight = 0;
 	DWORD	m_dwColorTableCount = 0;
 	DWORD	m_pdwColorTable[COLOR_TABLE_COUNT] = {};
+	BYTE*	m_pCvtTable = nullptr;
+
+	void	InitColorConvertingTable(const DWORD* pdwColorTable, DWORD dwColorTableCount);
 	
-	
+	void	CleanupColorConvertingTable();
 	BOOL	CalcClipArea(INT_VECTOR2* pivOutSrcStart, INT_VECTOR2* pivOutDestStart, INT_VECTOR2* pivOutDestSize, const INT_VECTOR2* pivPos, const INT_VECTOR2* pivImageSize);
+	BYTE	Convert32BitsColorToPaletteIndexRGBA_CVT(DWORD dwSrcColor);
+	BYTE	Convert32BitsColorToPaletteIndexBGRA_CVT(DWORD dwSrcColor);
 	void	Cleanup();
 public:
 	BOOL	Initialize(IVHController* pVHController, UINT Width, UINT Height, DWORD dwLayerCount);
-	void	Convert32BitsImageTo8BitsPalettedImage(BYTE* pDest, const DWORD* pSrc, DWORD dwWidth, DWORD dwHeight);
-	BYTE	Convert32BitsColorToPaletteIndex(DWORD dwColor);
+	void	Convert32BitsImageTo8BitsPalettedImageRGBA(BYTE* pDest, const DWORD* pSrc, DWORD dwWidth, DWORD dwHeight);
+	void	Convert32BitsImageTo8BitsPalettedImageBGRA(BYTE* pDest, const DWORD* pSrc, DWORD dwWidth, DWORD dwHeight);
+	
+	BYTE	Convert32BitsColorToPaletteIndexRGBA(DWORD dwSrcColor);
+	BYTE	Convert32BitsColorToPaletteIndexBGRA(DWORD dwSrcColor);
 	void	OnDeleteVoxelObject(IVoxelObjectLite* pVoxelObj);
 	
 	void	Clear(BYTE bColorIndex, DWORD dwLayerIndex);
@@ -36,7 +44,7 @@ public:
 	void	ResetVoxelData();
 	UINT	GetWidth() const { return m_Width; }
 	UINT	GetHeight() const { return m_Height; }
-	
+	BOOL	GetScreenPosWithVoxelObjPos(int* piOutX, int* piOutY, IVoxelObjectLite* pVoxelObjSrc, int x, int y);
 	CDisplayPanel();
 	~CDisplayPanel();
 };

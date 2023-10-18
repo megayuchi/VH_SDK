@@ -28,6 +28,8 @@ BOOL CGame::Initialize(IVHController* pVHController, const WCHAR* wchPluginPath)
 {
 	m_pVHController = pVHController;
 	
+	m_pVHController->DeleteAllVoxelObject();
+
 	m_pDisplayPanel = new CDisplayPanel;
 	m_pDisplayPanel->Initialize(m_pVHController, DISPLAY_PANEL_WIDTH, DISPLAY_PANEL_HEIGHT, LAYER_INDEX_COUNT);
 

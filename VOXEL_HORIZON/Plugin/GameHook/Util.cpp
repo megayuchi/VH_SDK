@@ -142,7 +142,7 @@ BOOL LoadPngImageAsPalettedImage(BYTE** ppOutBits, DWORD* pdwOutWidth, DWORD* pd
 	if (LoadPngImage((BYTE**)&pRGBABits, &dwImageWidth, &dwImageHeight, pdwOutColorKey, szFileName))
 	{
 		pPalettedImage = (BYTE*)malloc(dwImageWidth * dwImageHeight);
-		pDisplayPanel->Convert32BitsImageTo8BitsPalettedImage(pPalettedImage, pRGBABits, dwImageWidth, dwImageHeight);
+		pDisplayPanel->Convert32BitsImageTo8BitsPalettedImageRGBA(pPalettedImage, pRGBABits, dwImageWidth, dwImageHeight);
 		free(pRGBABits);
 		pRGBABits = nullptr;
 
@@ -177,8 +177,8 @@ CImageData* CreateImageData(const char* szFileName, CDisplayPanel* pDisplayPanel
 	if (LoadPngImage(&pRGBABits, &dwImageWidth, &dwImageHeight, &dwColorKey, szFileName))
 	{
 		pPalettedImage = (BYTE*)malloc(dwImageWidth * dwImageHeight);
-		pDisplayPanel->Convert32BitsImageTo8BitsPalettedImage(pPalettedImage, (DWORD*)pRGBABits, dwImageWidth, dwImageHeight);
-		bColorKeyIndex = pDisplayPanel->Convert32BitsColorToPaletteIndex(dwColorKey);
+		pDisplayPanel->Convert32BitsImageTo8BitsPalettedImageRGBA(pPalettedImage, (DWORD*)pRGBABits, dwImageWidth, dwImageHeight);
+		bColorKeyIndex = pDisplayPanel->Convert32BitsColorToPaletteIndexRGBA(dwColorKey);
 
 		free(pRGBABits);
 		pRGBABits = nullptr;
@@ -197,4 +197,149 @@ CImageData* CreateImageData(const char* szFileName, CDisplayPanel* pDisplayPanel
 
 	SetCurrentDirectory(wchOldPath);
 	return pImgageData;
+}
+
+BYTE Convert32BitsColorToPaletteIndexRGBA_Normal(const DWORD* pdwColorTable, DWORD dwColorTableCount, DWORD dwSrcColor)
+{
+	// r = (dwSrcColor & 0x000000ff);
+	// g = (dwSrcColor & 0x0000ff00) >> 8;
+	// b = (dwSrcColor & 0x00ff0000) >> 16;
+
+	DWORD	dwSelectedIndex = 0;
+	float min_dist = (float)INT_MAX;
+	for (DWORD i = 0; i < dwColorTableCount; i++)
+	{
+		DWORD	dwDestColor = pdwColorTable[i];
+		
+		float sb = (float)((dwSrcColor & 0x00ff0000) >> 16);
+		float sg = (float)((dwSrcColor & 0x0000ff00) >> 8);
+		float sr = (float)((dwSrcColor & 0x000000ff));
+		
+		float dr = (float)((dwDestColor & 0x00ff0000) >> 16);
+		float dg = (float)((dwDestColor & 0x0000ff00) >> 8);
+		float db = (float)((dwDestColor & 0x000000ff));
+
+		float r_diff = sr - dr;
+		float g_diff = sg - dg;
+		float b_diff = sb - db;
+
+		float dist = sqrtf(r_diff * r_diff + g_diff * g_diff + b_diff * b_diff);
+		if (min_dist > dist)
+		{
+			min_dist = dist;
+			dwSelectedIndex = i;
+		}
+	}
+	return (BYTE)dwSelectedIndex;
+}
+
+BYTE Convert32BitsColorToPaletteIndexRGBA_SSE(const DWORD* pdwColorTable, DWORD dwColorTableCount, DWORD dwSrcColor)
+{
+	//
+	//  float color table을 미리 만들어두자.
+	//
+	// r = (dwSrcColor & 0x000000ff);
+	// g = (dwSrcColor & 0x0000ff00) >> 8;
+	// b = (dwSrcColor & 0x00ff0000) >> 16;
+	__m128i src_dword = _mm_setr_epi32((dwSrcColor & 0x000000ff), (dwSrcColor & 0x0000ff00) >> 8, (dwSrcColor & 0x00ff0000) >> 16, 0);	// x | b | g| r |
+	__m128 src_float = _mm_cvtepi32_ps(src_dword);
+
+	DWORD	dwSelectedIndex = 0;
+	DWORD	dwSelectedIndex1 = 0;
+	float min_dist = (float)INT_MAX;
+
+	for (DWORD i = 0; i < dwColorTableCount; i++)
+	{
+		// r = (dwDestColor & 0x00ff0000) >> 16;
+		// g = (dwDestColor & 0x0000ff00) >> 8;
+		// b = (dwDestColor & 0x000000ff) >> 0;
+		DWORD	dwDestColor = pdwColorTable[i];
+		__m128i dest_dword = _mm_setr_epi32((dwDestColor & 0x00ff0000) >> 16, (dwDestColor & 0x0000ff00) >> 8, (dwDestColor & 0x000000ff), 0);	// x | b | g| r |
+		__m128 dest_float = _mm_cvtepi32_ps(dest_dword);
+
+		__m128 diff = _mm_sub_ps(src_float, dest_float);
+		__m128 diffxdiff = _mm_mul_ps(diff, diff);
+		__m128 diff_s = _mm_hadd_ps(diffxdiff, diffxdiff);
+		diff_s = _mm_hadd_ps(diff_s, diff_s);
+		__m128 dist = _mm_sqrt_ss(diff_s);
+
+		if (min_dist > dist.m128_f32[0])
+		{
+			dwSelectedIndex = i;
+			min_dist = dist.m128_f32[0];
+		}
+	}
+	return (BYTE)dwSelectedIndex;
+}
+
+BYTE Convert32BitsColorToPaletteIndexBGRA_Normal(const DWORD* pdwColorTable, DWORD dwColorTableCount, DWORD dwSrcColor)
+{
+	// r = (dwSrcColor & 0x00ff0000) >> 16;
+	// g = (dwSrcColor & 0x0000ff00) >> 8;
+	// b = (dwSrcColor & 0x000000ff);
+
+	DWORD	dwSelectedIndex = 0;
+	float min_dist = (float)INT_MAX;
+	for (DWORD i = 0; i < dwColorTableCount; i++)
+	{
+		DWORD	dwDestColor = pdwColorTable[i];
+		
+		float sr = (float)((dwSrcColor & 0x00ff0000) >> 16);
+		float sg = (float)((dwSrcColor & 0x0000ff00) >> 8);
+		float sb = (float)((dwSrcColor & 0x000000ff));
+		
+		float dr = (float)((dwDestColor & 0x00ff0000) >> 16);
+		float dg = (float)((dwDestColor & 0x0000ff00) >> 8);
+		float db = (float)((dwDestColor & 0x000000ff));
+
+		float r_diff = sr - dr;
+		float g_diff = sg - dg;
+		float b_diff = sb - db;
+
+		float dist = sqrtf(r_diff * r_diff + g_diff * g_diff + b_diff * b_diff);
+		if (min_dist > dist)
+		{
+			min_dist = dist;
+			dwSelectedIndex = i;
+		}
+	}
+	return (BYTE)dwSelectedIndex;
+}
+BYTE Convert32BitsColorToPaletteIndexBGRA_SSE(const DWORD* pdwColorTable, DWORD dwColorTableCount, DWORD dwSrcColor)
+{
+	//
+	//  float color table을 미리 만들어두자.
+	//
+	// r = (dwSrcColor & 0x00ff0000) >> 16;
+	// g = (dwSrcColor & 0x0000ff00) >> 8;
+	// b = (dwSrcColor & 0x000000ff);
+	__m128i src_dword = _mm_setr_epi32((dwSrcColor & 0x00ff0000) >> 16, (dwSrcColor & 0x0000ff00) >> 8, (dwSrcColor & 0x000000ff), 0);	// x | b | g| r |
+	__m128 src_float = _mm_cvtepi32_ps(src_dword);
+
+	DWORD	dwSelectedIndex = 0;
+	DWORD	dwSelectedIndex1 = 0;
+	float min_dist = (float)INT_MAX;
+
+	for (DWORD i = 0; i < dwColorTableCount; i++)
+	{
+		// r = (dwDestColor & 0x00ff0000) >> 16;
+		// g = (dwDestColor & 0x0000ff00) >> 8;
+		// b = (dwDestColor & 0x000000ff) >> 0;
+		DWORD	dwDestColor = pdwColorTable[i];
+		__m128i dest_dword = _mm_setr_epi32((dwDestColor & 0x00ff0000) >> 16, (dwDestColor & 0x0000ff00) >> 8, (dwDestColor & 0x000000ff), 0);	// x | b | g| r |
+		__m128 dest_float = _mm_cvtepi32_ps(dest_dword);
+
+		__m128 diff = _mm_sub_ps(src_float, dest_float);
+		__m128 diffxdiff = _mm_mul_ps(diff, diff);
+		__m128 diff_s = _mm_hadd_ps(diffxdiff, diffxdiff);
+		diff_s = _mm_hadd_ps(diff_s, diff_s);
+		__m128 dist = _mm_sqrt_ss(diff_s);
+
+		if (min_dist > dist.m128_f32[0])
+		{
+			dwSelectedIndex = i;
+			min_dist = dist.m128_f32[0];
+		}
+	}
+	return (BYTE)dwSelectedIndex;
 }

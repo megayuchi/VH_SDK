@@ -333,6 +333,7 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Util.h" />
     <ClInclude Include="VoxelEditor.h" />
+    <ClInclude Include="WebPage.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\util\VoxelUtil.cpp" />
@@ -366,6 +367,7 @@
     </ClCompile>
     <ClCompile Include="Util.cpp" />
     <ClCompile Include="VoxelEditor.cpp" />
+    <ClCompile Include="WebPage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\include\BooleanTable.inl" />

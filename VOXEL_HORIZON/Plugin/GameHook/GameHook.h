@@ -5,6 +5,7 @@
 class CDisplayPanel;
 class CGame;
 class CVoxelEditor;
+class CWebPage;
 class CGameHook : public IGameHook
 {
 	DWORD	m_dwRefCount = 1;
@@ -18,11 +19,13 @@ class CGameHook : public IGameHook
 	BOOL	m_bLeftKeyPressed = FALSE;
 	BOOL	m_bRightKeyPressed = FALSE;
 	BOOL	m_bDownKeyPressed = FALSE;
+	BOOL	m_bMidiInputMode = FALSE;
 
 	CVoxelEditor*	m_pVoxelEditor = nullptr;
+	CWebPage*	m_pWebPage = nullptr;
 	
-	
-
+	void	OnPianoKeyDown(DWORD dwKeyIndex);
+	void	OnPianoKeyUp(DWORD dwKeyIndex);
 	void	StartGame();
 	
 public:

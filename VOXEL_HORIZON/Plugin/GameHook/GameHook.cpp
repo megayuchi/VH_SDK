@@ -6,7 +6,14 @@
 #include "DisplayPanel.h"
 #include "Game.h"
 #include "VoxelEditor.h"
+#include "WebPage.h"
 #include "lodepng.h"
+
+const int FIRST_PIANO_KEY = 48;
+const DWORD PIANO_KEY_NUM = 36;
+const DWORD MIN_VELOCITY = 32;
+
+//#define MIDI_INPUT_MODE
 
 CGameHook* g_pGameHook = nullptr;
 
@@ -82,6 +89,11 @@ void __stdcall CGameHook::OnRun()
 	{
 		m_pGame->Process();
 	}
+	if (m_pWebPage)
+	{
+		m_pWebPage->Process();
+	}
+
 
 }
 void CGameHook::OnDeleteVoxelObject(IVoxelObjectLite* pVoxelObj)
@@ -110,25 +122,43 @@ void __stdcall CGameHook::OnDestroyScene()
 		delete m_pVoxelEditor;
 		m_pVoxelEditor = nullptr;
 	}
+	if (m_pWebPage)
+	{
+		delete m_pWebPage;
+		m_pWebPage = nullptr;
+	}
 }
 BOOL __stdcall CGameHook::OnMouseLButtonDown(int x, int y, UINT nFlags)
 {
 	BOOL	bProcessed = FALSE;
+	if (m_pWebPage)
+	{
+		bProcessed = m_pWebPage->OnMouseLButtonDown(x, y, nFlags);
+		if (bProcessed)
+			goto lb_return;
+	}
 	if (m_pVoxelEditor)
 	{
 		bProcessed = m_pVoxelEditor->OnMouseLButtonDown(x, y, nFlags);
 	}
+lb_return:
 	return bProcessed;
 }
 BOOL __stdcall CGameHook::OnMouseLButtonUp(int x, int y, UINT nFlags)
 {
 	BOOL	bProcessed = FALSE;
+	if (m_pWebPage)
+	{
+		bProcessed = m_pWebPage->OnMouseLButtonUp(x, y, nFlags);
+		if (bProcessed)
+			goto lb_return;
+	}
 	if (m_pVoxelEditor)
 	{
 		bProcessed = m_pVoxelEditor->OnMouseLButtonUp(x, y, nFlags);
 	}
+lb_return:
 	return bProcessed;
-
 }
 
 BOOL __stdcall CGameHook::OnMouseRButtonDown(int x, int y, UINT nFlags)
@@ -152,12 +182,155 @@ BOOL __stdcall CGameHook::OnMouseWheel(int iWheel)
 {
 	return FALSE;
 }
+
+void CGameHook::OnPianoKeyDown(DWORD dwKeyIndex)
+{
+	m_pVHController->WriteNoteOrControl(MIDI_SIGNAL_TYPE_NOTE, TRUE, (unsigned char)(FIRST_PIANO_KEY + dwKeyIndex), 127);
+}
+void CGameHook::OnPianoKeyUp(DWORD dwKeyIndex)
+{
+	m_pVHController->WriteNoteOrControl(MIDI_SIGNAL_TYPE_NOTE, FALSE, (unsigned char)(FIRST_PIANO_KEY + dwKeyIndex), 127);
+}
+
 BOOL __stdcall CGameHook::OnKeyDown(UINT nChar)
 {
 	BOOL	bProcessed = FALSE;
 
 	switch (nChar)
 	{
+		case 'A':
+			{
+				if (m_bMidiInputMode)
+				{
+					OnPianoKeyDown(0);
+					bProcessed = TRUE;
+				}
+			}
+			break;
+		case 'W':
+			{
+				if (m_bMidiInputMode)
+				{
+					OnPianoKeyDown(1);
+					bProcessed = TRUE;
+				}
+			}
+			break;
+		case 'S':
+			{
+				if (m_bMidiInputMode)
+				{
+					OnPianoKeyDown(2);
+					bProcessed = TRUE;
+				}
+			}
+			break;
+		case 'E':
+			{
+				if (m_bMidiInputMode)
+				{
+					OnPianoKeyDown(3);
+					bProcessed = TRUE;
+				}
+			}
+			break;
+		case 'D':
+			{
+				if (m_bMidiInputMode)
+				{
+					OnPianoKeyDown(4);
+					bProcessed = TRUE;
+				}
+			}
+			break;
+		case 'F':
+			{
+				if (m_bMidiInputMode)
+				{
+					OnPianoKeyDown(5);
+					bProcessed = TRUE;
+				}
+			}
+			break;
+		case 'T':
+			{
+				if (m_bMidiInputMode)
+				{
+					OnPianoKeyDown(6);
+					bProcessed = TRUE;
+				}
+			}
+			break;
+		case 'G':
+			{
+				if (m_bMidiInputMode)
+				{
+					OnPianoKeyDown(7);
+					bProcessed = TRUE;
+				}
+			}
+			break;
+		case 'Y':
+			{
+				if (m_bMidiInputMode)
+				{
+					OnPianoKeyDown(8);
+					bProcessed = TRUE;
+				}
+			}
+			break;
+		case 'H':
+			{
+				if (m_bMidiInputMode)
+				{
+					OnPianoKeyDown(9);
+					bProcessed = TRUE;
+				}
+			}
+			break;
+		case 'U':
+			{
+				if (m_bMidiInputMode)
+				{
+					OnPianoKeyDown(10);
+					bProcessed = TRUE;
+				}
+			}
+			break;
+		case 'J':
+			{
+				if (m_bMidiInputMode)
+				{
+					OnPianoKeyDown(11);
+					bProcessed = TRUE;
+				}
+			}
+			break;
+		case 'K':
+			{
+				if (m_bMidiInputMode)
+				{
+					OnPianoKeyDown(12);
+					bProcessed = TRUE;
+				}
+			}
+			break;
+		case 'M':
+			{
+				if (m_bMidiInputMode)
+				{
+					m_bMidiInputMode = FALSE;
+					m_pVHController->WriteTextToSystemDlgW(COLOR_VALUE_GREEN, L"Midi Mode Off.\n");
+				}
+				else
+				{
+					m_bMidiInputMode = TRUE;
+					m_pVHController->WriteTextToSystemDlgW(COLOR_VALUE_GREEN, L"Midi Mode On.\n");
+				}
+				bProcessed = TRUE;
+
+			}
+			break;
 		/*
 		case VK_UP:
 			{
@@ -196,7 +369,6 @@ BOOL __stdcall CGameHook::OnKeyDown(UINT nChar)
 			}
 			break;
 			*/
-
 		case VK_RETURN:
 			{
 				StartGame();
@@ -215,44 +387,123 @@ BOOL __stdcall CGameHook::OnKeyUp(UINT nChar)
 	BOOL	bProcessed = FALSE;
 	switch (nChar)
 	{
-		/*
-		case VK_UP:
+		case 'A':
 			{
-				if (m_pDisplayPanel)
+				if (m_bMidiInputMode)
 				{
-					m_bUpKeyPressed = FALSE;
+					OnPianoKeyUp(0);
 					bProcessed = TRUE;
 				}
 			}
 			break;
-		case VK_DOWN:
+		case 'W':
 			{
-				if (m_pDisplayPanel)
+				if (m_bMidiInputMode)
 				{
-					m_bDownKeyPressed = FALSE;
+					OnPianoKeyUp(1);
 					bProcessed = TRUE;
 				}
 			}
 			break;
-		case VK_LEFT:
+		case 'S':
 			{
-				if (m_pDisplayPanel)
+				if (m_bMidiInputMode)
 				{
-					m_bLeftKeyPressed = FALSE;
+					OnPianoKeyUp(2);
 					bProcessed = TRUE;
 				}
 			}
 			break;
-		case VK_RIGHT:
+		case 'E':
 			{
-				if (m_pDisplayPanel)
+				if (m_bMidiInputMode)
 				{
-					m_bRightKeyPressed = FALSE;
+					OnPianoKeyUp(3);
 					bProcessed = TRUE;
 				}
 			}
 			break;
-			*/
+		case 'D':
+			{
+				if (m_bMidiInputMode)
+				{
+					OnPianoKeyUp(4);
+					bProcessed = TRUE;
+				}
+			}
+			break;
+		case 'F':
+			{
+				if (m_bMidiInputMode)
+				{
+					OnPianoKeyUp(5);
+					bProcessed = TRUE;
+				}
+			}
+			break;
+		case 'T':
+			{
+				if (m_bMidiInputMode)
+				{
+					OnPianoKeyUp(6);
+					bProcessed = TRUE;
+				}
+			}
+			break;
+		case 'G':
+			{
+				if (m_bMidiInputMode)
+				{
+					OnPianoKeyUp(7);
+					bProcessed = TRUE;
+				}
+			}
+			break;
+		case 'Y':
+			{
+				if (m_bMidiInputMode)
+				{
+					OnPianoKeyUp(8);
+					bProcessed = TRUE;
+				}
+			}
+			break;
+		case 'H':
+			{
+				if (m_bMidiInputMode)
+				{
+					OnPianoKeyUp(9);
+					bProcessed = TRUE;
+				}
+			}
+			break;
+		case 'U':
+			{
+				if (m_bMidiInputMode)
+				{
+					OnPianoKeyUp(10);
+					bProcessed = TRUE;
+				}
+			}
+			break;
+		case 'J':
+			{
+				if (m_bMidiInputMode)
+				{
+					OnPianoKeyUp(11);
+					bProcessed = TRUE;
+				}
+			}
+			break;
+		case 'K':
+			{
+				if (m_bMidiInputMode)
+				{
+					OnPianoKeyUp(12);
+					bProcessed = TRUE;
+				}
+			}
+			break;
 	}
 	if (m_pGame)
 	{
@@ -350,24 +601,52 @@ BOOL __stdcall	CGameHook::OnKeyDownFunc(UINT nChar)
 }
 BOOL __stdcall	CGameHook::OnKeyDownCtrlFunc(UINT nChar)
 {
-	return FALSE;
+	BOOL	bProcessed = FALSE;
+	switch (nChar)
+	{
+		case VK_F11:
+			{
+				if (m_pWebPage)
+				{
+					delete m_pWebPage;
+					m_pWebPage = nullptr;
+				}
+				m_pWebPage = new CWebPage;
+			
+			
+				//m_pWebPage->Initialize(m_pVHController, "https://www.shadertoy.com/view/XsXXDB");
+				m_pWebPage->Initialize(m_pVHController, "https://youtu.be/bhPXCkqfSkk?si=F9Sc8kPFn7RJNaea");
+				//m_pWebPage->Initialize(m_pVHController, "https://bing.com");
+				bProcessed = TRUE;
+			}
+			break;
+	}
+	return bProcessed;
 }
 BOOL __stdcall CGameHook::OnPreConsoleCommand(const WCHAR* wchCmd, DWORD dwCmdLen)
 {
 	BOOL	bResult = FALSE;
-	if (m_pGame)
-	{
-		if (m_pGame->IsGamePaused())
-		{
+	
+	// 채팅 다이얼로그 시스템 출력창에 출력
+	m_pVHController->WriteTextToSystemDlgW(COLOR_VALUE_CYAN, L"[Plug-in] OnPreConsoleCommand:\"%s\".\n", wchCmd);
 
-		}
-		else
-		{
-			m_pVHController->WriteTextToSystemDlgW(COLOR_VALUE_CYAN, L"[Plug-in] OnPreConsoleCommand:\"%s\".\n", wchCmd);
-			bResult = TRUE;
-		}
+	// 콘솔창에 출력
+	m_pVHController->BeginWriteTextToConsole();
 
-	}
+	WCHAR wchTxt[128] = {};
+	int iLen = (int)swprintf_s(wchTxt, L"[Plug-in] OnPreConsoleCommand:\"%s\"", wchCmd);
+			
+	//WriteTextToConsole()함수는 가변인자를 허용하지 않음.
+	m_pVHController->WriteTextToConsole(wchTxt, iLen, COLOR_VALUE_MAGENTA);
+			
+	m_pVHController->EndWriteTextToConsole();
+
+	// 게임 레이어에서 더 이상 처리하지 않기를 바란다면 TRUE를 리턴
+	//bResult = TRUE;
+
+	// 게임 레이어에서 계속 처리하지를 원한다면 FALSE를 리턴
+	bResult = FALSE;
+
 	return bResult;
 }
 /*
@@ -381,8 +660,6 @@ IVoxelObjectLite* CSceneBattleField::CreateVoxelObject(VECTOR3* pv3Pos, UINT Wid
 */
 void CGameHook::StartGame()
 {
-	m_pVHController->DeleteAllVoxelObject();
-
 	if (m_pGame)
 	{
 		delete m_pGame;

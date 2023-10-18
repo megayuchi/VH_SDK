@@ -40,6 +40,9 @@
     <Filter Include="Contents\Game">
       <UniqueIdentifier>{563857a9-bcaf-4550-9e36-ff9d81acf983}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Contents\WebPage">
+      <UniqueIdentifier>{2734b035-bf11-412e-add0-56844b6d52ef}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -90,6 +93,9 @@
     <ClInclude Include="VoxelEditor.h">
       <Filter>Contents\VoxelEditor</Filter>
     </ClInclude>
+    <ClInclude Include="WebPage.h">
+      <Filter>Contents\WebPage</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -130,6 +136,9 @@
     </ClCompile>
     <ClCompile Include="VoxelEditor.cpp">
       <Filter>Contents\VoxelEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="WebPage.cpp">
+      <Filter>Contents\WebPage</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

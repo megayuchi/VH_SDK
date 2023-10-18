@@ -7,17 +7,6 @@
 class CStack;
 #endif
 
-
-enum VH_EDIT_MODE
-{
-	VH_EDIT_MODE_SELECT,
-	VH_EDIT_MODE_CREATE_NEW_OBJECT,
-	VH_EDIT_MODE_SET_VOXEL_COLOR,
-	VH_EDIT_MODE_ADD_VOXEL,
-	VH_EDIT_MODE_REMOVE_VOXEL,
-	VH_EDIT_MODE_COUNT
-};
-
 interface IVoxelObjectLite
 {
 	virtual		void	__stdcall	GetVoxelObjectPtr(void** ppOutVoxelObj) const = 0;		// Get IVoxelObject from IVoxelObjectLite
@@ -66,6 +55,19 @@ interface IVoxelObjectLite
 
 };
 
+#if defined(VH_PLUGIN) || defined(_CLIENT)
+
+
+enum VH_EDIT_MODE
+{
+	VH_EDIT_MODE_SELECT,
+	VH_EDIT_MODE_CREATE_NEW_OBJECT,
+	VH_EDIT_MODE_SET_VOXEL_COLOR,
+	VH_EDIT_MODE_ADD_VOXEL,
+	VH_EDIT_MODE_REMOVE_VOXEL,
+	VH_EDIT_MODE_COUNT
+};
+
 interface IVHController
 {
 	virtual		void			__stdcall	GetWorldInfo(DWORD* pdwOutObjNumWidth, DWORD* pdwOutObjNumDepth, DWORD* pdwOutObjNumHeight, AABB* pOutWorldAABB) const = 0;
@@ -77,8 +79,9 @@ interface IVHController
 	virtual		void			__stdcall	GetIntPositionWithFloatCoord(INT_VECTOR3* pivOutPos, const VECTOR3* pv3Pos) const = 0;
 	virtual		void			__stdcall	GetFloatPositionWithIntCoord(VECTOR3* pv3OutPos, const INT_VECTOR3* pivPos) const = 0;
 	virtual		void			__stdcall	GetVoxelObjectAABBWithIntCoord(AABB* pOutAABB, const INT_VECTOR3* pivPos) const = 0;
-
+	virtual		BOOL			__stdcall	GetRayWithScreenCoord(VECTOR3* pv3OutPos, VECTOR3* pv3OutDir, int x, int y) const = 0;
 	virtual		IVoxelObjectLite*	__stdcall	IntersectVoxelWithRayAsTriMesh(VECTOR3* pv3OutIntersectPoint, float* pfOutT, const VECTOR3* pv3Orig, const VECTOR3* pv3Ray) const = 0;
+	virtual		BOOL				__stdcall	IntersectVoxelWithRay(VECTOR3* pv3OutIntersectPoint, float* pfOutT, VECTOR3* pv3OutAxis, VOXEL_DESC_LITE* pOutVoxelDesc, const VECTOR3* pv3Orig, const VECTOR3* pv3Ray) const = 0;
 	virtual		BOOL				__stdcall	IntersectBottomWithRay(VECTOR3* pv3OutIntersectPoint, const VECTOR3* pv3Orig, const VECTOR3* pv3Ray) const = 0;
 	virtual		int					__stdcall	FindTriListWithCapsuleRay(TRIANGLE* pOutTriList, int iMaxTriNum, const VECTOR3* pv3Orig, const VECTOR3* pv3Ray, float fRs, BOOL* pbOutInsufficient) const = 0;
 	virtual		IVoxelObjectLite*	__stdcall	GetVoxelObjectWithGridCoord(const INT_VECTOR3* pivPos) const = 0;
@@ -142,7 +145,10 @@ interface IVHController
 	virtual		BOOL			__stdcall	WriteFile(const WCHAR* wchFileName) = 0;
 	virtual		BOOL			__stdcall	ReadFile(const WCHAR* wchFileName, BOOL bDelayedUpdate, BOOL bLighting) = 0;
 
-	// 콘솔창 출력
+	virtual		void			__stdcall	BeginWriteTextToConsole() = 0;
+	virtual		void			__stdcall	WriteTextToConsole(const WCHAR* wchTxt, int iLen, DWORD dwColor) = 0;
+	virtual		void			__stdcall	EndWriteTextToConsole() = 0;
+
 	virtual		BYTE			__stdcall	GetCurrentColorIndex() const = 0;
 	virtual		VH_EDIT_MODE	__stdcall	GetCurrentEditMode() const = 0;
 	virtual		PLANE_AXIS_TYPE __stdcall	GetCurrentPlaneType() const = 0;
@@ -155,15 +161,29 @@ interface IVHController
 	virtual		void			__stdcall	EnableDestroyableAll(BOOL bSwitch) = 0;
 	virtual		void			__stdcall	EnableAutoRestoreAll(BOOL bSwitch) = 0;
 	virtual		void			__stdcall	SetOnDeleteVoxelObjectFunc(ON_DELETE_VOXEL_OBJ_LITE_FUNC pFunc) = 0;
+
+	virtual		WEB_CLIENT_HANDLE __stdcall BrowseWeb(const char* szURL, DWORD dwWidth, DWORD dwHeight, BOOL bUserSharedMemory) = 0;
+	virtual		void	__stdcall CloseWeb(WEB_CLIENT_HANDLE pHandle) = 0;
+	virtual		BOOL	__stdcall GetWebImage(BYTE* pOutBits32, DWORD dwWidth, DWORD dwHeight, DWORD dwDestPitch, WEB_CLIENT_HANDLE pHandle) const = 0;
+	virtual		void	__stdcall OnWebMouseLButtonDown(WEB_CLIENT_HANDLE pHandle, int x, int y, UINT nFlags) = 0;
+	virtual		void	__stdcall OnWebMouseLButtonUp(WEB_CLIENT_HANDLE pHandle, int x, int y, UINT nFlags) = 0;
+
+	// midi
+	virtual		BOOL	__stdcall SetMidiOutDevice(const WCHAR* wchDeviceName) = 0;
+	virtual		BOOL	__stdcall GetSelectedMidiOutDevice(MIDI_DEVICE_INFO* pOutInfo) = 0;
+	virtual		BOOL	__stdcall SetMidiInDevice(const WCHAR* wchDeviceName) = 0;
+	virtual		BOOL	__stdcall GetSelectedMidiInDevice(MIDI_DEVICE_INFO* pOutInfo) = 0;
+	virtual		BOOL	__stdcall SetVolume(unsigned char channel, unsigned char Volume) = 0;
+	virtual		BOOL	__stdcall SetSustainPedal(unsigned char channel, unsigned char Value) = 0;
+	virtual		BOOL	__stdcall NoteOn(unsigned char channel, unsigned char note, unsigned char Velocity) = 0;
+	virtual		BOOL	__stdcall NoteOff(unsigned char channel, unsigned char note, unsigned char Velocity) = 0;
+	virtual		DWORD	__stdcall GetMidiInDeviceList(MIDI_DEVICE_INFO* pOutInfoList, DWORD dwMaxBufferCount) = 0;
+	virtual		DWORD	__stdcall GetMidiOutDeviceList(MIDI_DEVICE_INFO* pOutInfoList, DWORD dwMaxBufferCount) = 0;
+	virtual		BOOL	__stdcall WriteNoteOrControl(MIDI_SIGNAL_TYPE type, BOOL bOnOff, DWORD dwKey, DWORD dwVelocity) = 0;
 };
 
 interface IVHNetworkLayer
 {
-	// MIDI
-	virtual		void	Send_MidiNoteBlock(const MIDI_NOTE* pNoteList, DWORD dwNoteNum) = 0;
-	virtual		void	Send_BeginMidiNoteBlock() = 0;
-	virtual		void	Send_EndMidiNoteBlock() = 0;
-
 	// voxel edit
 	virtual		void	Send_RequestAddMultipleVoxels(const VECTOR3* pv3ObjPos, const INT_VECTOR3* pivVoxelPosList, DWORD dwVoxelNum, BYTE bWidthDepthHeight, BYTE bColorIndex, PLANE_AXIS_TYPE planeType, BOOL bRebuildArea) = 0;
 	virtual		void	Send_RequestSetMultipleVoxelsColor(const VECTOR3* pv3ObjPos, const INT_VECTOR3* pivVoxelPosList, DWORD dwVoxelNum, BYTE bColorIndex, BYTE WidthDepthHeight, PLANE_AXIS_TYPE planeType) = 0;
@@ -221,3 +241,4 @@ interface IGameHook : public IUnknown
 	virtual BOOL __stdcall	OnPreConsoleCommand(const WCHAR* wchCmd, DWORD dwCmdLen) = 0;
 
 };
+#endif
