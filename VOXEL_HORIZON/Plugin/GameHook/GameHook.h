@@ -77,6 +77,7 @@ public:
 	BOOL __stdcall	OnKeyDownFunc(UINT nChar);
 	BOOL __stdcall	OnKeyDownCtrlFunc(UINT nChar);
 	BOOL __stdcall	OnPreConsoleCommand(const WCHAR* wchCmd, DWORD dwCmdLen);
+	BOOL __stdcall	OnMidiInput(const MIDI_NOTE_L* pNote);
 
 	void	OnDeleteVoxelObject(IVoxelObjectLite* pVoxelObj);
 	CGameHook();

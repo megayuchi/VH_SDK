@@ -649,6 +649,71 @@ BOOL __stdcall CGameHook::OnPreConsoleCommand(const WCHAR* wchCmd, DWORD dwCmdLe
 
 	return bResult;
 }
+
+BOOL __stdcall CGameHook::OnMidiInput(const MIDI_NOTE_L* pNote)
+{
+	BOOL	bResult = FALSE;
+	
+	if (!m_bMidiInputMode)
+		return FALSE;
+
+	MIDI_SIGNAL_TYPE type = MIDI_SIGNAL_TYPE_NOTE;
+	if (pNote->IsControl())
+	{
+		type = MIDI_SIGNAL_TYPE_CONTROL;
+	}
+	if (MIDI_SIGNAL_TYPE_NOTE == type)
+	{
+		BOOL	bOnOff = pNote->GetOnOff();
+		DWORD	dwKey = pNote->GetKey();
+		DWORD	dwVelocity = pNote->GetVelocity() + MIN_VELOCITY;
+		if (dwVelocity > 127)
+			dwVelocity = 127;
+
+		m_pVHController->WriteNoteOrControl(MIDI_SIGNAL_TYPE_NOTE, bOnOff, dwKey, dwVelocity);
+
+		DWORD dwButtonIndex = dwKey - FIRST_PIANO_KEY;
+
+		if (dwButtonIndex < PIANO_KEY_NUM)
+		{
+			if (bOnOff)
+			{
+				// draw that piano key pressed
+				bResult = TRUE;
+			}
+			else
+			{
+				// draw that piano key released
+				bResult = TRUE;
+			}
+		}
+		else
+		{
+			int a = 0;
+		}
+	}
+	else if (MIDI_SIGNAL_TYPE_CONTROL == type)
+	{
+		DWORD	dwController = pNote->GetController();
+		DWORD	dwControlValue = pNote->GetControlValue();
+
+		m_pVHController->WriteNoteOrControl(MIDI_SIGNAL_TYPE_CONTROL, TRUE, dwController, dwControlValue);
+		if (64 == dwController)
+		{
+			if (127 == dwControlValue)
+			{
+				// draw that sustain pedal pressed
+				bResult = TRUE;
+			}
+			else
+			{
+				// draw that sustain pedal released
+				bResult = TRUE;
+			}
+		}
+	}
+	return bResult;
+}
 /*
 IVoxelObjectLite* CSceneBattleField::CreateVoxelObject(VECTOR3* pv3Pos, UINT WidthDepthHeight, CREATE_VOXEL_OBJECT_ERROR* pOutErr)
 {

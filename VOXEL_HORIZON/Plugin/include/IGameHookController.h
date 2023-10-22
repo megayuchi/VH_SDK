@@ -16,7 +16,7 @@ interface IVoxelObjectLite
 	virtual 	BOOL	__stdcall	SetColorTable(const BYTE* pColorTable, UINT WidthDepthHeight) = 0;
 	virtual		BOOL	__stdcall	SetColorTableWithStream(const BYTE* pColorTable, UINT WidthDepthHeight) = 0;
 	virtual		BOOL	__stdcall	SetCompressedColorTable2x2x2(const void* pCompressedData, DWORD dwSize, UINT WidthDepthHeight) = 0;
-	virtual		BOOL	__stdcall	ScluptToRoundBox() = 0;
+	virtual		BOOL	__stdcall	SculptToRoundBox() = 0;
 	virtual		BOOL	__stdcall	SculptToSphere() = 0;
 	virtual		void	__stdcall	UpdateGeometry(BOOL bImmediate) = 0;
 	virtual		void	__stdcall	UpdateLighting() = 0;
@@ -180,6 +180,9 @@ interface IVHController
 	virtual		DWORD	__stdcall GetMidiInDeviceList(MIDI_DEVICE_INFO* pOutInfoList, DWORD dwMaxBufferCount) = 0;
 	virtual		DWORD	__stdcall GetMidiOutDeviceList(MIDI_DEVICE_INFO* pOutInfoList, DWORD dwMaxBufferCount) = 0;
 	virtual		BOOL	__stdcall WriteNoteOrControl(MIDI_SIGNAL_TYPE type, BOOL bOnOff, DWORD dwKey, DWORD dwVelocity) = 0;
+	virtual		BOOL	__stdcall IsBroadcastMode() const = 0;
+	virtual		BOOL	__stdcall EnableBroadcastMode(BOOL bSwitch) = 0;
+	virtual		void	__stdcall Reset() = 0;
 };
 
 interface IVHNetworkLayer
@@ -239,6 +242,6 @@ interface IGameHook : public IUnknown
 	virtual BOOL __stdcall	OnKeyDownFunc(UINT nChar) = 0;
 	virtual BOOL __stdcall	OnKeyDownCtrlFunc(UINT nChar) = 0;
 	virtual BOOL __stdcall	OnPreConsoleCommand(const WCHAR* wchCmd, DWORD dwCmdLen) = 0;
-
+	virtual BOOL __stdcall	OnMidiInput(const MIDI_NOTE_L* pNote) = 0;
 };
 #endif
