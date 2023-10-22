@@ -1071,113 +1071,6 @@ struct TRI_MESH
 	DWORD			dwTriNum;
 };
 
-struct MIDI_NOTE
-{
-private:
-	// Control / note | On / Off(1) | velocity(7) | key(7)
-	static const DWORD ON_OFF_MASK = 0b1;
-	static const DWORD VELOCITY_MASK = 0b1111111;
-	static const DWORD KEY_MASK = 0b1111111;
-	DWORD	dwRelativeTick;
-	DWORD	dwValue;
-public:
-	BOOL IsControl() const
-	{
-		BOOL bResult = (dwValue & (1 << 15)) != 0;
-		return bResult;
-	}
-	DWORD GetRelativeTick() const
-	{
-		return dwRelativeTick;
-	}
-	void SetRelativeTick(DWORD dwTick)
-	{
-		dwRelativeTick = dwTick;
-	}
-
-	// as note
-	void SetAsNote(BOOL bOnOff, DWORD dwTick, DWORD dwVelocity, DWORD dwKey)
-	{
-		dwRelativeTick = dwTick;
-		dwValue = (0 << 15) | ((bOnOff & ON_OFF_MASK) << 14) | ((dwVelocity & VELOCITY_MASK) << 7) | (dwKey & KEY_MASK);
-	}
-	BOOL GetOnOff() const
-	{
-		return (BOOL)((dwValue >> 14) & ON_OFF_MASK);
-	}
-	DWORD GetVelocity() const
-	{
-		return ((dwValue >> 7) & VELOCITY_MASK);
-	}
-	DWORD GetKey() const
-	{
-		return (dwValue & KEY_MASK);
-	}
-	// as controller
-	void SetAsControl(DWORD dwTick, DWORD dwControlValue, DWORD dwController)
-	{
-		dwRelativeTick = dwTick;
-		dwValue = (1 << 15) | ((1 & ON_OFF_MASK) << 14) | ((dwControlValue & VELOCITY_MASK) << 7) | (dwController & KEY_MASK);
-	}
-	DWORD GetControlValue() const
-	{
-		return ((dwValue >> 7) & VELOCITY_MASK);
-	}
-	DWORD GetController() const
-	{
-		return (dwValue & KEY_MASK);
-	}
-};
-struct MIDI_NOTE_L
-{
-private:
-	// Control / note | On / Off(1) | velocity(7) | key(7)
-	static const DWORD CONTROL_NOTE_MASK = 0b1;
-	static const DWORD ON_OFF_MASK = 0b1;
-	static const DWORD VELOCITY_MASK = 0b1111111;
-	static const DWORD KEY_MASK = 0b1111111;
-	DWORD	dwValue;
-public:
-	// as note
-	void SetAsNote(BOOL bOnOff, DWORD dwVelocity, DWORD dwKey)
-	{
-		dwValue = (0 << 15) | ((bOnOff & ON_OFF_MASK) << 14) | ((dwVelocity & VELOCITY_MASK) << 7) | (dwKey & KEY_MASK);
-	}
-	BOOL IsControl() const
-	{
-		BOOL bResult = (dwValue & (1 << 15)) != 0;
-		return bResult;
-	}
-	BOOL GetOnOff() const
-	{
-		return (BOOL)((dwValue >> 14) & ON_OFF_MASK);
-	}
-	DWORD GetVelocity() const
-	{
-		return ((dwValue >> 7) & VELOCITY_MASK);
-	}
-	DWORD GetKey() const
-	{
-		return (dwValue & KEY_MASK);
-	}
-
-	// as controller
-	void SetAsControl(DWORD dwControlValue, DWORD dwController)
-	{
-		dwValue = (1 << 15) | ((1 & ON_OFF_MASK) << 14) | ((dwControlValue & VELOCITY_MASK) << 7) | (dwController & KEY_MASK);
-	}
-	DWORD GetControlValue() const
-	{
-		return ((dwValue >> 7) & VELOCITY_MASK);
-	}
-	DWORD GetController() const
-	{
-		return (dwValue & KEY_MASK);
-	}
-
-};
-const DWORD MAX_NOTE_NUM_PER_BLOCK = 8;
-typedef void* WEB_CLIENT_HANDLE;
 
 struct MIDI_DEVICE_INFO
 {
@@ -1188,7 +1081,205 @@ struct MIDI_DEVICE_INFO
 enum MIDI_SIGNAL_TYPE
 {
 	MIDI_SIGNAL_TYPE_NOTE,
-	MIDI_SIGNAL_TYPE_CONTROL
+	MIDI_SIGNAL_TYPE_CONTROL,
+	MIDI_SIGNAL_TYPE_PROGRAM,
+	MIDI_SIGNAL_TYPE_COUNT
 };
+typedef void (__stdcall *ON_MIDI_INPUT_CALLBACK)(MIDI_SIGNAL_TYPE type, unsigned char channel, BOOL bOnOff, unsigned char key, unsigned char Velocity, void* pData);
+
+struct MIDI_NOTE
+{
+
+private:
+	// | event Type |  Channel   |  Reserved  |  On / Off(1) | Key / Program / Controler | Velocity / ControlValue |
+	// |    (3)     |    (5)     |     (9)    |      (1)     |            (7)            |            (7)          |
+
+	static const DWORD SIGNAL_TYPE_SET_MASK = 0b111;
+	static const DWORD SIGNAL_TYPE_GET_MASK = (0b111 << 29);
+
+	static const DWORD CHANNEL_SET_MASK = 0b11111;
+	static const DWORD CHANNEL_GET_MASK = (0b11111 << 24);
+
+	static const DWORD ON_OFF_SET_MASK = 0b1;
+	static const DWORD ON_OFF_GET_MASK = (0b1 << 14);
+
+	static const DWORD KEY_SET_MASK = 0b1111111;
+	static const DWORD KEY_GET_MASK = (0b1111111 << 7);
+
+	static const DWORD CONTROLLER_SET_MASK = KEY_SET_MASK;
+	static const DWORD CONTROLLER_GET_MASK = KEY_GET_MASK;
+
+	static const DWORD PROGRAM_SET_MASK = KEY_SET_MASK;
+	static const DWORD PROGRAM_GET_MASK = KEY_GET_MASK;
+
+	static const DWORD VELOCITY_SET_MASK = 0b1111111;
+	static const DWORD VELOCITY_GET_MASK = 0b1111111;
+	static const DWORD CONTROL_VALUE_SET_MASK = VELOCITY_SET_MASK;
+	static const DWORD CONTROL_VALUE_GET_MASK = VELOCITY_GET_MASK;
+
+	DWORD	dwRelativeTick;
+	DWORD	dwValue;
+public:
+	MIDI_SIGNAL_TYPE GetSignalType() const
+	{
+		MIDI_SIGNAL_TYPE type = (MIDI_SIGNAL_TYPE)((dwValue & SIGNAL_TYPE_GET_MASK) >> 29);
+		return type;
+	}
+	//BOOL IsControl() const
+	//{
+	//	MIDI_SIGNAL_TYPE type = GetSignalType();
+	//	return (MIDI_SIGNAL_TYPE_CONTROL == type);
+	//}
+	DWORD GetRelativeTick() const
+	{
+		return dwRelativeTick;
+	}
+	void SetRelativeTick(DWORD dwTick)
+	{
+		dwRelativeTick = dwTick;
+	}
+
+	// as note
+	void SetAsNote(DWORD dwChannel, BOOL bOnOff, DWORD dwKey, DWORD dwVelocity, DWORD dwTick)
+	{
+		dwRelativeTick = dwTick;
+		dwValue = (MIDI_SIGNAL_TYPE_NOTE << 29) | ((dwChannel & CHANNEL_SET_MASK) << 24) | ((bOnOff & ON_OFF_SET_MASK) << 14) | ((dwKey & KEY_SET_MASK) << 7) | (dwVelocity & VELOCITY_SET_MASK);
+	}
+	DWORD GetChannel() const
+	{
+		return ((dwValue & CHANNEL_GET_MASK) >> 24);
+	}
+	BOOL GetOnOff() const
+	{
+		return (((dwValue & ON_OFF_GET_MASK) >> 14) != 0);
+	}
+	DWORD GetKey() const
+	{
+		return ((dwValue & KEY_GET_MASK) >> 7);
+	}
+	DWORD GetVelocity() const
+	{
+		return (dwValue & VELOCITY_GET_MASK);
+	}
+
+	// as controller
+	void SetAsControl(DWORD dwChannel, DWORD dwController, DWORD dwControlValue, DWORD dwTick)
+	{
+		dwRelativeTick = dwTick;
+		dwValue = (MIDI_SIGNAL_TYPE_CONTROL << 29) | ((dwChannel & CHANNEL_SET_MASK) << 24) | ((1 & ON_OFF_SET_MASK) << 14) | ((dwController & CONTROLLER_SET_MASK) << 7) | (dwControlValue & CONTROL_VALUE_SET_MASK);
+	}
+	DWORD GetController() const
+	{
+		return ((dwValue & CONTROLLER_GET_MASK) >> 7);
+	}
+	DWORD GetControlValue() const
+	{
+		return (dwValue & CONTROL_VALUE_GET_MASK);
+	}
+
+	// as program
+	void SetAsProgram(DWORD dwChannel, DWORD dwProgram, DWORD dwTick)
+	{
+		dwRelativeTick = dwTick;
+		dwValue = (MIDI_SIGNAL_TYPE_PROGRAM << 29) | ((dwChannel & CHANNEL_SET_MASK) << 24) | ((1 & ON_OFF_SET_MASK) << 14) | ((dwProgram & PROGRAM_SET_MASK) << 7) | 0;
+	}
+	DWORD GetProgram() const
+	{
+		return ((dwValue & PROGRAM_GET_MASK) >> 7);
+	}
+};
+struct MIDI_NOTE_L
+{
+private:
+	// | event Type |  Channel   |  Reserved  |  On / Off(1) | Key / Program / Controler | Velocity / ControlValue |
+	// |    (3)     |    (5)     |     (9)    |      (1)     |            (7)            |            (7)          |
+
+	static const DWORD SIGNAL_TYPE_SET_MASK = 0b111;
+	static const DWORD SIGNAL_TYPE_GET_MASK = (0b111 << 29);
+
+	static const DWORD CHANNEL_SET_MASK = 0b11111;
+	static const DWORD CHANNEL_GET_MASK = (0b11111 << 24);
+
+	static const DWORD ON_OFF_SET_MASK = 0b1;
+	static const DWORD ON_OFF_GET_MASK = (0b1 << 14);
+
+	static const DWORD KEY_SET_MASK = 0b1111111;
+	static const DWORD KEY_GET_MASK = (0b1111111 << 7);
+
+	static const DWORD CONTROLLER_SET_MASK = KEY_SET_MASK;
+	static const DWORD CONTROLLER_GET_MASK = KEY_GET_MASK;
+
+	static const DWORD PROGRAM_SET_MASK = KEY_SET_MASK;
+	static const DWORD PROGRAM_GET_MASK = KEY_GET_MASK;
+
+	static const DWORD VELOCITY_SET_MASK = 0b1111111;
+	static const DWORD VELOCITY_GET_MASK = 0b1111111;
+	static const DWORD CONTROL_VALUE_SET_MASK = VELOCITY_SET_MASK;
+	static const DWORD CONTROL_VALUE_GET_MASK = VELOCITY_GET_MASK;
+
+	DWORD	dwValue;
+public:
+	MIDI_SIGNAL_TYPE GetSignalType() const
+	{
+		MIDI_SIGNAL_TYPE type = (MIDI_SIGNAL_TYPE)((dwValue & SIGNAL_TYPE_GET_MASK) >> 29);
+		return type;
+	}
+	//BOOL IsControl() const
+	//{
+	//	MIDI_SIGNAL_TYPE type = GetSignalType();
+	//	return (MIDI_SIGNAL_TYPE_CONTROL == type);
+	//}
+
+	// as note
+	void SetAsNote(DWORD dwChannel, BOOL bOnOff, DWORD dwKey, DWORD dwVelocity)
+	{
+		dwValue = (MIDI_SIGNAL_TYPE_NOTE << 29) | ((dwChannel & CHANNEL_SET_MASK) << 24) | ((bOnOff & ON_OFF_SET_MASK) << 14) | ((dwKey & KEY_SET_MASK) << 7) | (dwVelocity & VELOCITY_SET_MASK);
+	}
+	DWORD GetChannel() const
+	{
+		return ((dwValue & CHANNEL_GET_MASK) >> 24);
+	}
+	BOOL GetOnOff() const
+	{
+		return (((dwValue & ON_OFF_GET_MASK) >> 14) != 0);
+	}
+	DWORD GetKey() const
+	{
+		return ((dwValue & KEY_GET_MASK) >> 7);
+	}
+	DWORD GetVelocity() const
+	{
+		return (dwValue & VELOCITY_GET_MASK);
+	}
+
+	// as controller
+	void SetAsControl(DWORD dwChannel, DWORD dwController, DWORD dwControlValue)
+	{
+		dwValue = (MIDI_SIGNAL_TYPE_CONTROL << 29) | ((dwChannel & CHANNEL_SET_MASK) << 24) | ((1 & ON_OFF_SET_MASK) << 14) | ((dwController & CONTROLLER_SET_MASK) << 7) | (dwControlValue & CONTROL_VALUE_SET_MASK);
+	}
+	DWORD GetController() const
+	{
+		return ((dwValue & CONTROLLER_GET_MASK) >> 7);
+	}
+	DWORD GetControlValue() const
+	{
+		return (dwValue & CONTROL_VALUE_GET_MASK);
+	}
+
+	// as program
+	void SetAsProgram(DWORD dwChannel, DWORD dwProgram)
+	{
+		dwValue = (MIDI_SIGNAL_TYPE_PROGRAM << 29) | ((dwChannel & CHANNEL_SET_MASK) << 24) | ((1 & ON_OFF_SET_MASK) << 14) | ((dwProgram & PROGRAM_SET_MASK) << 7) | 0;
+	}
+	DWORD GetProgram() const
+	{
+		return ((dwValue & PROGRAM_GET_MASK) >> 7);
+	}
+
+};
+
+const DWORD MAX_NOTE_NUM_PER_BLOCK = 8;
+typedef void* WEB_CLIENT_HANDLE;
+
 
 #endif	// VH_PLUGIN

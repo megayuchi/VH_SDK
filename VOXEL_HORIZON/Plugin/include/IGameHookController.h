@@ -179,7 +179,9 @@ interface IVHController
 	virtual		BOOL	__stdcall NoteOff(unsigned char channel, unsigned char note, unsigned char Velocity) = 0;
 	virtual		DWORD	__stdcall GetMidiInDeviceList(MIDI_DEVICE_INFO* pOutInfoList, DWORD dwMaxBufferCount) = 0;
 	virtual		DWORD	__stdcall GetMidiOutDeviceList(MIDI_DEVICE_INFO* pOutInfoList, DWORD dwMaxBufferCount) = 0;
-	virtual		BOOL	__stdcall WriteNoteOrControl(MIDI_SIGNAL_TYPE type, BOOL bOnOff, DWORD dwKey, DWORD dwVelocity) = 0;
+	virtual		BOOL	__stdcall MidiWriteNote(DWORD dwChannel, BOOL bOnOff, DWORD dwKey, DWORD dwVelocity) = 0;
+	virtual		BOOL	__stdcall MidiChangeControl(DWORD dwChannel, DWORD dwController, DWORD dwControlValue) = 0;
+	virtual		BOOL	__stdcall MidiChangeProgram(DWORD dwChannel, DWORD dwProgram) = 0;
 	virtual		BOOL	__stdcall IsBroadcastMode() const = 0;
 	virtual		BOOL	__stdcall EnableBroadcastMode(BOOL bSwitch) = 0;
 	virtual		void	__stdcall Reset() = 0;

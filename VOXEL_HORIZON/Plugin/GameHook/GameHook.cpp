@@ -185,11 +185,11 @@ BOOL __stdcall CGameHook::OnMouseWheel(int iWheel)
 
 void CGameHook::OnPianoKeyDown(DWORD dwKeyIndex)
 {
-	m_pVHController->WriteNoteOrControl(MIDI_SIGNAL_TYPE_NOTE, TRUE, (unsigned char)(FIRST_PIANO_KEY + dwKeyIndex), 127);
+	m_pVHController->MidiWriteNote(0, TRUE, (unsigned char)(FIRST_PIANO_KEY + dwKeyIndex), 127);
 }
 void CGameHook::OnPianoKeyUp(DWORD dwKeyIndex)
 {
-	m_pVHController->WriteNoteOrControl(MIDI_SIGNAL_TYPE_NOTE, FALSE, (unsigned char)(FIRST_PIANO_KEY + dwKeyIndex), 127);
+	m_pVHController->MidiWriteNote(0, FALSE, (unsigned char)(FIRST_PIANO_KEY + dwKeyIndex), 127);
 }
 
 BOOL __stdcall CGameHook::OnKeyDown(UINT nChar)
@@ -657,20 +657,18 @@ BOOL __stdcall CGameHook::OnMidiInput(const MIDI_NOTE_L* pNote)
 	if (!m_bMidiInputMode)
 		return FALSE;
 
-	MIDI_SIGNAL_TYPE type = MIDI_SIGNAL_TYPE_NOTE;
-	if (pNote->IsControl())
-	{
-		type = MIDI_SIGNAL_TYPE_CONTROL;
-	}
+	MIDI_SIGNAL_TYPE type = pNote->GetSignalType();
 	if (MIDI_SIGNAL_TYPE_NOTE == type)
 	{
+		DWORD	dwChannel = pNote->GetChannel();
 		BOOL	bOnOff = pNote->GetOnOff();
 		DWORD	dwKey = pNote->GetKey();
 		DWORD	dwVelocity = pNote->GetVelocity() + MIN_VELOCITY;
 		if (dwVelocity > 127)
 			dwVelocity = 127;
 
-		m_pVHController->WriteNoteOrControl(MIDI_SIGNAL_TYPE_NOTE, bOnOff, dwKey, dwVelocity);
+		
+		m_pVHController->MidiWriteNote(dwChannel, bOnOff, dwKey, dwVelocity);
 
 		DWORD dwButtonIndex = dwKey - FIRST_PIANO_KEY;
 
@@ -678,13 +676,11 @@ BOOL __stdcall CGameHook::OnMidiInput(const MIDI_NOTE_L* pNote)
 		{
 			if (bOnOff)
 			{
-				// draw that piano key pressed
-				bResult = TRUE;
+				
 			}
 			else
 			{
-				// draw that piano key released
-				bResult = TRUE;
+				
 			}
 		}
 		else
@@ -694,23 +690,29 @@ BOOL __stdcall CGameHook::OnMidiInput(const MIDI_NOTE_L* pNote)
 	}
 	else if (MIDI_SIGNAL_TYPE_CONTROL == type)
 	{
+		DWORD	dwChannel = pNote->GetChannel();
 		DWORD	dwController = pNote->GetController();
 		DWORD	dwControlValue = pNote->GetControlValue();
 
-		m_pVHController->WriteNoteOrControl(MIDI_SIGNAL_TYPE_CONTROL, TRUE, dwController, dwControlValue);
+		m_pVHController->MidiChangeControl(dwChannel, dwController, dwControlValue);
 		if (64 == dwController)
 		{
 			if (127 == dwControlValue)
 			{
-				// draw that sustain pedal pressed
-				bResult = TRUE;
+				// sustain pedal pressed
 			}
 			else
 			{
-				// draw that sustain pedal released
-				bResult = TRUE;
+				// sustain pedal released
 			}
 		}
+	}
+	else if (MIDI_SIGNAL_TYPE_PROGRAM == type)
+	{
+		DWORD	dwChannel = pNote->GetChannel();
+		DWORD	dwProgram = pNote->GetProgram();
+
+		m_pVHController->MidiChangeProgram(dwChannel, dwProgram);
 	}
 	return bResult;
 }
