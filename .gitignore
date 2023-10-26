@@ -128,3 +128,4 @@ VOXEL_HORIZON/symbols/UIParser_x86_release.pdb
 VOXEL_HORIZON/symbols/megayuchiLevelEditor_x64_release.pdb
 VOXEL_HORIZON/symbols/megayuchiModelView_x64_release.pdb
 VOXEL_HORIZON/symbols/UIParser_x64_release.pdb
+*.MID
