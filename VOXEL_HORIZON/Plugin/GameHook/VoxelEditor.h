@@ -23,10 +23,6 @@ class CVoxelEditor
 	float			m_fPreviewVoxelWidthDepthHeight = 0.0f;
 	DWORD			m_dwPreviewVoxelPosNum = 0;
 	VECTOR3			m_pv3PreviewVoxelPosList[MAX_RECURSIVE_PLANE_COLLECT_VOXEL_COUNT] = {};
-
-public:
-	BOOL	Initialize(IVHController* pVHController, IVHNetworkLayer* pVHNetworkLayer);
-	void	Cleanup();
 	
 	DWORD	AddOrRemoveSelecteVoxelObjPosList(IVoxelObjectLite* pVoxelObj);
 	DWORD	AddSelecteVoxelObjPosList(IVoxelObjectLite* pVoxelObj);
@@ -44,16 +40,20 @@ public:
 	BOOL	RemoveVoxel(BOOL bRecursivePlane);
 	void	RemoveVoxelRecursive(unsigned long* pBitTable, BYTE* pColorTable, const VECTOR3* pv3ObjPos, int x, int y, int z, BYTE bCmpColorIndex, UINT CursorWidthDepthHeight, INT_VECTOR3* pivOutVoxelPosList, DWORD* pdwInOutVoxelCount, PLANE_AXIS_TYPE planeType);
 	void	ClearPreviewMeshInRecursiveMode();
-	void	OnDeleteVoxelObject(IVoxelObjectLite* pVoxelObj);
-	// input
-	BOOL __stdcall	OnMouseLButtonDown(int x, int y, UINT nFlags);
-	BOOL __stdcall	OnMouseLButtonUp(int x, int y, UINT nFlags);
-	BOOL __stdcall	OnMouseRButtonDown(int x, int y, UINT nFlags);
-	BOOL __stdcall	OnMouseRButtonUp(int x, int y, UINT nFlags);
-	BOOL __stdcall	OnMouseMove(int x, int y, UINT nFlags);
-	BOOL __stdcall	OnMouseMoveHV(int iMoveX, int iMoveY, BOOL bLButtonPressed, BOOL bRButtonPressed, BOOL bMButtonPressed);
-	BOOL __stdcall	OnMouseWheel(int iWheel);
+	
+	void	Cleanup();
+public:
+	BOOL	Initialize(IVHController* pVHController, IVHNetworkLayer* pVHNetworkLayer);
+	BOOL	OnPreConsoleCommand(const WCHAR* wchCmd, DWORD dwCmdLen);
+	BOOL 	OnMouseLButtonDown(int x, int y, UINT nFlags);
+	BOOL 	OnMouseLButtonUp(int x, int y, UINT nFlags);
+	BOOL 	OnMouseRButtonDown(int x, int y, UINT nFlags);
+	BOOL 	OnMouseRButtonUp(int x, int y, UINT nFlags);
+	BOOL 	OnMouseMove(int x, int y, UINT nFlags);
+	BOOL 	OnMouseMoveHV(int iMoveX, int iMoveY, BOOL bLButtonPressed, BOOL bRButtonPressed, BOOL bMButtonPressed);
+	BOOL 	OnMouseWheel(int iWheel);
 
+	void	OnDeleteVoxelObject(IVoxelObjectLite* pVoxelObj);
 	CVoxelEditor();
 	~CVoxelEditor();
 

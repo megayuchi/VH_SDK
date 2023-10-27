@@ -3,10 +3,11 @@
 #include "../include/IGameHookController.h"
 
 class CDisplayPanel;
-class CGame;
+class CTestGame;
 class CVoxelEditor;
 class CWebPage;
-class CGameHook : public IGameHook
+class CMidiPlayer;
+class CTestGameHook : public IGameHook
 {
 	DWORD	m_dwRefCount = 1;
 	IVHController* m_pVHController = nullptr;
@@ -14,19 +15,24 @@ class CGameHook : public IGameHook
 
 	WCHAR	m_wchPluginPath[_MAX_PATH] = {};
 
-	CGame*	m_pGame = nullptr;
+	
 	BOOL	m_bUpKeyPressed = FALSE;
 	BOOL	m_bLeftKeyPressed = FALSE;
 	BOOL	m_bRightKeyPressed = FALSE;
 	BOOL	m_bDownKeyPressed = FALSE;
 	BOOL	m_bMidiInputMode = FALSE;
 
-	CVoxelEditor*	m_pVoxelEditor = nullptr;
-	CWebPage*	m_pWebPage = nullptr;
 	
-	void	OnPianoKeyDown(DWORD dwKeyIndex);
-	void	OnPianoKeyUp(DWORD dwKeyIndex);
+	
+	
+	CTestGame*		m_pTestGame = nullptr;
+	CVoxelEditor*	m_pVoxelEditor = nullptr;
+	CWebPage*		m_pWebPage = nullptr;
+	CMidiPlayer*	m_pMidiPlayer = nullptr;
+	
 	void	StartGame();
+	
+	
 	
 public:
 	STDMETHODIMP					QueryInterface(REFIID, void** ppv);
@@ -45,7 +51,7 @@ public:
 	BOOL __stdcall	OnMouseRButtonUp(int x, int y, UINT nFlags);
 	BOOL __stdcall	OnMouseMove(int x, int y, UINT nFlags);
 	BOOL __stdcall	OnMouseMoveHV(int iMoveX, int iMoveY, BOOL bLButtonPressed, BOOL bRButtonPressed, BOOL bMButtonPressed);
-	BOOL __stdcall	OnMouseWheel(int iWheel);
+	BOOL __stdcall	OnMouseWheel(int x, int y, int iWheel);
 
 	BOOL __stdcall	OnKeyDown(UINT nChar);
 	BOOL __stdcall	OnKeyUp(UINT nChar);
@@ -77,11 +83,12 @@ public:
 	BOOL __stdcall	OnKeyDownFunc(UINT nChar);
 	BOOL __stdcall	OnKeyDownCtrlFunc(UINT nChar);
 	BOOL __stdcall	OnPreConsoleCommand(const WCHAR* wchCmd, DWORD dwCmdLen);
-	BOOL __stdcall	OnMidiInput(const MIDI_NOTE_L* pNote);
+	BOOL __stdcall	OnMidiInput(const MIDI_MESSAGE_L* pMessage, BOOL bBroadcastMode, LARGE_INTEGER BeginCounter);
+	BOOL __stdcall	OnMidiEventProcessed(const MIDI_MESSAGE_L* pMessage, MIDI_EVENT_FROM_TYPE FromType);
 
 	void	OnDeleteVoxelObject(IVoxelObjectLite* pVoxelObj);
-	CGameHook();
-	~CGameHook();
+	CTestGameHook();
+	~CTestGameHook();
 };
 
-extern CGameHook* g_pGameHook;
+extern CTestGameHook* g_pGameHook;

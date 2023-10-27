@@ -3,7 +3,7 @@
 #include "../include/typedef.h"
 #include "ImageData.h"
 #include "FlightObject.h"
-#include "Game.h"
+#include "TestGame.h"
 #include "game_typedef.h"
 
 CFlightObject::CFlightObject()

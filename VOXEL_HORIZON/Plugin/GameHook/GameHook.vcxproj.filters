@@ -43,6 +43,12 @@
     <Filter Include="Contents\WebPage">
       <UniqueIdentifier>{2734b035-bf11-412e-add0-56844b6d52ef}</UniqueIdentifier>
     </Filter>
+    <Filter Include="MidiFile">
+      <UniqueIdentifier>{3e295e8b-b2ab-498e-b922-cf89b618112c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Contents\MidiPlayer">
+      <UniqueIdentifier>{3d5fbe56-ea39-46aa-9348-0d7d76a012f7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -60,16 +66,13 @@
     <ClInclude Include="DisplayPanel.h">
       <Filter>DisplayPanel</Filter>
     </ClInclude>
-    <ClInclude Include="lodepng.h">
-      <Filter>png</Filter>
-    </ClInclude>
     <ClInclude Include="Util.h">
       <Filter>Util</Filter>
     </ClInclude>
     <ClInclude Include="FlightObject.h">
       <Filter>Contents\Game</Filter>
     </ClInclude>
-    <ClInclude Include="Game.h">
+    <ClInclude Include="TestGame.h">
       <Filter>Contents\Game</Filter>
     </ClInclude>
     <ClInclude Include="game_typedef.h">
@@ -80,9 +83,6 @@
     </ClInclude>
     <ClInclude Include="ImageData.h">
       <Filter>Contents\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="QueryPerfCounter.h">
-      <Filter>Util</Filter>
     </ClInclude>
     <ClInclude Include="..\util\VoxelUtil.h">
       <Filter>VoxelUtil</Filter>
@@ -95,6 +95,36 @@
     </ClInclude>
     <ClInclude Include="WebPage.h">
       <Filter>Contents\WebPage</Filter>
+    </ClInclude>
+    <ClInclude Include="Midi\MidiEvent.h">
+      <Filter>MidiFile</Filter>
+    </ClInclude>
+    <ClInclude Include="Midi\MidiEventList.h">
+      <Filter>MidiFile</Filter>
+    </ClInclude>
+    <ClInclude Include="Midi\MidiFile.h">
+      <Filter>MidiFile</Filter>
+    </ClInclude>
+    <ClInclude Include="Midi\MidiMessage.h">
+      <Filter>MidiFile</Filter>
+    </ClInclude>
+    <ClInclude Include="Midi\stdafx.h">
+      <Filter>MidiFile</Filter>
+    </ClInclude>
+    <ClInclude Include="Midi\Binasc.h">
+      <Filter>MidiFile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\util\Stack.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\util\QueryPerfCounter.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="MidiPlayer.h">
+      <Filter>Contents\MidiPlayer</Filter>
+    </ClInclude>
+    <ClInclude Include="lodepng\lodepng.h">
+      <Filter>png</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -110,16 +140,13 @@
     <ClCompile Include="DisplayPanel.cpp">
       <Filter>DisplayPanel</Filter>
     </ClCompile>
-    <ClCompile Include="lodepng.cpp">
-      <Filter>png</Filter>
-    </ClCompile>
     <ClCompile Include="Util.cpp">
       <Filter>Util</Filter>
     </ClCompile>
     <ClCompile Include="FlightObject.cpp">
       <Filter>Contents\Game</Filter>
     </ClCompile>
-    <ClCompile Include="Game.cpp">
+    <ClCompile Include="TestGame.cpp">
       <Filter>Contents\Game</Filter>
     </ClCompile>
     <ClCompile Include="GameObject.cpp">
@@ -127,9 +154,6 @@
     </ClCompile>
     <ClCompile Include="ImageData.cpp">
       <Filter>Contents\Game</Filter>
-    </ClCompile>
-    <ClCompile Include="QueryPerfCounter .cpp">
-      <Filter>Util</Filter>
     </ClCompile>
     <ClCompile Include="..\util\VoxelUtil.cpp">
       <Filter>VoxelUtil</Filter>
@@ -139,6 +163,33 @@
     </ClCompile>
     <ClCompile Include="WebPage.cpp">
       <Filter>Contents\WebPage</Filter>
+    </ClCompile>
+    <ClCompile Include="Midi\MidiEvent.cpp">
+      <Filter>MidiFile</Filter>
+    </ClCompile>
+    <ClCompile Include="Midi\MidiEventList.cpp">
+      <Filter>MidiFile</Filter>
+    </ClCompile>
+    <ClCompile Include="Midi\MidiFile.cpp">
+      <Filter>MidiFile</Filter>
+    </ClCompile>
+    <ClCompile Include="Midi\MidiMessage.cpp">
+      <Filter>MidiFile</Filter>
+    </ClCompile>
+    <ClCompile Include="Midi\Binasc.cpp">
+      <Filter>MidiFile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\util\Stack.cpp">
+      <Filter>Util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\util\QueryPerfCounter .cpp">
+      <Filter>Util</Filter>
+    </ClCompile>
+    <ClCompile Include="MidiPlayer.cpp">
+      <Filter>Contents\MidiPlayer</Filter>
+    </ClCompile>
+    <ClCompile Include="lodepng\lodepng.cpp">
+      <Filter>png</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

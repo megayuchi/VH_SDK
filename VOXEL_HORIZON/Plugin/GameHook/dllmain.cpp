@@ -25,7 +25,7 @@ STDAPI DllCreateInstance(void** ppv)
 {
 	HRESULT hr;
 
-    CGameHook* pGameHook = new CGameHook;
+    CTestGameHook* pGameHook = new CTestGameHook;
 	hr = S_OK;
 	*ppv = pGameHook;
 lb_return:

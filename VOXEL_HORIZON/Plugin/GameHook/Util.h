@@ -42,3 +42,6 @@ BYTE Convert32BitsColorToPaletteIndexRGBA_Normal(const DWORD* pdwColorTable, DWO
 BYTE Convert32BitsColorToPaletteIndexRGBA_SSE(const DWORD* pdwColorTable, DWORD dwColorTableCount, DWORD dwSrcColor);
 BYTE Convert32BitsColorToPaletteIndexBGRA_Normal(const DWORD* pdwColorTable, DWORD dwColorTableCount, DWORD dwSrcColor);
 BYTE Convert32BitsColorToPaletteIndexBGRA_SSE(const DWORD* pdwColorTable, DWORD dwColorTableCount, DWORD dwSrcColor);
+
+void DownSample_FPU(DWORD* pDest, DWORD* pSrc, unsigned int SrcWidth, unsigned SrcHeight);
+void SortMidiMessageList(MIDI_MESSAGE* pArray, DWORD dwNum);

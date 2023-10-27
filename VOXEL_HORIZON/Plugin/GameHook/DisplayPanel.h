@@ -17,7 +17,7 @@ class CDisplayPanel
 	DWORD	m_dwColorTableCount = 0;
 	DWORD	m_pdwColorTable[COLOR_TABLE_COUNT] = {};
 	BYTE*	m_pCvtTable = nullptr;
-
+	AABB	m_aabb = {};
 	void	InitColorConvertingTable(const DWORD* pdwColorTable, DWORD dwColorTableCount);
 	
 	void	CleanupColorConvertingTable();
@@ -45,6 +45,7 @@ public:
 	UINT	GetWidth() const { return m_Width; }
 	UINT	GetHeight() const { return m_Height; }
 	BOOL	GetScreenPosWithVoxelObjPos(int* piOutX, int* piOutY, IVoxelObjectLite* pVoxelObjSrc, int x, int y);
+	BOOL	GetScreenPosWithWorldPos(int* piOutX, int* piOutY, const VECTOR3* pv3Point, int iScreenWidth, int iScreenHeight);
 	CDisplayPanel();
 	~CDisplayPanel();
 };

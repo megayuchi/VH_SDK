@@ -1,21 +1,22 @@
 #include "stdafx.h"
 #include "../include/BooleanTable.inl"
 #include "../util/VoxelUtil.h"
+#include "../util/Stack.h"
 #include "Util.h"
 #include "GameHook.h"
 #include "DisplayPanel.h"
-#include "Game.h"
+#include "TestGame.h"
 #include "VoxelEditor.h"
 #include "WebPage.h"
-#include "lodepng.h"
+#include "MidiPlayer.h"
+#include "./lodepng/lodepng.h"
+#include "../util/QueryPerfCounter.h"
 
-const int FIRST_PIANO_KEY = 48;
-const DWORD PIANO_KEY_NUM = 36;
-const DWORD MIN_VELOCITY = 32;
+
 
 //#define MIDI_INPUT_MODE
 
-CGameHook* g_pGameHook = nullptr;
+CTestGameHook* g_pGameHook = nullptr;
 
 void __stdcall CALLBACK_OnDeleteVoxelObject(IVoxelObjectLite* pVoxelObj)
 {
@@ -24,26 +25,27 @@ void __stdcall CALLBACK_OnDeleteVoxelObject(IVoxelObjectLite* pVoxelObj)
 	g_pGameHook->OnDeleteVoxelObject(pVoxelObj);
 }
 
-CGameHook::CGameHook()
+CTestGameHook::CTestGameHook()
 {
 #ifdef _DEBUG
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
+	QCInit();
 	g_pGameHook = this;
 
 }
-STDMETHODIMP CGameHook::QueryInterface(REFIID refiid, void** ppv)
+STDMETHODIMP CTestGameHook::QueryInterface(REFIID refiid, void** ppv)
 {
 	*ppv = nullptr;
 
 	return E_NOINTERFACE;
 }
-STDMETHODIMP_(ULONG) CGameHook::AddRef()
+STDMETHODIMP_(ULONG) CTestGameHook::AddRef()
 {
 	m_dwRefCount++;
 	return m_dwRefCount;
 }
-STDMETHODIMP_(ULONG) CGameHook::Release()
+STDMETHODIMP_(ULONG) CTestGameHook::Release()
 {
 	DWORD	ref_count = --m_dwRefCount;
 	if (!m_dwRefCount)
@@ -51,7 +53,7 @@ STDMETHODIMP_(ULONG) CGameHook::Release()
 
 	return ref_count;
 }
-void __stdcall CGameHook::OnStartScene(IVHController* pVHController, IVHNetworkLayer* pNetworkLayer, const WCHAR* wchPluginPath)
+void __stdcall CTestGameHook::OnStartScene(IVHController* pVHController, IVHNetworkLayer* pNetworkLayer, const WCHAR* wchPluginPath)
 {
 	const WCHAR* wchPulginName = L"GameHook";
 	const WCHAR* wchArch = nullptr;
@@ -83,39 +85,37 @@ void __stdcall CGameHook::OnStartScene(IVHController* pVHController, IVHNetworkL
 	m_pVoxelEditor->Initialize(m_pVHController, m_pNetworkLayer);
 }
 
-void __stdcall CGameHook::OnRun()
+void __stdcall CTestGameHook::OnRun()
 {
-	if (m_pGame)
+	if (m_pTestGame)
 	{
-		m_pGame->Process();
+		m_pTestGame->Process();
 	}
 	if (m_pWebPage)
 	{
 		m_pWebPage->Process();
 	}
-
-
 }
-void CGameHook::OnDeleteVoxelObject(IVoxelObjectLite* pVoxelObj)
+void CTestGameHook::OnDeleteVoxelObject(IVoxelObjectLite* pVoxelObj)
 {
-	if (m_pGame)
+	if (m_pTestGame)
 	{
-		m_pGame->OnDeleteVoxelObject(pVoxelObj);
+		m_pTestGame->OnDeleteVoxelObject(pVoxelObj);
 	}
 	if (m_pVoxelEditor)
 	{
 		m_pVoxelEditor->OnDeleteVoxelObject(pVoxelObj);
 	}
 }
-void __stdcall CGameHook::OnDestroyScene()
+void __stdcall CTestGameHook::OnDestroyScene()
 {
 	//
 	// 이 플러그인에서 할당한 IVoxelObjectLite가 있다면 여기서 해제한다. 이 함수가 리턴한 이후로는 해제해서는 안된다.
 	//
-	if (m_pGame)
+	if (m_pTestGame)
 	{
-		delete m_pGame;
-		m_pGame = nullptr;
+		delete m_pTestGame;
+		m_pTestGame = nullptr;
 	}
 	if (m_pVoxelEditor)
 	{
@@ -127,8 +127,13 @@ void __stdcall CGameHook::OnDestroyScene()
 		delete m_pWebPage;
 		m_pWebPage = nullptr;
 	}
+	if (m_pMidiPlayer)
+	{
+		delete m_pMidiPlayer;
+		m_pMidiPlayer = nullptr;
+	}
 }
-BOOL __stdcall CGameHook::OnMouseLButtonDown(int x, int y, UINT nFlags)
+BOOL __stdcall CTestGameHook::OnMouseLButtonDown(int x, int y, UINT nFlags)
 {
 	BOOL	bProcessed = FALSE;
 	if (m_pWebPage)
@@ -144,7 +149,7 @@ BOOL __stdcall CGameHook::OnMouseLButtonDown(int x, int y, UINT nFlags)
 lb_return:
 	return bProcessed;
 }
-BOOL __stdcall CGameHook::OnMouseLButtonUp(int x, int y, UINT nFlags)
+BOOL __stdcall CTestGameHook::OnMouseLButtonUp(int x, int y, UINT nFlags)
 {
 	BOOL	bProcessed = FALSE;
 	if (m_pWebPage)
@@ -161,214 +166,52 @@ lb_return:
 	return bProcessed;
 }
 
-BOOL __stdcall CGameHook::OnMouseRButtonDown(int x, int y, UINT nFlags)
+BOOL __stdcall CTestGameHook::OnMouseRButtonDown(int x, int y, UINT nFlags)
 {
 	return FALSE;
 }
-BOOL __stdcall CGameHook::OnMouseRButtonUp(int x, int y, UINT nFlags)
+BOOL __stdcall CTestGameHook::OnMouseRButtonUp(int x, int y, UINT nFlags)
 {
 	return FALSE;
 }
-BOOL __stdcall CGameHook::OnMouseMove(int x, int y, UINT nFlags)
+BOOL __stdcall CTestGameHook::OnMouseMove(int x, int y, UINT nFlags)
 {
-	return FALSE;
+	BOOL	bProcessed = FALSE;
+	if (nFlags & MK_LBUTTON)
+	{	
+		if (m_pWebPage)
+		{
+			bProcessed = m_pWebPage->OnMouseMove(x, y, nFlags);
+		}
+	}
+lb_return:
+	return bProcessed;
 }
 
-BOOL __stdcall CGameHook::OnMouseMoveHV(int iMoveX, int iMoveY, BOOL bLButtonPressed, BOOL bRButtonPressed, BOOL bMButtonPressed)
+BOOL __stdcall CTestGameHook::OnMouseMoveHV(int iMoveX, int iMoveY, BOOL bLButtonPressed, BOOL bRButtonPressed, BOOL bMButtonPressed)
 {
 	return FALSE;
 }
-BOOL __stdcall CGameHook::OnMouseWheel(int iWheel)
+BOOL __stdcall CTestGameHook::OnMouseWheel(int x, int y, int iWheel)
 {
-	return FALSE;
+	BOOL	bProcessed = FALSE;
+	if (m_pWebPage)
+	{
+		bProcessed = m_pWebPage->OnMouseWheel(x, y, iWheel);
+	}
+lb_return:
+	return bProcessed;
 }
 
-void CGameHook::OnPianoKeyDown(DWORD dwKeyIndex)
-{
-	m_pVHController->MidiWriteNote(0, TRUE, (unsigned char)(FIRST_PIANO_KEY + dwKeyIndex), 127);
-}
-void CGameHook::OnPianoKeyUp(DWORD dwKeyIndex)
-{
-	m_pVHController->MidiWriteNote(0, FALSE, (unsigned char)(FIRST_PIANO_KEY + dwKeyIndex), 127);
-}
 
-BOOL __stdcall CGameHook::OnKeyDown(UINT nChar)
+
+BOOL __stdcall CTestGameHook::OnKeyDown(UINT nChar)
 {
 	BOOL	bProcessed = FALSE;
 
 	switch (nChar)
 	{
-		case 'A':
-			{
-				if (m_bMidiInputMode)
-				{
-					OnPianoKeyDown(0);
-					bProcessed = TRUE;
-				}
-			}
-			break;
-		case 'W':
-			{
-				if (m_bMidiInputMode)
-				{
-					OnPianoKeyDown(1);
-					bProcessed = TRUE;
-				}
-			}
-			break;
-		case 'S':
-			{
-				if (m_bMidiInputMode)
-				{
-					OnPianoKeyDown(2);
-					bProcessed = TRUE;
-				}
-			}
-			break;
-		case 'E':
-			{
-				if (m_bMidiInputMode)
-				{
-					OnPianoKeyDown(3);
-					bProcessed = TRUE;
-				}
-			}
-			break;
-		case 'D':
-			{
-				if (m_bMidiInputMode)
-				{
-					OnPianoKeyDown(4);
-					bProcessed = TRUE;
-				}
-			}
-			break;
-		case 'F':
-			{
-				if (m_bMidiInputMode)
-				{
-					OnPianoKeyDown(5);
-					bProcessed = TRUE;
-				}
-			}
-			break;
-		case 'T':
-			{
-				if (m_bMidiInputMode)
-				{
-					OnPianoKeyDown(6);
-					bProcessed = TRUE;
-				}
-			}
-			break;
-		case 'G':
-			{
-				if (m_bMidiInputMode)
-				{
-					OnPianoKeyDown(7);
-					bProcessed = TRUE;
-				}
-			}
-			break;
-		case 'Y':
-			{
-				if (m_bMidiInputMode)
-				{
-					OnPianoKeyDown(8);
-					bProcessed = TRUE;
-				}
-			}
-			break;
-		case 'H':
-			{
-				if (m_bMidiInputMode)
-				{
-					OnPianoKeyDown(9);
-					bProcessed = TRUE;
-				}
-			}
-			break;
-		case 'U':
-			{
-				if (m_bMidiInputMode)
-				{
-					OnPianoKeyDown(10);
-					bProcessed = TRUE;
-				}
-			}
-			break;
-		case 'J':
-			{
-				if (m_bMidiInputMode)
-				{
-					OnPianoKeyDown(11);
-					bProcessed = TRUE;
-				}
-			}
-			break;
-		case 'K':
-			{
-				if (m_bMidiInputMode)
-				{
-					OnPianoKeyDown(12);
-					bProcessed = TRUE;
-				}
-			}
-			break;
-		case 'M':
-			{
-				if (m_bMidiInputMode)
-				{
-					m_bMidiInputMode = FALSE;
-					m_pVHController->WriteTextToSystemDlgW(COLOR_VALUE_GREEN, L"Midi Mode Off.\n");
-				}
-				else
-				{
-					m_bMidiInputMode = TRUE;
-					m_pVHController->WriteTextToSystemDlgW(COLOR_VALUE_GREEN, L"Midi Mode On.\n");
-				}
-				bProcessed = TRUE;
 
-			}
-			break;
-		/*
-		case VK_UP:
-			{
-				if (m_pDisplayPanel)
-				{
-					m_bUpKeyPressed = TRUE;
-					bProcessed = TRUE;
-				}
-			}
-			break;
-		case VK_DOWN:
-			{
-				if (m_pDisplayPanel)
-				{
-					m_bDownKeyPressed = TRUE;
-					bProcessed = TRUE;
-				}
-			}
-			break;
-		case VK_LEFT:
-			{
-				if (m_pDisplayPanel)
-				{
-					m_bLeftKeyPressed = TRUE;
-					bProcessed = TRUE;
-				}
-			}
-			break;
-		case VK_RIGHT:
-			{
-				if (m_pDisplayPanel)
-				{
-					m_bRightKeyPressed = TRUE;
-					bProcessed = TRUE;
-				}
-			}
-			break;
-			*/
 		case VK_RETURN:
 			{
 				StartGame();
@@ -376,234 +219,143 @@ BOOL __stdcall CGameHook::OnKeyDown(UINT nChar)
 			}
 			break;
 	}
-	if (m_pGame)
+	
+	if (m_pTestGame)
 	{
-		bProcessed |= m_pGame->OnKeyDown(nChar);
+		bProcessed |= m_pTestGame->OnKeyDown(nChar);
+	}
+	if (m_pWebPage)
+	{
+		bProcessed |= m_pWebPage->OnKeyDown(nChar);
+	}
+	if (m_pMidiPlayer)
+	{
+		bProcessed |= m_pMidiPlayer->OnKeyDown(nChar);
 	}
 	return bProcessed;
 }
-BOOL __stdcall CGameHook::OnKeyUp(UINT nChar)
+BOOL __stdcall CTestGameHook::OnKeyUp(UINT nChar)
+{
+	BOOL	bProcessed = FALSE;
+	
+	if (m_pTestGame)
+	{
+		bProcessed |= m_pTestGame->OnKeyUp(nChar);
+	}
+	if (m_pWebPage)
+	{
+		bProcessed |= m_pWebPage->OnKeyUp(nChar);
+	}
+	if (m_pMidiPlayer)
+	{
+		bProcessed |= m_pMidiPlayer->OnKeyUp(nChar);
+	}
+	return bProcessed;
+}
+BOOL __stdcall CTestGameHook::OnCharUnicode(UINT nChar)
+{
+	return FALSE;
+}
+BOOL __stdcall CTestGameHook::OnDPadLB()
+{
+	return FALSE;
+}
+BOOL __stdcall CTestGameHook::OffDPadLB()
+{
+	return FALSE;
+}
+BOOL __stdcall CTestGameHook::OnDPadRB()
+{
+	return FALSE;
+}
+BOOL __stdcall CTestGameHook::OffDPadRB()
+{
+	return FALSE;
+}
+BOOL __stdcall CTestGameHook::OnDPadUp()
+{
+	return FALSE;
+}
+BOOL __stdcall CTestGameHook::OnDPadDown()
+{
+	return FALSE;
+}
+BOOL __stdcall CTestGameHook::OnDPadLeft()
+{
+	return FALSE;
+}
+BOOL __stdcall CTestGameHook::OnDPadRight()
+{
+	return FALSE;
+}
+BOOL __stdcall CTestGameHook::OffDPadUp()
+{
+	return FALSE;
+}
+BOOL __stdcall CTestGameHook::OffDPadDown()
+{
+	return FALSE;
+}
+BOOL __stdcall CTestGameHook::OffDPadLeft()
+{
+	return FALSE;
+}
+BOOL __stdcall CTestGameHook::OffDPadRight()
+{
+	return FALSE;
+}
+BOOL __stdcall	CTestGameHook::OnPadPressedA()
+{
+	return FALSE;
+}
+BOOL __stdcall	CTestGameHook::OnPadPressedB()
+{
+	return FALSE;
+}
+BOOL __stdcall	CTestGameHook::OnPadPressedX()
+{
+	return FALSE;
+}
+BOOL __stdcall	CTestGameHook::OnPadPressedY()
+{
+	return FALSE;
+}
+BOOL __stdcall	CTestGameHook::OffPadPressedA()
+{
+	return FALSE;
+}
+BOOL __stdcall	CTestGameHook::OffPadPressedB()
+{
+	return FALSE;
+}
+BOOL __stdcall	CTestGameHook::OffPadPressedX()
+{
+	return FALSE;
+}
+BOOL __stdcall	CTestGameHook::OffPadPressedY()
+{
+	return FALSE;
+}
+BOOL __stdcall	CTestGameHook::OnKeyDownFunc(UINT nChar)
+{
+	return FALSE;
+}
+BOOL __stdcall	CTestGameHook::OnKeyDownCtrlFunc(UINT nChar)
 {
 	BOOL	bProcessed = FALSE;
 	switch (nChar)
 	{
-		case 'A':
+		case VK_F10:
 			{
-				if (m_bMidiInputMode)
+				if (m_pMidiPlayer)
 				{
-					OnPianoKeyUp(0);
-					bProcessed = TRUE;
+					delete m_pMidiPlayer;
+					m_pMidiPlayer = nullptr;
 				}
+				m_pMidiPlayer = new CMidiPlayer;
+				m_pMidiPlayer->Initialize(m_pVHController, m_wchPluginPath);
 			}
 			break;
-		case 'W':
-			{
-				if (m_bMidiInputMode)
-				{
-					OnPianoKeyUp(1);
-					bProcessed = TRUE;
-				}
-			}
-			break;
-		case 'S':
-			{
-				if (m_bMidiInputMode)
-				{
-					OnPianoKeyUp(2);
-					bProcessed = TRUE;
-				}
-			}
-			break;
-		case 'E':
-			{
-				if (m_bMidiInputMode)
-				{
-					OnPianoKeyUp(3);
-					bProcessed = TRUE;
-				}
-			}
-			break;
-		case 'D':
-			{
-				if (m_bMidiInputMode)
-				{
-					OnPianoKeyUp(4);
-					bProcessed = TRUE;
-				}
-			}
-			break;
-		case 'F':
-			{
-				if (m_bMidiInputMode)
-				{
-					OnPianoKeyUp(5);
-					bProcessed = TRUE;
-				}
-			}
-			break;
-		case 'T':
-			{
-				if (m_bMidiInputMode)
-				{
-					OnPianoKeyUp(6);
-					bProcessed = TRUE;
-				}
-			}
-			break;
-		case 'G':
-			{
-				if (m_bMidiInputMode)
-				{
-					OnPianoKeyUp(7);
-					bProcessed = TRUE;
-				}
-			}
-			break;
-		case 'Y':
-			{
-				if (m_bMidiInputMode)
-				{
-					OnPianoKeyUp(8);
-					bProcessed = TRUE;
-				}
-			}
-			break;
-		case 'H':
-			{
-				if (m_bMidiInputMode)
-				{
-					OnPianoKeyUp(9);
-					bProcessed = TRUE;
-				}
-			}
-			break;
-		case 'U':
-			{
-				if (m_bMidiInputMode)
-				{
-					OnPianoKeyUp(10);
-					bProcessed = TRUE;
-				}
-			}
-			break;
-		case 'J':
-			{
-				if (m_bMidiInputMode)
-				{
-					OnPianoKeyUp(11);
-					bProcessed = TRUE;
-				}
-			}
-			break;
-		case 'K':
-			{
-				if (m_bMidiInputMode)
-				{
-					OnPianoKeyUp(12);
-					bProcessed = TRUE;
-				}
-			}
-			break;
-	}
-	if (m_pGame)
-	{
-		bProcessed |= m_pGame->OnKeyUp(nChar);
-	}
-	return bProcessed;
-}
-BOOL __stdcall CGameHook::OnCharUnicode(UINT nChar)
-{
-	return FALSE;
-}
-BOOL __stdcall CGameHook::OnDPadLB()
-{
-	return FALSE;
-}
-BOOL __stdcall CGameHook::OffDPadLB()
-{
-	return FALSE;
-}
-BOOL __stdcall CGameHook::OnDPadRB()
-{
-	return FALSE;
-}
-BOOL __stdcall CGameHook::OffDPadRB()
-{
-	return FALSE;
-}
-BOOL __stdcall CGameHook::OnDPadUp()
-{
-	return FALSE;
-}
-BOOL __stdcall CGameHook::OnDPadDown()
-{
-	return FALSE;
-}
-BOOL __stdcall CGameHook::OnDPadLeft()
-{
-	return FALSE;
-}
-BOOL __stdcall CGameHook::OnDPadRight()
-{
-	return FALSE;
-}
-BOOL __stdcall CGameHook::OffDPadUp()
-{
-	return FALSE;
-}
-BOOL __stdcall CGameHook::OffDPadDown()
-{
-	return FALSE;
-}
-BOOL __stdcall CGameHook::OffDPadLeft()
-{
-	return FALSE;
-}
-BOOL __stdcall CGameHook::OffDPadRight()
-{
-	return FALSE;
-}
-BOOL __stdcall	CGameHook::OnPadPressedA()
-{
-	return FALSE;
-}
-BOOL __stdcall	CGameHook::OnPadPressedB()
-{
-	return FALSE;
-}
-BOOL __stdcall	CGameHook::OnPadPressedX()
-{
-	return FALSE;
-}
-BOOL __stdcall	CGameHook::OnPadPressedY()
-{
-	return FALSE;
-}
-BOOL __stdcall	CGameHook::OffPadPressedA()
-{
-	return FALSE;
-}
-BOOL __stdcall	CGameHook::OffPadPressedB()
-{
-	return FALSE;
-}
-BOOL __stdcall	CGameHook::OffPadPressedX()
-{
-	return FALSE;
-}
-BOOL __stdcall	CGameHook::OffPadPressedY()
-{
-	return FALSE;
-}
-BOOL __stdcall	CGameHook::OnKeyDownFunc(UINT nChar)
-{
-	return FALSE;
-}
-BOOL __stdcall	CGameHook::OnKeyDownCtrlFunc(UINT nChar)
-{
-	BOOL	bProcessed = FALSE;
-	switch (nChar)
-	{
 		case VK_F11:
 			{
 				if (m_pWebPage)
@@ -612,109 +364,136 @@ BOOL __stdcall	CGameHook::OnKeyDownCtrlFunc(UINT nChar)
 					m_pWebPage = nullptr;
 				}
 				m_pWebPage = new CWebPage;
-			
-			
-				//m_pWebPage->Initialize(m_pVHController, "https://www.shadertoy.com/view/XsXXDB");
-				m_pWebPage->Initialize(m_pVHController, "https://youtu.be/bhPXCkqfSkk?si=F9Sc8kPFn7RJNaea");
-				//m_pWebPage->Initialize(m_pVHController, "https://bing.com");
+
+
+				//m_pWebPage->Initialize(m_pVHController, "https://www.shadertoy.com/view/XsXXDB", 640, 480);	// shader toy
+				//m_pWebPage->Initialize(m_pVHController, "https://youtu.be/bhPXCkqfSkk?si=F9Sc8kPFn7RJNaea", 640, 480);	// bad apple
+				m_pWebPage->Initialize(m_pVHController, "https://youtu.be/zjCDJOyHTfw?si=PLcuNDr7_uLPlx3S", 640, 480);	// ultima midi
+				//m_pWebPage->Initialize(m_pVHController, "https://bing.com", 640, 480);
 				bProcessed = TRUE;
 			}
 			break;
+		
+
 	}
 	return bProcessed;
 }
-BOOL __stdcall CGameHook::OnPreConsoleCommand(const WCHAR* wchCmd, DWORD dwCmdLen)
+BOOL __stdcall CTestGameHook::OnPreConsoleCommand(const WCHAR* wchCmd, DWORD dwCmdLen)
 {
-	BOOL	bResult = FALSE;
-	
-	// 채팅 다이얼로그 시스템 출력창에 출력
-	m_pVHController->WriteTextToSystemDlgW(COLOR_VALUE_CYAN, L"[Plug-in] OnPreConsoleCommand:\"%s\".\n", wchCmd);
+	BOOL	bProcessed = FALSE;
 
-	// 콘솔창에 출력
-	m_pVHController->BeginWriteTextToConsole();
+	// 게임 레이어에서 더 이상 처리하지 않기를 원한다면 TRUE를 리턴
+	// 게임 레이어에서 계속 처리하기를 원한다면 FALSE를 리턴
 
-	WCHAR wchTxt[128] = {};
-	int iLen = (int)swprintf_s(wchTxt, L"[Plug-in] OnPreConsoleCommand:\"%s\"", wchCmd);
-			
-	//WriteTextToConsole()함수는 가변인자를 허용하지 않음.
-	m_pVHController->WriteTextToConsole(wchTxt, iLen, COLOR_VALUE_MAGENTA);
-			
-	m_pVHController->EndWriteTextToConsole();
+	if (m_pTestGame)
+	{
+		bProcessed |= m_pTestGame->OnPreConsoleCommand(wchCmd, dwCmdLen);
+	}
+	if (m_pVoxelEditor)
+	{
+		bProcessed |= m_pVoxelEditor->OnPreConsoleCommand(wchCmd, dwCmdLen);
+	}
+	if (m_pWebPage)
+	{
+		bProcessed |= m_pWebPage->OnPreConsoleCommand(wchCmd, dwCmdLen);
+	}
+	if (m_pMidiPlayer)
+	{
+		bProcessed |= m_pMidiPlayer->OnPreConsoleCommand(wchCmd, dwCmdLen);
+	}
+	if (!bProcessed)
+	{
+		// 채팅 다이얼로그 시스템 출력창에 출력
+		m_pVHController->WriteTextToSystemDlgW(COLOR_VALUE_CYAN, L"[Plug-in] OnPreConsoleCommand:\"%s\".\n", wchCmd);
 
-	// 게임 레이어에서 더 이상 처리하지 않기를 바란다면 TRUE를 리턴
-	//bResult = TRUE;
+		// 콘솔창에 출력
+		m_pVHController->BeginWriteTextToConsole();
 
-	// 게임 레이어에서 계속 처리하지를 원한다면 FALSE를 리턴
-	bResult = FALSE;
+		WCHAR wchTxt[128] = {};
+		int iLen = (int)swprintf_s(wchTxt, L"[Plug-in] OnPreConsoleCommand:\"%s\"", wchCmd);
 
-	return bResult;
+		//WriteTextToConsole()함수는 가변인자를 허용하지 않음.
+		m_pVHController->WriteTextToConsole(wchTxt, iLen, COLOR_VALUE_MAGENTA);
+
+		m_pVHController->EndWriteTextToConsole();
+	}
+	return bProcessed;
 }
 
-BOOL __stdcall CGameHook::OnMidiInput(const MIDI_NOTE_L* pNote)
+BOOL __stdcall CTestGameHook::OnMidiInput(const MIDI_MESSAGE_L* pMessage, BOOL bBroadcastMode, LARGE_INTEGER BeginCounter)
 {
+	// BeginCounter is counter when broacast mode enabled.
+	// BeginCounter is valid, only if bBroadcastMode == TRUE.
+	
+	// 미디 건반을 통해 입력이 들어온 경우
+	// 브로드캐스트 모드가 켜진 상태라면 bBroadcastMode값이 TRUE이고, 브로드 캐스트 모드가 켜졌을 때의 카운터 BeginCounter가 전달된다.
+	// 브로드캐스트 모드가 꺼져 있다면 bBroadcastMode값이 FALSE이고, BeginCounter는 유효하지 않은 값이다.
+
+	LARGE_INTEGER	CurCounter = QCGetCounter();
+	float fElapsedTick = QCMeasureElapsedTick(CurCounter, BeginCounter);	// 브로드캐스트 모드가 켜진 이후로 현재 입력이 들어올때까지 걸린 시간(ms). 메모리 또는 파일에 저장하거나 MidiPushXXXX() 함수에 대한 입력으로 사용할 수 있다.
+
+
 	BOOL	bResult = FALSE;
 	
-	if (!m_bMidiInputMode)
+	return bResult;
+}
+BOOL __stdcall CTestGameHook::OnMidiEventProcessed(const MIDI_MESSAGE_L* pMessage, MIDI_EVENT_FROM_TYPE FromType)
+{
+	// 로컬에서 컴퓨터 키볻, 미디 UI, 미디 건반으로 입력한 케이스가 아닌, 순수 데이터만으로 전송된 미디 이벤트가 처리 됐을 때 호출되는 콜백함수.
+	// 다음의 경우에 해당된다.
+	// 1) 다른 플레이어가 연주한 미디 곡이 네트워크로 수신된 경우
+	// 2) .mid파일을 MidiBeginPushMessage()/MidiPushXXX()/MidiEndPushMessage()로 연주한 경우
+	// 
+	// 화면에 건반을 표시하거나 노트 입력을 표시하기 위한 콜백이다.
+	// 
+	
+	
+	// 원격지에서 날라온 미디 이벤트면 처리 안함.
+	if (MIDI_EVENT_FROM_TYPE_REMOTE == FromType)
 		return FALSE;
 
-	MIDI_SIGNAL_TYPE type = pNote->GetSignalType();
-	if (MIDI_SIGNAL_TYPE_NOTE == type)
+	DWORD dwTextColor = COLOR_VALUE_WHITE;
+	WCHAR wchTxt[64];
+
+	MIDI_MESSAGE_TYPE type = pMessage->GetSignalType();
+	if (MIDI_MESSAGE_TYPE_NOTE == type)
 	{
-		DWORD	dwChannel = pNote->GetChannel();
-		BOOL	bOnOff = pNote->GetOnOff();
-		DWORD	dwKey = pNote->GetKey();
-		DWORD	dwVelocity = pNote->GetVelocity() + MIN_VELOCITY;
-		if (dwVelocity > 127)
-			dwVelocity = 127;
-
-		
-		m_pVHController->MidiWriteNote(dwChannel, bOnOff, dwKey, dwVelocity);
-
-		DWORD dwButtonIndex = dwKey - FIRST_PIANO_KEY;
-
-		if (dwButtonIndex < PIANO_KEY_NUM)
+		DWORD	dwChannel = pMessage->GetChannel();
+		BOOL	bOnOff = pMessage->GetOnOff();
+		DWORD	dwKey = pMessage->GetKey();
+		DWORD	dwVelocity = pMessage->GetVelocity();
+		if (bOnOff)
 		{
-			if (bOnOff)
-			{
-				
-			}
-			else
-			{
-				
-			}
+			dwTextColor = COLOR_VALUE_GREEN;
+			swprintf_s(wchTxt, L"[Midi] Note On , Ch:%u, Key:%u, Vel:%u\n", dwChannel, dwKey, dwVelocity);
 		}
 		else
 		{
-			int a = 0;
+			dwTextColor = COLOR_VALUE_GRAY;
+			swprintf_s(wchTxt, L"[Midi] Note Off , Ch:%u, Key:%u, Vel:%u\n", dwChannel, dwKey, dwVelocity);
 		}
+		
 	}
-	else if (MIDI_SIGNAL_TYPE_CONTROL == type)
+	else if (MIDI_MESSAGE_TYPE_CONTROL == type)
 	{
-		DWORD	dwChannel = pNote->GetChannel();
-		DWORD	dwController = pNote->GetController();
-		DWORD	dwControlValue = pNote->GetControlValue();
-
-		m_pVHController->MidiChangeControl(dwChannel, dwController, dwControlValue);
-		if (64 == dwController)
-		{
-			if (127 == dwControlValue)
-			{
-				// sustain pedal pressed
-			}
-			else
-			{
-				// sustain pedal released
-			}
-		}
+		DWORD	dwChannel = pMessage->GetChannel();
+		DWORD	dwController = pMessage->GetController();
+		DWORD	dwControlValue = pMessage->GetControlValue();
+		dwTextColor = COLOR_VALUE_MAGENTA;
+		swprintf_s(wchTxt, L"[Midi] Change Control, Ch:%u, Controller:%u, Value:%u\n", dwChannel, dwController, dwControlValue);
+		
 	}
-	else if (MIDI_SIGNAL_TYPE_PROGRAM == type)
+	else if (MIDI_MESSAGE_TYPE_PROGRAM == type)
 	{
-		DWORD	dwChannel = pNote->GetChannel();
-		DWORD	dwProgram = pNote->GetProgram();
-
-		m_pVHController->MidiChangeProgram(dwChannel, dwProgram);
+		DWORD	dwChannel = pMessage->GetChannel();
+		DWORD	dwProgram = pMessage->GetProgram();
+		dwTextColor = COLOR_VALUE_DARK_ORANGE;
+		swprintf_s(wchTxt, L"[Midi] Change Program, Ch:%u, Program:%u\n", dwChannel, dwProgram);
 	}
-	return bResult;
+	m_pVHController->WriteTextToSystemDlgW(dwTextColor, wchTxt);
+	
+	// 상위 레이어에서 계속처리할 수 있도록 FALSE를 리턴
+	return FALSE;
 }
 /*
 IVoxelObjectLite* CSceneBattleField::CreateVoxelObject(VECTOR3* pv3Pos, UINT WidthDepthHeight, CREATE_VOXEL_OBJECT_ERROR* pOutErr)
@@ -725,15 +504,15 @@ IVoxelObjectLite* CSceneBattleField::CreateVoxelObject(VECTOR3* pv3Pos, UINT Wid
 	return pVoxelObj;
 }
 */
-void CGameHook::StartGame()
+void CTestGameHook::StartGame()
 {
-	if (m_pGame)
+	if (m_pTestGame)
 	{
-		delete m_pGame;
-		m_pGame = nullptr;
+		delete m_pTestGame;
+		m_pTestGame = nullptr;
 	}
-	m_pGame = new CGame;
-	m_pGame->Initialize(m_pVHController, m_wchPluginPath);
+	m_pTestGame = new CTestGame;
+	m_pTestGame->Initialize(m_pVHController, m_wchPluginPath);
 	/*
 	WCHAR	wchOldPath[_MAX_PATH] = {};
 	GetCurrentDirectory(_MAX_PATH, wchOldPath);
@@ -761,7 +540,7 @@ void CGameHook::StartGame()
 	*/
 }
 
-CGameHook::~CGameHook()
+CTestGameHook::~CTestGameHook()
 {
 	//
 	// 여기서 IVoxelObjectLite를 제거해선 안된다.
@@ -773,4 +552,3 @@ CGameHook::~CGameHook()
 	_ASSERT(_CrtCheckMemory());
 #endif
 }
-

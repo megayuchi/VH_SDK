@@ -20,7 +20,7 @@ enum LAYER_INDEX
 	LAYER_INDEX_DEFAULT = LAYER_INDEX_OBJECT
 };
 
-class CGame
+class CTestGame
 {
 	static const DWORD DISPLAY_PANEL_WIDTH = 320;
 	static const DWORD DISPLAY_PANEL_HEIGHT = 240;
@@ -105,6 +105,7 @@ class CGame
 public:
 
 	BOOL Initialize(IVHController* pVHController, const WCHAR* wchPluginPath);
+	BOOL OnPreConsoleCommand(const WCHAR* wchCmd, DWORD dwCmdLen);
 	BOOL OnKeyDown(UINT nChar);
 	BOOL OnKeyUp(UINT nChar);
 	void OnUpdateWindowSize();
@@ -113,8 +114,8 @@ public:
 	void OnDeleteVoxelObject(IVoxelObjectLite* pVoxelObj);
 	BOOL IsGamePaused() const { return m_bPause; }
 
-	CGame();
-	~CGame();
+	CTestGame();
+	~CTestGame();
 };
 
-extern CGame* g_pGame;
+extern CTestGame* g_pGame;

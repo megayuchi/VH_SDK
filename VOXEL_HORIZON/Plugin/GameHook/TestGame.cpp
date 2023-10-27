@@ -6,25 +6,23 @@
 #include "Util.h"
 #include "ImageData.h"
 #include "DisplayPanel.h"
-#include "QueryPerfCounter.h"
+#include "../util/QueryPerfCounter.h"
 #include "game_typedef.h"
 #include "GameObject.h"
 #include "FlightObject.h"
-#include "Game.h"
+#include "TestGame.h"
 
-CGame* g_pGame = nullptr;
+CTestGame* g_pGame = nullptr;
 
-CGame::CGame()
+CTestGame::CTestGame()
 {
 	m_dwCurFPS = 0;
 	m_fTicksPerGameFrame = 1000.0f / (float)m_dwGameFPS;
 	m_PrvGameFrameTick = GetTickCount64();
 	m_PrvCounter = QCGetCounter();
-
-	QCInit();
 }
 
-BOOL CGame::Initialize(IVHController* pVHController, const WCHAR* wchPluginPath)
+BOOL CTestGame::Initialize(IVHController* pVHController, const WCHAR* wchPluginPath)
 {
 	m_pVHController = pVHController;
 	
@@ -70,7 +68,11 @@ BOOL CGame::Initialize(IVHController* pVHController, const WCHAR* wchPluginPath)
 
 	return TRUE;
 }
-void CGame::CleanupDisplayPanel()
+BOOL CTestGame::OnPreConsoleCommand(const WCHAR* wchCmd, DWORD dwCmdLen)
+{
+	return FALSE;
+}
+void CTestGame::CleanupDisplayPanel()
 {
 	if (m_pDisplayPanel)
 	{
@@ -78,7 +80,7 @@ void CGame::CleanupDisplayPanel()
 		m_pDisplayPanel = nullptr;
 	}
 }
-void CGame::Process()
+void CTestGame::Process()
 {
 	LARGE_INTEGER	CurCounter = QCGetCounter();
 	float	fElpasedTick = QCMeasureElapsedTick(CurCounter, m_PrvCounter);
@@ -111,7 +113,7 @@ void CGame::Process()
 	}
 }
 
-BOOL CGame::OnKeyDown(UINT nChar)
+BOOL CTestGame::OnKeyDown(UINT nChar)
 {
 	BOOL	bProcessed = FALSE;
 	switch (nChar)
@@ -189,7 +191,7 @@ BOOL CGame::OnKeyDown(UINT nChar)
 	}
 	return bProcessed;
 }
-BOOL CGame::OnKeyUp(UINT nChar)
+BOOL CTestGame::OnKeyUp(UINT nChar)
 {
 	BOOL	bProcessed = FALSE;
 	switch (nChar)
@@ -234,14 +236,14 @@ BOOL CGame::OnKeyUp(UINT nChar)
 	return bProcessed;
 }
 
-void CGame::EnableMultipleLayresMode(BOOL bSwitch)
+void CTestGame::EnableMultipleLayresMode(BOOL bSwitch)
 {
 	m_bUseMultipleLayers = bSwitch; 
 	m_pDisplayPanel->ResetVoxelData();
 }
 
 
-void CGame::DrawScene()
+void CTestGame::DrawScene()
 {
 	DWORD	dwObjLayerIndex = LAYER_INDEX_DEFAULT;
 	DWORD	dwMidScrollLayerIndex = LAYER_INDEX_DEFAULT;
@@ -303,21 +305,21 @@ void CGame::DrawScene()
 	
 	//	m_pDDraw->CheckFPS();
 }
-void CGame::OnUpdateWindowSize()
+void CTestGame::OnUpdateWindowSize()
 {
 
 }
-void CGame::OnUpdateWindowPos()
+void CTestGame::OnUpdateWindowPos()
 {
 
 }
-void CGame::DrawFlightObject(CFlightObject* pFighter, int x, int y, DWORD dwLayerIndex)
+void CTestGame::DrawFlightObject(CFlightObject* pFighter, int x, int y, DWORD dwLayerIndex)
 {
 	const CImageData* pImageData = pFighter->GetImageData();
 	//m_pDisplayPanel->DrawPalettedBitmap(x, y, pImageData->GetWidth(), pImageData->GetHeight(), pImageData->GetUncompressedImage());
 	m_pDisplayPanel->DrawCompressedPalettedImageData(x, y, pImageData, dwLayerIndex);
 }
-void CGame::InterpolatePostion(float fAlpha)
+void CTestGame::InterpolatePostion(float fAlpha)
 {
 	if (m_pPlayer)
 	{
@@ -336,7 +338,7 @@ void CGame::InterpolatePostion(float fAlpha)
 	}
 
 }
-void CGame::FixPostionPostion()
+void CTestGame::FixPostionPostion()
 {
 	if (m_pPlayer)
 	{
@@ -355,7 +357,7 @@ void CGame::FixPostionPostion()
 	}
 
 }
-void CGame::OnGameFrame(ULONGLONG CurTick)
+void CTestGame::OnGameFrame(ULONGLONG CurTick)
 {
 	int iScreenWidth = (int)m_pDisplayPanel->GetWidth();
 	int iScreenHeight = (int)m_pDisplayPanel->GetHeight();
@@ -404,7 +406,7 @@ void CGame::OnGameFrame(ULONGLONG CurTick)
 	UpdateBackground();
 
 }
-void CGame::UpdateBackground()
+void CTestGame::UpdateBackground()
 {
 	/*
 	static ULONGLONG PrvUpdateTick = 0;
@@ -432,7 +434,7 @@ void CGame::UpdateBackground()
 	//memcpy(m_pBackground + (dwTotalPixels - (DWORD)m_iScreenWidth), m_pBackgroundLineBuffer, sizeof(WCHAR) * m_iScreenWidth);
 	*/
 }
-void CGame::UpdatePlayerPos(int iScreenWidth, int iScreenHeight)
+void CTestGame::UpdatePlayerPos(int iScreenWidth, int iScreenHeight)
 {
 	INT_VECTOR2		ivPlayerPos;
 	m_pPlayer->GetPos(&ivPlayerPos);
@@ -546,7 +548,7 @@ void CGame::UpdatePlayerPos(int iScreenWidth, int iScreenHeight)
 	}
 	m_pPlayer->SetPos(&ivPlayerPos, TRUE);
 }
-void CGame::DeleteDestroyedEnemies(ULONGLONG CurTick)
+void CTestGame::DeleteDestroyedEnemies(ULONGLONG CurTick)
 {
 	DWORD	dwIndex = 0;
 	while (dwIndex < m_dwCurEnemiesNum)
@@ -565,7 +567,7 @@ void CGame::DeleteDestroyedEnemies(ULONGLONG CurTick)
 		}
 	}
 }
-void CGame::ProcessCollision(ULONGLONG CurTick)
+void CTestGame::ProcessCollision(ULONGLONG CurTick)
 {
 	DWORD	dwIndex = 0;
 	while (dwIndex < m_dwCurAmmoNum)
@@ -586,7 +588,7 @@ void CGame::ProcessCollision(ULONGLONG CurTick)
 }
 
 
-BOOL CGame::IsCollisionFlightObjectVsFlightObject(const CFlightObject* pObj0, const CFlightObject* pObj1)
+BOOL CTestGame::IsCollisionFlightObjectVsFlightObject(const CFlightObject* pObj0, const CFlightObject* pObj1)
 {
 	BOOL bResult = FALSE;
 
@@ -616,7 +618,7 @@ BOOL CGame::IsCollisionFlightObjectVsFlightObject(const CFlightObject* pObj0, co
 lb_return:
 	return bResult;
 }
-BOOL CGame::ProcessCollisionAmmoVsEnemies(CFlightObject* pAmmo, ULONGLONG CurTick)
+BOOL CTestGame::ProcessCollisionAmmoVsEnemies(CFlightObject* pAmmo, ULONGLONG CurTick)
 {
 	BOOL	bCollision = FALSE;
 	for (DWORD i = 0; i < m_dwCurEnemiesNum; i++)
@@ -633,7 +635,7 @@ BOOL CGame::ProcessCollisionAmmoVsEnemies(CFlightObject* pAmmo, ULONGLONG CurTic
 	}
 	return bCollision;
 }
-void CGame::ProcessEnemies()
+void CTestGame::ProcessEnemies()
 {
 	int iScreenWidth = (int)m_pDisplayPanel->GetWidth();
 	int iScreenHeight = (int)m_pDisplayPanel->GetHeight();
@@ -660,13 +662,13 @@ void CGame::ProcessEnemies()
 	MoveEnemies();
 	FillEnemies();
 }
-void CGame::OnHitEnemy(CFlightObject* pEnemy, ULONGLONG CurTick)
+void CTestGame::OnHitEnemy(CFlightObject* pEnemy, ULONGLONG CurTick)
 {
 	// 지금 삭제하지 않고 상태만 바꾼다.
 	ChangeFlightObjectStatusToDead(pEnemy, CurTick);
 	AddScore(SCORE_PER_ONE_KILL);
 }
-DWORD CGame::AddScore(DWORD dwAddval)
+DWORD CTestGame::AddScore(DWORD dwAddval)
 {
 	/*
 	m_dwCurScore += dwAddval;
@@ -674,7 +676,7 @@ DWORD CGame::AddScore(DWORD dwAddval)
 	*/
 	return 0;
 }
-void CGame::MoveEnemies()
+void CTestGame::MoveEnemies()
 {
 	int iScreenWidth = (int)m_pDisplayPanel->GetWidth();
 	int iScreenHeight = (int)m_pDisplayPanel->GetHeight();
@@ -693,7 +695,7 @@ void CGame::MoveEnemies()
 	}
 }
 
-void CGame::FillEnemies()
+void CTestGame::FillEnemies()
 {
 	static ULONGLONG PrvFillEnemyTick = 0;
 
@@ -720,7 +722,7 @@ void CGame::FillEnemies()
 		m_dwCurEnemiesNum++;
 	}
 }
-void CGame::DeleteAllEnemies()
+void CTestGame::DeleteAllEnemies()
 {
 	for (DWORD i = 0; i < m_dwCurEnemiesNum; i++)
 	{
@@ -729,7 +731,7 @@ void CGame::DeleteAllEnemies()
 	}
 	m_dwCurEnemiesNum = 0;
 }
-void CGame::DeleteAllAmmos()
+void CTestGame::DeleteAllAmmos()
 {
 	for (DWORD i = 0; i < m_dwCurAmmoNum; i++)
 	{
@@ -738,7 +740,7 @@ void CGame::DeleteAllAmmos()
 	}
 	m_dwCurAmmoNum = 0;
 }
-void CGame::Cleanup()
+void CTestGame::Cleanup()
 {
 	CleanupDisplayPanel();
 
@@ -785,7 +787,7 @@ void CGame::Cleanup()
 		m_pBackImage = nullptr;
 	}
 }
-void CGame::ShootFromPlayer()
+void CTestGame::ShootFromPlayer()
 {
 	if (m_dwCurAmmoNum >= MAX_AMMO_NUM)
 		return;
@@ -795,7 +797,7 @@ void CGame::ShootFromPlayer()
 	m_dwCurAmmoNum++;
 }
 
-void CGame::DrawScore(int x, int y)
+void CTestGame::DrawScore(int x, int y)
 {
 	//
 	// IMegayuchiRenderer로부터 텍스트 출력 함수를 빼준다.
@@ -810,14 +812,14 @@ void CGame::DrawScore(int x, int y)
 	memcpy(wchDest, wchTxt, sizeof(WCHAR) * dwLen);
 	*/
 }
-void CGame::OnDeleteVoxelObject(IVoxelObjectLite* pVoxelObj)
+void CTestGame::OnDeleteVoxelObject(IVoxelObjectLite* pVoxelObj)
 {
 	if (m_pDisplayPanel)
 	{
 		m_pDisplayPanel->OnDeleteVoxelObject(pVoxelObj);
 	}
 }
-CGame::~CGame()
+CTestGame::~CTestGame()
 {
 	Cleanup();
 }

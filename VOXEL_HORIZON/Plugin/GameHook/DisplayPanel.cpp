@@ -99,6 +99,9 @@ BOOL CDisplayPanel::Initialize(IVHController* pVHController, UINT Width, UINT He
 	IVoxelObjectLite* pVoxelObj = nullptr;
 	CREATE_VOXEL_OBJECT_ERROR	err = CREATE_VOXEL_OBJECT_ERROR_OK;
 
+	m_aabb.Min = { 999999.0f, 999999.0f, 999999.0f };
+	m_aabb.Max = { -999999.0f, -999999.0f, -999999.0f, };
+
 	VECTOR3		v3Pos = v3BasePos;
 	for (UINT y = 0; y < m_VoxelObjHeight; y++)
 	{
@@ -112,6 +115,16 @@ BOOL CDisplayPanel::Initialize(IVHController* pVHController, UINT Width, UINT He
 			pVoxelObj->UpdateLighting();
 			m_ppVoxelObjList[y * m_VoxelObjWidth + x] = pVoxelObj;
 			v3Pos.x += VOXEL_OBJECT_SIZE;
+
+			AABB aabb;
+			pVoxelObj->GetAABB(&aabb);
+			m_aabb.Min.x = fminf(m_aabb.Min.x, aabb.Min.x);
+			m_aabb.Min.y = fminf(m_aabb.Min.y, aabb.Min.y);
+			m_aabb.Min.z = fminf(m_aabb.Min.z, aabb.Min.z);
+			m_aabb.Max.x = fmaxf(m_aabb.Max.x, aabb.Max.x);
+			m_aabb.Max.y = fmaxf(m_aabb.Max.y, aabb.Max.y);
+			m_aabb.Max.z = fmaxf(m_aabb.Max.z, aabb.Max.z);
+
 		}
 		v3Pos.x = v3BasePos.x;
 		v3Pos.y += VOXEL_OBJECT_SIZE;
@@ -538,6 +551,33 @@ BOOL CDisplayPanel::GetScreenPosWithVoxelObjPos(int* piOutX, int* piOutY, IVoxel
 lb_return:
 	return bResult;
 }
+BOOL CDisplayPanel::GetScreenPosWithWorldPos(int* piOutX, int* piOutY, const VECTOR3* pv3Point, int iScreenWidth, int iScreenHeight)
+{
+	// display 패널이 xy평면에 펼쳐져 있으므로 pv3Point의 x,y만 사용한다.
+	float fWidth = (m_aabb.Max.x - m_aabb.Min.x);
+	float fHeight = (m_aabb.Max.y - m_aabb.Min.y);
+	float rx = (pv3Point->x - m_aabb.Min.x) / fWidth;
+	float ry = 1.0f - ((pv3Point->y - m_aabb.Min.y) / fHeight);
+
+	int sx = (int)(rx * (float)(iScreenWidth-1));
+	int sy = (int)(ry * (float)(iScreenHeight-1));
+
+	if (sx < 0)
+		return FALSE;
+
+	if (sy < 0)
+		return FALSE;
+
+	if (sx >= iScreenWidth)
+		return FALSE;
+
+	if (sy >= iScreenHeight)
+		return FALSE;
+
+	*piOutX = sx;
+	*piOutY = sy;
+	return TRUE;
+}
 
 BYTE CDisplayPanel::Convert32BitsColorToPaletteIndexRGBA(DWORD dwSrcColor)
 {
@@ -579,10 +619,6 @@ void CDisplayPanel::Cleanup()
 				if (pVoxelObj)
 				{
 					m_pVHController->DeleteVoxelObject(pVoxelObj);
-				}
-				else
-				{
-					int a = 0;
 				}
 				m_ppVoxelObjList[y * m_VoxelObjWidth + x] = nullptr;
 			}

@@ -20,7 +20,10 @@ BOOL CVoxelEditor::Initialize(IVHController* pVHController, IVHNetworkLayer* pVH
 	memset(m_pivSelectedObjPosList, 0, sizeof(INT_VECTOR3) * m_dwMaxSelectedObjPosNum);
 	return TRUE;
 }
-
+BOOL CVoxelEditor::OnPreConsoleCommand(const WCHAR* wchCmd, DWORD dwCmdLen)
+{
+	return FALSE;
+}
 
 
 void CVoxelEditor::SetVoxelColorRecursive(unsigned long* pBitTable, BYTE* pColorTable, const VECTOR3* pv3ObjPos, int x, int y, int z, BYTE bColorIndex, BYTE bCmpColorIndex, UINT CursorWidthDepthHeight, INT_VECTOR3* pivOutVoxelPosList, DWORD* pdwInOutVoxelCount, PLANE_AXIS_TYPE planeType)
@@ -659,7 +662,7 @@ void CVoxelEditor::ClearPreviewMeshInRecursiveMode()
 {
 	m_dwPreviewVoxelPosNum = 0;
 }
-BOOL __stdcall CVoxelEditor::OnMouseLButtonDown(int x, int y, UINT nFlags)
+BOOL CVoxelEditor::OnMouseLButtonDown(int x, int y, UINT nFlags)
 {
 	BOOL	bProcessed = FALSE;
 
@@ -735,29 +738,29 @@ BOOL __stdcall CVoxelEditor::OnMouseLButtonDown(int x, int y, UINT nFlags)
 	}
 	return bProcessed;
 }
-BOOL __stdcall CVoxelEditor::OnMouseLButtonUp(int x, int y, UINT nFlags)
+BOOL CVoxelEditor::OnMouseLButtonUp(int x, int y, UINT nFlags)
 {
 	return FALSE;
 }
 
-BOOL __stdcall CVoxelEditor::OnMouseRButtonDown(int x, int y, UINT nFlags)
+BOOL CVoxelEditor::OnMouseRButtonDown(int x, int y, UINT nFlags)
 {
 	return FALSE;
 }
-BOOL __stdcall CVoxelEditor::OnMouseRButtonUp(int x, int y, UINT nFlags)
+BOOL CVoxelEditor::OnMouseRButtonUp(int x, int y, UINT nFlags)
 {
 	return FALSE;
 }
-BOOL __stdcall CVoxelEditor::OnMouseMove(int x, int y, UINT nFlags)
+BOOL CVoxelEditor::OnMouseMove(int x, int y, UINT nFlags)
 {
 	return FALSE;
 }
 
-BOOL __stdcall CVoxelEditor::OnMouseMoveHV(int iMoveX, int iMoveY, BOOL bLButtonPressed, BOOL bRButtonPressed, BOOL bMButtonPressed)
+BOOL CVoxelEditor::OnMouseMoveHV(int iMoveX, int iMoveY, BOOL bLButtonPressed, BOOL bRButtonPressed, BOOL bMButtonPressed)
 {
 	return FALSE;
 }
-BOOL __stdcall CVoxelEditor::OnMouseWheel(int iWheel)
+BOOL CVoxelEditor::OnMouseWheel(int iWheel)
 {
 	return FALSE;
 }

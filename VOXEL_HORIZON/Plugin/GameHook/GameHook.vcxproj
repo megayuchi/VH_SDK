@@ -319,32 +319,38 @@
   <ItemGroup>
     <ClInclude Include="..\include\IGameHookController.h" />
     <ClInclude Include="..\include\typedef.h" />
+    <ClInclude Include="..\util\QueryPerfCounter.h" />
+    <ClInclude Include="..\util\Stack.h" />
     <ClInclude Include="..\util\stdafx.h" />
     <ClInclude Include="..\util\VoxelUtil.h" />
     <ClInclude Include="DisplayPanel.h" />
     <ClInclude Include="FlightObject.h" />
-    <ClInclude Include="Game.h" />
+    <ClInclude Include="lodepng\lodepng.h" />
+    <ClInclude Include="TestGame.h" />
     <ClInclude Include="GameHook.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="game_typedef.h" />
     <ClInclude Include="ImageData.h" />
-    <ClInclude Include="lodepng.h" />
-    <ClInclude Include="QueryPerfCounter.h" />
+    <ClInclude Include="MidiPlayer.h" />
+    <ClInclude Include="Midi\Binasc.h" />
+    <ClInclude Include="Midi\MidiEvent.h" />
+    <ClInclude Include="Midi\MidiEventList.h" />
+    <ClInclude Include="Midi\MidiFile.h" />
+    <ClInclude Include="Midi\MidiMessage.h" />
+    <ClInclude Include="Midi\stdafx.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Util.h" />
     <ClInclude Include="VoxelEditor.h" />
     <ClInclude Include="WebPage.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\util\QueryPerfCounter .cpp" />
+    <ClCompile Include="..\util\Stack.cpp" />
     <ClCompile Include="..\util\VoxelUtil.cpp" />
     <ClCompile Include="DisplayPanel.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="FlightObject.cpp" />
-    <ClCompile Include="Game.cpp" />
-    <ClCompile Include="GameHook.cpp" />
-    <ClCompile Include="GameObject.cpp" />
-    <ClCompile Include="ImageData.cpp" />
-    <ClCompile Include="lodepng.cpp">
+    <ClCompile Include="lodepng\lodepng.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64EC'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|ARM64EC'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
@@ -354,7 +360,16 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="QueryPerfCounter .cpp" />
+    <ClCompile Include="TestGame.cpp" />
+    <ClCompile Include="GameHook.cpp" />
+    <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="ImageData.cpp" />
+    <ClCompile Include="MidiPlayer.cpp" />
+    <ClCompile Include="Midi\Binasc.cpp" />
+    <ClCompile Include="Midi\MidiEvent.cpp" />
+    <ClCompile Include="Midi\MidiEventList.cpp" />
+    <ClCompile Include="Midi\MidiFile.cpp" />
+    <ClCompile Include="Midi\MidiMessage.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">Create</PrecompiledHeader>

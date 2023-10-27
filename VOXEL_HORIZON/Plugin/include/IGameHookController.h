@@ -145,6 +145,7 @@ interface IVHController
 	virtual		BOOL			__stdcall	WriteFile(const WCHAR* wchFileName) = 0;
 	virtual		BOOL			__stdcall	ReadFile(const WCHAR* wchFileName, BOOL bDelayedUpdate, BOOL bLighting) = 0;
 
+	virtual		void			__stdcall	WriteTextToConsoleImmediately(const WCHAR* wchTxt, int iLen, DWORD dwColor) = 0;
 	virtual		void			__stdcall	BeginWriteTextToConsole() = 0;
 	virtual		void			__stdcall	WriteTextToConsole(const WCHAR* wchTxt, int iLen, DWORD dwColor) = 0;
 	virtual		void			__stdcall	EndWriteTextToConsole() = 0;
@@ -167,6 +168,9 @@ interface IVHController
 	virtual		BOOL	__stdcall GetWebImage(BYTE* pOutBits32, DWORD dwWidth, DWORD dwHeight, DWORD dwDestPitch, WEB_CLIENT_HANDLE pHandle) const = 0;
 	virtual		void	__stdcall OnWebMouseLButtonDown(WEB_CLIENT_HANDLE pHandle, int x, int y, UINT nFlags) = 0;
 	virtual		void	__stdcall OnWebMouseLButtonUp(WEB_CLIENT_HANDLE pHandle, int x, int y, UINT nFlags) = 0;
+	virtual		void	__stdcall OnWebMouseMove(WEB_CLIENT_HANDLE pHandle, int x, int y, UINT nFlags) = 0;
+	virtual		void	__stdcall OnWebMouseWheel(WEB_CLIENT_HANDLE pHandle, int x, int y, int iWheel) = 0;
+	virtual		void	__stdcall OnWebMouseHWheel(WEB_CLIENT_HANDLE pHandle, int x, int y, int iWheel) = 0;
 
 	// midi
 	virtual		BOOL	__stdcall SetMidiOutDevice(const WCHAR* wchDeviceName) = 0;
@@ -174,17 +178,35 @@ interface IVHController
 	virtual		BOOL	__stdcall SetMidiInDevice(const WCHAR* wchDeviceName) = 0;
 	virtual		BOOL	__stdcall GetSelectedMidiInDevice(MIDI_DEVICE_INFO* pOutInfo) = 0;
 	virtual		BOOL	__stdcall SetVolume(unsigned char channel, unsigned char Volume) = 0;
-	virtual		BOOL	__stdcall SetSustainPedal(unsigned char channel, unsigned char Value) = 0;
-	virtual		BOOL	__stdcall NoteOn(unsigned char channel, unsigned char note, unsigned char Velocity) = 0;
-	virtual		BOOL	__stdcall NoteOff(unsigned char channel, unsigned char note, unsigned char Velocity) = 0;
 	virtual		DWORD	__stdcall GetMidiInDeviceList(MIDI_DEVICE_INFO* pOutInfoList, DWORD dwMaxBufferCount) = 0;
 	virtual		DWORD	__stdcall GetMidiOutDeviceList(MIDI_DEVICE_INFO* pOutInfoList, DWORD dwMaxBufferCount) = 0;
-	virtual		BOOL	__stdcall MidiWriteNote(DWORD dwChannel, BOOL bOnOff, DWORD dwKey, DWORD dwVelocity) = 0;
-	virtual		BOOL	__stdcall MidiChangeControl(DWORD dwChannel, DWORD dwController, DWORD dwControlValue) = 0;
-	virtual		BOOL	__stdcall MidiChangeProgram(DWORD dwChannel, DWORD dwProgram) = 0;
+	virtual		void	__stdcall MidiReset() = 0;
+
+	// Functions that run asynchronously. Actually, music playback is performed after MidiEndPushMessage() called.
+	virtual		BOOL	__stdcall MidiBeginPushMessage() = 0;
+	virtual		BOOL	__stdcall MidiPushNoteOn(DWORD dwChannel, DWORD dwKey, DWORD dwVelocity, DWORD dwTickFromBegin) = 0;
+	virtual		BOOL	__stdcall MidiPushNoteOff(DWORD dwChannel, DWORD dwKey, DWORD dwVelocity, DWORD dwTickFromBegin) = 0;
+	virtual		BOOL	__stdcall MidiPushChangeControl(DWORD dwChannel, DWORD dwController, DWORD dwControlValue, DWORD dwTickFromBegin) = 0;
+	virtual		BOOL	__stdcall MidiPushChangeProgram(DWORD dwChannel, DWORD dwProgram, DWORD dwTickFromBegin) = 0;
+	virtual		BOOL	__stdcall MidiEndPushMessage() = 0;
+	
 	virtual		BOOL	__stdcall IsBroadcastMode() const = 0;
-	virtual		BOOL	__stdcall EnableBroadcastMode(BOOL bSwitch) = 0;
-	virtual		void	__stdcall Reset() = 0;
+
+	// Functions that run immediately. 
+	// In order for a MIDI event to be played, it internally needs a time value(tick-ms) relative to the start time. 
+	// The time value is calculated when the Midi event functions are called after the EnableBroadcastModeImmediately() function call.
+	virtual		void	__stdcall EnableBroadcastModeImmediately() = 0;	// Broadcast mode is turned on immediately.
+	virtual		BOOL	__stdcall MidiNoteOnImmediately(DWORD dwChannel, DWORD dwKey, DWORD dwVelocity) = 0;
+	virtual		BOOL	__stdcall MidiNoteOffImmediately(DWORD dwChannel, DWORD dwKey, DWORD dwVelocity) = 0;
+	virtual		BOOL	__stdcall MidiChangeControlImmediately(DWORD dwChannel, DWORD dwController, DWORD dwControlValue) = 0;
+	virtual		BOOL	__stdcall MidiChangeProgramImmediately(DWORD dwChannel, DWORD dwProgram) = 0;
+	virtual		void	__stdcall DisableBroadcastModeImmediately() = 0;	// Broadcast mode is turned off immediately.
+	
+	// Broadcast mode is turned off after all midi messages have been sent. 
+	// When playing from a .mid file in online mode, use this function to automatically turn off broadcast mode after music playback ends.
+	virtual		void	__stdcall DisableBroadcastModeDeferred() = 0;		
+	
+	virtual		void	__stdcall Reset() = 0;	// Stop the music. The status of all channels will be initialized.
 };
 
 interface IVHNetworkLayer
@@ -213,7 +235,7 @@ interface IGameHook : public IUnknown
 	virtual BOOL __stdcall	OnMouseRButtonUp(int x, int y, UINT nFlags) = 0;
 	virtual BOOL __stdcall	OnMouseMove(int x, int y, UINT nFlags) = 0;
 	virtual BOOL __stdcall	OnMouseMoveHV(int iMoveX, int iMoveY, BOOL bLButtonPressed, BOOL bRButtonPressed, BOOL bMButtonPressed) = 0;
-	virtual BOOL __stdcall	OnMouseWheel(int iWheel) = 0;
+	virtual BOOL __stdcall	OnMouseWheel(int x, int y, int iWheel) = 0;
 
 	virtual BOOL __stdcall	OnKeyDown(UINT nChar) = 0;
 	virtual BOOL __stdcall	OnKeyUp(UINT nChar) = 0;
@@ -244,6 +266,7 @@ interface IGameHook : public IUnknown
 	virtual BOOL __stdcall	OnKeyDownFunc(UINT nChar) = 0;
 	virtual BOOL __stdcall	OnKeyDownCtrlFunc(UINT nChar) = 0;
 	virtual BOOL __stdcall	OnPreConsoleCommand(const WCHAR* wchCmd, DWORD dwCmdLen) = 0;
-	virtual BOOL __stdcall	OnMidiInput(const MIDI_NOTE_L* pNote) = 0;
+	virtual BOOL __stdcall	OnMidiInput(const MIDI_MESSAGE_L* pMessage, BOOL bBroadcastMode, LARGE_INTEGER BeginCounter) = 0;
+	virtual BOOL __stdcall	OnMidiEventProcessed(const MIDI_MESSAGE_L* pMessage, MIDI_EVENT_FROM_TYPE FromType) = 0;
 };
 #endif

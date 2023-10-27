@@ -1,8 +1,11 @@
 #include "stdafx.h"
+#include "../include/typedef.h"
+#include "../util/Stack.h"
 #include "Util.h"
-#include "lodepng.h"
+#include "./lodepng/lodepng.h"
 #include "DisplayPanel.h"
 #include "ImageData.h"
+
 
 size_t GetFileSize(FILE* fp)
 {
@@ -342,4 +345,52 @@ BYTE Convert32BitsColorToPaletteIndexBGRA_SSE(const DWORD* pdwColorTable, DWORD 
 		}
 	}
 	return (BYTE)dwSelectedIndex;
+}
+
+
+void DownSample_FPU(DWORD* pDest, DWORD* pSrc, unsigned int SrcWidth, unsigned SrcHeight)
+{
+	// 반드시 다음이 성립해야 함.
+	// dest_width = src_width / 2;
+	// dest_height = src_height / 2;
+	
+	unsigned int Width = SrcWidth >> 1;
+	unsigned int Height = SrcHeight >> 1;
+
+	DWORD	px[4];
+	for (unsigned int y = 0; y < Height; y++)
+	{
+		for (unsigned int x = 0; x < Width; x++)
+		{
+			px[0] = pSrc[(y << 1) * SrcWidth + (x << 1) + 0];
+			px[1] = pSrc[(y << 1) * SrcWidth + (x << 1) + 1];
+			px[2] = pSrc[((y << 1) + 1) * SrcWidth + (x << 1) + 0];
+			px[3] = pSrc[((y << 1) + 1) * SrcWidth + (x << 1) + 1];
+
+			DWORD c3 = (((px[0] & 0xff000000) >> 24) + ((px[1] & 0xff000000) >> 24) + ((px[2] & 0xff000000) >> 24) + ((px[3] & 0xff000000) >> 24)) / 4;
+			DWORD c2 = (((px[0] & 0x00ff0000) >> 16) + ((px[1] & 0x00ff0000) >> 16) + ((px[2] & 0x00ff0000) >> 16) + ((px[3] & 0x00ff0000) >> 16)) / 4;
+			DWORD c1 = (((px[0] & 0x0000ff00) >> 8) + ((px[1] & 0x0000ff00) >> 8) + ((px[2] & 0x0000ff00) >> 8) + ((px[3] & 0x0000ff00) >> 8)) / 4;
+			DWORD c0 = (((px[0] & 0x000000ff) >> 0) + ((px[1] & 0x000000ff) >> 0) + ((px[2] & 0x000000ff) >> 0) + ((px[3] & 0x000000ff) >> 0)) / 4;
+			pDest[y * Width + x] = (c3 << 24) | (c2 << 16) | (c1 << 8) | c0;;
+		}
+	}
+}
+
+int static CompareFunc(const void* first, const void* second)
+{
+	MIDI_MESSAGE* pFirstMessage = (MIDI_MESSAGE*)first;
+	MIDI_MESSAGE* pSecondMessage = (MIDI_MESSAGE*)second;
+
+	if (pFirstMessage->GetTickFromBegin() > pSecondMessage->GetTickFromBegin())
+		return 1;
+	else if (pFirstMessage->GetTickFromBegin() < pSecondMessage->GetTickFromBegin())
+		return -1;
+	else
+		return 0;
+}
+
+void SortMidiMessageList(MIDI_MESSAGE* pArray, DWORD dwNum)
+{
+	qsort(pArray, dwNum, sizeof(MIDI_MESSAGE), CompareFunc);
+	int a = 0;
 }
