@@ -1,35 +1,9 @@
 BEGIN	MOD
-./Data/Character/boss_001/	     6
-Boss_001_Body.MOD
-Boss_001_Body_D.MOD
-Boss_001_Larm.MOD
-Boss_001_Larm_D.MOD
-Boss_001_Rarm.MOD
-Boss_001_Rarm_D.MOD
+./Data/Character/boss_001/	     0
 END
 
 BEGIN	ANM
-./Data/Character/boss_001/	    20
-Boss_001_Die.ANM
-Boss_001_Down00.ANM
-Boss_001_Down01.ANM
-Boss_001_Down02.ANM
-Boss_001_F_RIFL_Fire.ANM
-Boss_001_F_RIFL_Redy.ANM
-Boss_001_F_RKET_Fire.ANM
-Boss_001_F_RKET_Redy.ANM
-Boss_001_F_SABR_Redy.ANM
-Boss_001_F_SMG_Fire.ANM
-Boss_001_F_SMG_Redy.ANM
-Boss_001_Stun.ANM
-Boss_001_St_RIFL_Fire.ANM
-Boss_001_St_RIFL_Redy.ANM
-Boss_001_St_RKET_Fire.ANM
-Boss_001_St_RKET_Redy.ANM
-Boss_001_St_SABR_Fire.ANM
-Boss_001_St_SABR_Redy.ANM
-Boss_001_St_SMG_Fire.ANM
-Boss_001_St_SMG_Redy.ANM
+./Data/Character/boss_001/	     0
 END
 
 BEGIN	MTL
@@ -37,29 +11,11 @@ BEGIN	MTL
 END
 
 BEGIN	MOD
-./Data/Character/mon_001/	     1
-Mon_001.MOD
+./Data/Character/mon_001/	     0
 END
 
 BEGIN	ANM
-./Data/Character/mon_001/	    17
-Mon_001_Die.ANM
-Mon_001_Down00.ANM
-Mon_001_Down01.ANM
-Mon_001_Down02.ANM
-MON_001_F_Bstd_Redy.ANM
-Mon_001_F_Rifl_Fire.anm
-MON_001_F_Rifl_Redy.ANM
-MON_001_F_SABR_Redy.ANM
-MON_001_Stun.ANM
-Mon_001_ST_BSTD_Fire.anm
-Mon_001_St_Bstd_Redy.anm
-MON_001_St_Idle00.ANM
-MON_001_St_Idle01.ANM
-Mon_001_ST_Rifl_Fire.anm
-Mon_001_ST_Rifl_Redy.anm
-MON_001_St_SABR_Fire.ANM
-MON_001_St_SABR_Redy.ANM
+./Data/Character/mon_001/	     0
 END
 
 BEGIN	MTL
@@ -67,29 +23,11 @@ BEGIN	MTL
 END
 
 BEGIN	MOD
-./Data/Character/mon_028/	     1
-MON_028.MOD
+./Data/Character/mon_028/	     0
 END
 
 BEGIN	ANM
-./Data/Character/mon_028/	    17
-MON_028_Die.anm
-MON_028_Down00.anm
-MON_028_Down01.anm
-MON_028_Down02.anm
-MON_028_F_BSTD_redy.anm
-MON_028_F_Sabr_redy.anm
-MON_028_F_SMG_Fire.ANM
-MON_028_F_SMG_redy.ANM
-MON_028_Stun.anm
-MON_028_St_BSTD_Fire.anm
-MON_028_St_BSTD_redy.anm
-MON_028_St_idle00.anm
-MON_028_St_idle01.anm
-MON_028_St_sabr_Fire.anm
-MON_028_St_sabr_redy.anm
-MON_028_St_SMG_Fire.ANM
-MON_028_St_SMG_redy.ANM
+./Data/Character/mon_028/	     0
 END
 
 BEGIN	MTL
@@ -97,14 +35,11 @@ BEGIN	MTL
 END
 
 BEGIN	MOD
-./Data/Character/obj_ore_green/	     1
-OBJ_ORE_GREEN.MOD
+./Data/Character/obj_ore_green/	     0
 END
 
 BEGIN	ANM
-./Data/Character/obj_ore_green/	     2
-OBJ_ORE_GREEN_die.ANM
-OBJ_ORE_GREEN_redy.ANM
+./Data/Character/obj_ore_green/	     0
 END
 
 BEGIN	MTL

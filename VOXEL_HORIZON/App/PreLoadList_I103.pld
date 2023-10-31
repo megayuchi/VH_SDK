@@ -1,35 +1,9 @@
 BEGIN	MOD
-./Data/Character/boss_000/	     6
-Boss_000_Part_0.MOD
-Boss_000_Part_0_D.MOD
-Boss_000_Part_1.MOD
-Boss_000_Part_1_D.MOD
-Boss_000_Part_2.MOD
-Boss_000_Part_2_D.MOD
+./Data/Character/boss_000/	     0
 END
 
 BEGIN	ANM
-./Data/Character/boss_000/	    20
-Boss_000_Die.ANM
-Boss_000_Down00.ANM
-Boss_000_Down01.ANM
-Boss_000_Down02.ANM
-Boss_000_F_RIFL_Fire.ANM
-Boss_000_F_RIFL_Redy.ANM
-Boss_000_F_RKET_Fire.ANM
-Boss_000_F_RKET_Redy.ANM
-Boss_000_F_SABR_Redy.ANM
-Boss_000_F_SMG_Fire.ANM
-Boss_000_F_SMG_Redy.ANM
-Boss_000_Stun.ANM
-Boss_000_St_RIFL_Fire.ANM
-Boss_000_St_RIFL_Redy.ANM
-Boss_000_St_RKET_Fire.ANM
-Boss_000_St_RKET_Redy.ANM
-Boss_000_St_SABR_Fire.ANM
-Boss_000_St_SABR_Redy.ANM
-Boss_000_St_SMG_Fire.ANM
-Boss_000_St_SMG_Redy.ANM
+./Data/Character/boss_000/	     0
 END
 
 BEGIN	MTL
@@ -37,29 +11,11 @@ BEGIN	MTL
 END
 
 BEGIN	MOD
-./Data/Character/mon_001/	     1
-Mon_001.MOD
+./Data/Character/mon_001/	     0
 END
 
 BEGIN	ANM
-./Data/Character/mon_001/	    17
-Mon_001_Die.ANM
-Mon_001_Down00.ANM
-Mon_001_Down01.ANM
-Mon_001_Down02.ANM
-MON_001_F_Bstd_Redy.ANM
-Mon_001_F_Rifl_Fire.anm
-MON_001_F_Rifl_Redy.ANM
-MON_001_F_SABR_Redy.ANM
-MON_001_Stun.ANM
-Mon_001_ST_BSTD_Fire.anm
-Mon_001_St_Bstd_Redy.anm
-MON_001_St_Idle00.ANM
-MON_001_St_Idle01.ANM
-Mon_001_ST_Rifl_Fire.anm
-Mon_001_ST_Rifl_Redy.anm
-MON_001_St_SABR_Fire.ANM
-MON_001_St_SABR_Redy.ANM
+./Data/Character/mon_001/	     0
 END
 
 BEGIN	MTL

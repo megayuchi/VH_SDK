@@ -1,27 +1,9 @@
 BEGIN	MOD
-./Data/Character/mon_006/	     1
-Mon_006.MOD
+./Data/Character/mon_006/	     0
 END
 
 BEGIN	ANM
-./Data/Character/mon_006/	    17
-Mon_006_Die.ANM
-Mon_006_Down00.ANM
-Mon_006_Down01.ANM
-Mon_006_Down02.ANM
-MON_006_F_bstd_Redy.ANM
-Mon_006_F_Rifl_fire.anm
-MON_006_F_Rifl_Redy.ANM
-MON_006_F_SABR_Redy.ANM
-Mon_006_Stun.ANM
-Mon_006_ST_bstd_Fire.anm
-Mon_006_ST_bstd_redy.anm
-MON_006_St_Idle00.ANM
-MON_006_St_Idle01.ANM
-Mon_006_ST_Rifl_Fire.anm
-Mon_006_ST_Rifl_redy.anm
-MON_006_St_SABR_Fire.ANM
-MON_006_St_SABR_Redy.ANM
+./Data/Character/mon_006/	     0
 END
 
 BEGIN	MTL
@@ -29,26 +11,11 @@ BEGIN	MTL
 END
 
 BEGIN	MOD
-./Data/Character/mon_009/	     1
-Mon_009.MOD
+./Data/Character/mon_009/	     0
 END
 
 BEGIN	ANM
-./Data/Character/mon_009/	    14
-Mon_009_Die.ANM
-Mon_009_Down00.ANM
-Mon_009_Down01.ANM
-Mon_009_Down02.ANM
-MON_009_F_RIFL_Fire.ANM
-MON_009_F_RIFL_Redy.ANM
-MON_009_F_SABR_Redy.ANM
-Mon_009_Stun.ANM
-MON_009_St_Idle00.ANM
-MON_009_St_Idle01.ANM
-MON_009_St_RIFL_Fire.ANM
-MON_009_St_RIFL_Redy.ANM
-MON_009_St_SABR_Fire.ANM
-MON_009_St_SABR_Redy.ANM
+./Data/Character/mon_009/	     0
 END
 
 BEGIN	MTL
@@ -56,22 +23,11 @@ BEGIN	MTL
 END
 
 BEGIN	MOD
-./Data/Character/mon_026/	     1
-MON_026.mod
+./Data/Character/mon_026/	     0
 END
 
 BEGIN	ANM
-./Data/Character/mon_026/	    10
-MON_026_Die.anm
-MON_026_Down00.anm
-MON_026_Down01.anm
-MON_026_Down02.anm
-MON_026_F_SABR_Redy.anm
-MON_026_Stun.anm
-MON_026_ST_Idle00.anm
-MON_026_ST_Idle01.anm
-MON_026_st_SABR_Fire.anm
-MON_026_ST_SABR_Redy.anm
+./Data/Character/mon_026/	     0
 END
 
 BEGIN	MTL
@@ -79,22 +35,11 @@ BEGIN	MTL
 END
 
 BEGIN	MOD
-./Data/Character/mon_027/	     1
-MON_027.mod
+./Data/Character/mon_027/	     0
 END
 
 BEGIN	ANM
-./Data/Character/mon_027/	    10
-MON_027_Die.anm
-MON_027_Down00.anm
-MON_027_Down01.anm
-MON_027_Down02.anm
-MON_027_F_sabr_Redy.anm
-MON_027_STun.anm
-MON_027_ST_Idle00.anm
-MON_027_ST_Idle01.anm
-MON_027_ST_sabr_Fire.anm
-MON_027_ST_sabr_Redy.anm
+./Data/Character/mon_027/	     0
 END
 
 BEGIN	MTL
@@ -102,29 +47,11 @@ BEGIN	MTL
 END
 
 BEGIN	MOD
-./Data/Character/mon_028/	     1
-MON_028.MOD
+./Data/Character/mon_028/	     0
 END
 
 BEGIN	ANM
-./Data/Character/mon_028/	    17
-MON_028_Die.anm
-MON_028_Down00.anm
-MON_028_Down01.anm
-MON_028_Down02.anm
-MON_028_F_BSTD_redy.anm
-MON_028_F_Sabr_redy.anm
-MON_028_F_SMG_Fire.ANM
-MON_028_F_SMG_redy.ANM
-MON_028_Stun.anm
-MON_028_St_BSTD_Fire.anm
-MON_028_St_BSTD_redy.anm
-MON_028_St_idle00.anm
-MON_028_St_idle01.anm
-MON_028_St_sabr_Fire.anm
-MON_028_St_sabr_redy.anm
-MON_028_St_SMG_Fire.ANM
-MON_028_St_SMG_redy.ANM
+./Data/Character/mon_028/	     0
 END
 
 BEGIN	MTL
@@ -132,22 +59,11 @@ BEGIN	MTL
 END
 
 BEGIN	MOD
-./Data/Character/mon_030/	     1
-MON_030.mod
+./Data/Character/mon_030/	     0
 END
 
 BEGIN	ANM
-./Data/Character/mon_030/	    10
-MON_030_Die.anm
-MON_030_Down00.anm
-MON_030_Down01.anm
-MON_030_Down02.anm
-MON_030_F_SABR_Redy.anm
-MON_030_Stun.anm
-MON_030_ST_Idle00.anm
-MON_030_ST_Idle01.anm
-MON_030_ST_SABR_Fire.anm
-MON_030_ST_SABR_Redy.anm
+./Data/Character/mon_030/	     0
 END
 
 BEGIN	MTL
@@ -155,22 +71,11 @@ BEGIN	MTL
 END
 
 BEGIN	MOD
-./Data/Character/mon_043/	     1
-MON_043.mod
+./Data/Character/mon_043/	     0
 END
 
 BEGIN	ANM
-./Data/Character/mon_043/	    10
-MON_043_Die.ANM
-MON_043_Down00.anm
-MON_043_Down01.ANM
-MON_043_Down02.anm
-MON_043_F_SABR_Redy.anm
-MON_043_Stun.ANM
-MON_043_ST_Idle00.ANM
-MON_043_ST_Idle01.ANM
-MON_043_ST_SABR_Fire.anm
-MON_043_ST_SABR_Redy.ANM
+./Data/Character/mon_043/	     0
 END
 
 BEGIN	MTL
@@ -178,16 +83,11 @@ BEGIN	MTL
 END
 
 BEGIN	MOD
-./Data/Character/npc_001/	     1
-NPC_WEAPON.MOD
+./Data/Character/npc_001/	     0
 END
 
 BEGIN	ANM
-./Data/Character/npc_001/	     4
-NPC_WEAPON_Idle00.ANM
-NPC_WEAPON_Idle01.ANM
-NPC_WEAPON_stand.ANM
-NPC_WEAPON_talk.ANM
+./Data/Character/npc_001/	     0
 END
 
 BEGIN	MTL
@@ -195,16 +95,11 @@ BEGIN	MTL
 END
 
 BEGIN	MOD
-./Data/Character/npc_002/	     1
-NPC_BOUTIQUE.MOD
+./Data/Character/npc_002/	     0
 END
 
 BEGIN	ANM
-./Data/Character/npc_002/	     4
-NPC_BOUTIQUE_Idle00.ANM
-NPC_BOUTIQUE_Idle01.ANM
-NPC_BOUTIQUE_stand.ANM
-NPC_BOUTIQUE_Talk.ANM
+./Data/Character/npc_002/	     0
 END
 
 BEGIN	MTL
@@ -212,16 +107,11 @@ BEGIN	MTL
 END
 
 BEGIN	MOD
-./Data/Character/npc_005/	     1
-NPC_PROTECTOR.MOD
+./Data/Character/npc_005/	     0
 END
 
 BEGIN	ANM
-./Data/Character/npc_005/	     4
-NPC_PROTECTOR_Idle00.ANM
-NPC_PROTECTOR_Idle01.ANM
-NPC_PROTECTOR_Stand.ANM
-NPC_PROTECTOR_Talk.ANM
+./Data/Character/npc_005/	     0
 END
 
 BEGIN	MTL
@@ -229,16 +119,11 @@ BEGIN	MTL
 END
 
 BEGIN	MOD
-./Data/Character/npc_006/	     1
-NPC_GROCERY.MOD
+./Data/Character/npc_006/	     0
 END
 
 BEGIN	ANM
-./Data/Character/npc_006/	     4
-NPC_GROCERY_Idle00.ANM
-NPC_GROCERY_Idle01.ANM
-NPC_GROCERY_Stand.ANM
-NPC_GROCERY_Talk.ANM
+./Data/Character/npc_006/	     0
 END
 
 BEGIN	MTL
@@ -246,16 +131,11 @@ BEGIN	MTL
 END
 
 BEGIN	MOD
-./Data/Character/npc_007/	     1
-NPC_WAREHOUSE.MOD
+./Data/Character/npc_007/	     0
 END
 
 BEGIN	ANM
-./Data/Character/npc_007/	     4
-NPC_WAREHOUSE_Idle00.ANM
-NPC_WAREHOUSE_Idle01.ANM
-NPC_WAREHOUSE_Stand.ANM
-NPC_WAREHOUSE_Talk.ANM
+./Data/Character/npc_007/	     0
 END
 
 BEGIN	MTL
@@ -263,16 +143,11 @@ BEGIN	MTL
 END
 
 BEGIN	MOD
-./Data/Character/npc_009/	     1
-NPC_HAMGUARD01.MOD
+./Data/Character/npc_009/	     0
 END
 
 BEGIN	ANM
-./Data/Character/npc_009/	     4
-NPC_HAMGUARD01_Idle00.ANM
-NPC_HAMGUARD01_Idle01.ANM
-NPC_HAMGUARD01_stand.ANM
-NPC_HAMGUARD01_Talk.ANM
+./Data/Character/npc_009/	     0
 END
 
 BEGIN	MTL
@@ -280,16 +155,11 @@ BEGIN	MTL
 END
 
 BEGIN	MOD
-./Data/Character/npc_011/	     1
-NPC_MEDIC.MOD
+./Data/Character/npc_011/	     0
 END
 
 BEGIN	ANM
-./Data/Character/npc_011/	     4
-NPC_MEDIC_Idle00.ANM
-NPC_MEDIC_Idle01.ANM
-NPC_MEDIC_Stand.ANM
-NPC_MEDIC_Talk.ANM
+./Data/Character/npc_011/	     0
 END
 
 BEGIN	MTL
@@ -297,16 +167,11 @@ BEGIN	MTL
 END
 
 BEGIN	MOD
-./Data/Character/npc_014/	     1
-NPC_014.mod
+./Data/Character/npc_014/	     0
 END
 
 BEGIN	ANM
-./Data/Character/npc_014/	     4
-NPC_014_Idle00.anm
-NPC_014_Idle01.anm
-NPC_014_Stand.anm
-NPC_014_Talk.anm
+./Data/Character/npc_014/	     0
 END
 
 BEGIN	MTL
@@ -314,16 +179,11 @@ BEGIN	MTL
 END
 
 BEGIN	MOD
-./Data/Character/npc_015/	     1
-NPC_015.mod
+./Data/Character/npc_015/	     0
 END
 
 BEGIN	ANM
-./Data/Character/npc_015/	     4
-NPC_015_Idle00.anm
-NPC_015_Idle01.anm
-NPC_015_Stand.anm
-NPC_015_talk.anm
+./Data/Character/npc_015/	     0
 END
 
 BEGIN	MTL
@@ -331,16 +191,11 @@ BEGIN	MTL
 END
 
 BEGIN	MOD
-./Data/Character/npc_016/	     1
-NPC_016.MOD
+./Data/Character/npc_016/	     0
 END
 
 BEGIN	ANM
-./Data/Character/npc_016/	     4
-NPC_016_Idle00.anm
-NPC_016_Idle01.anm
-NPC_016_Stand.anm
-NPC_016_Talk.anm
+./Data/Character/npc_016/	     0
 END
 
 BEGIN	MTL
@@ -348,16 +203,11 @@ BEGIN	MTL
 END
 
 BEGIN	MOD
-./Data/Character/npc_026/	     1
-NPC_026.mod
+./Data/Character/npc_026/	     0
 END
 
 BEGIN	ANM
-./Data/Character/npc_026/	     4
-NPC_026_Idle00.anm
-NPC_026_Idle01.anm
-NPC_026_Stand.anm
-NPC_026_talk.anm
+./Data/Character/npc_026/	     0
 END
 
 BEGIN	MTL
@@ -365,16 +215,11 @@ BEGIN	MTL
 END
 
 BEGIN	MOD
-./Data/Character/npc_027/	     1
-NPC_027.mod
+./Data/Character/npc_027/	     0
 END
 
 BEGIN	ANM
-./Data/Character/npc_027/	     4
-NPC_027_Idle00.anm
-NPC_027_Idle01.anm
-NPC_027_Stand.anm
-NPC_027_Talk.anm
+./Data/Character/npc_027/	     0
 END
 
 BEGIN	MTL

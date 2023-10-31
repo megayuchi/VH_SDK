@@ -1,27 +1,9 @@
 BEGIN	MOD
-./Data/Character/mon_001/	     1
-Mon_001.MOD
+./Data/Character/mon_001/	     0
 END
 
 BEGIN	ANM
-./Data/Character/mon_001/	    17
-Mon_001_Die.ANM
-Mon_001_Down00.ANM
-Mon_001_Down01.ANM
-Mon_001_Down02.ANM
-MON_001_F_Bstd_Redy.ANM
-Mon_001_F_Rifl_Fire.anm
-MON_001_F_Rifl_Redy.ANM
-MON_001_F_SABR_Redy.ANM
-MON_001_Stun.ANM
-Mon_001_ST_BSTD_Fire.anm
-Mon_001_St_Bstd_Redy.anm
-MON_001_St_Idle00.ANM
-MON_001_St_Idle01.ANM
-Mon_001_ST_Rifl_Fire.anm
-Mon_001_ST_Rifl_Redy.anm
-MON_001_St_SABR_Fire.ANM
-MON_001_St_SABR_Redy.ANM
+./Data/Character/mon_001/	     0
 END
 
 BEGIN	MTL
@@ -29,22 +11,11 @@ BEGIN	MTL
 END
 
 BEGIN	MOD
-./Data/Character/mon_007/	     1
-Mon_007.MOD
+./Data/Character/mon_007/	     0
 END
 
 BEGIN	ANM
-./Data/Character/mon_007/	    10
-Mon_007_Die.ANM
-Mon_007_Down00.ANM
-Mon_007_Down01.ANM
-Mon_007_Down02.ANM
-MON_007_F_SABR_Redy.ANM
-Mon_007_Stun.ANM
-MON_007_St_Idle00.ANM
-MON_007_St_Idle01.ANM
-MON_007_St_SABR_Fire.ANM
-MON_007_St_SABR_Redy.ANM
+./Data/Character/mon_007/	     0
 END
 
 BEGIN	MTL
@@ -52,26 +23,11 @@ BEGIN	MTL
 END
 
 BEGIN	MOD
-./Data/Character/mon_010/	     1
-Mon_010.MOD
+./Data/Character/mon_010/	     0
 END
 
 BEGIN	ANM
-./Data/Character/mon_010/	    14
-Mon_010_Die.ANM
-Mon_010_Down00.ANM
-Mon_010_Down01.ANM
-Mon_010_Down02.ANM
-MON_010_F_BSTD_Redy.ANM
-MON_010_F_SMG_Fire.ANM
-MON_010_F_SMG_Redy.ANM
-Mon_010_Stun.ANM
-MON_010_St_BSTD_Fire.anm
-MON_010_St_BSTD_Redy.anm
-MON_010_St_Idle00.ANM
-MON_010_St_Idle01.ANM
-MON_010_St_SMG_Fire.ANM
-MON_010_St_SMG_Redy.ANM
+./Data/Character/mon_010/	     0
 END
 
 BEGIN	MTL
@@ -79,29 +35,11 @@ BEGIN	MTL
 END
 
 BEGIN	MOD
-./Data/Character/mon_029/	     1
-MON_029.MOD
+./Data/Character/mon_029/	     0
 END
 
 BEGIN	ANM
-./Data/Character/mon_029/	    17
-MON_029_Die.anm
-MON_029_Down00.anm
-MON_029_Down01.anm
-MON_029_Down02.anm
-MON_029_F_BSTD_redy.anm
-MON_029_F_Sabr_redy.anm
-MON_029_F_SMG_Fire.ANM
-MON_029_F_SMG_redy.ANM
-MON_029_Stun.anm
-MON_029_St_BSTD_Fire.anm
-MON_029_St_BSTD_redy.anm
-MON_029_St_Idle00.anm
-MON_029_St_Idle01.anm
-MON_029_St_sabr_Fire.anm
-MON_029_St_sabr_redy.anm
-MON_029_St_SMG_Fire.ANM
-MON_029_St_SMG_redy.ANM
+./Data/Character/mon_029/	     0
 END
 
 BEGIN	MTL
@@ -109,22 +47,11 @@ BEGIN	MTL
 END
 
 BEGIN	MOD
-./Data/Character/mon_034/	     1
-MON_034.MOD
+./Data/Character/mon_034/	     0
 END
 
 BEGIN	ANM
-./Data/Character/mon_034/	    10
-MON_034_Die.anm
-MON_034_Down00.anm
-MON_034_Down01.anm
-MON_034_Down02.anm
-MON_034_F_SABR_Redy.anm
-MON_034_Stun.anm
-MON_034_ST_Idle00.anm
-MON_034_ST_Idle01.anm
-MON_034_ST_SABR_Fire.anm
-MON_034_ST_SABR_Redy.anm
+./Data/Character/mon_034/	     0
 END
 
 BEGIN	MTL
@@ -132,26 +59,11 @@ BEGIN	MTL
 END
 
 BEGIN	MOD
-./Data/Character/mon_035/	     1
-MON_035.MOD
+./Data/Character/mon_035/	     0
 END
 
 BEGIN	ANM
-./Data/Character/mon_035/	    14
-MON_035_Die.anm
-MON_035_Down00.anm
-MON_035_Down01.anm
-MON_035_Down02.anm
-MON_035_F_Rifl_Fire.ANM
-MON_035_F_Rifl_Redy.anm
-MON_035_F_Sabr_Redy.anm
-MON_035_Stun.anm
-MON_035_st_Idle00.anm
-MON_035_st_Idle01.anm
-MON_035_St_Rifl_Fire.ANM
-MON_035_st_Rifl_redy.anm
-MON_035_st_sabr_Fire.anm
-MON_035_st_sabr_redy.anm
+./Data/Character/mon_035/	     0
 END
 
 BEGIN	MTL
@@ -159,23 +71,11 @@ BEGIN	MTL
 END
 
 BEGIN	MOD
-./Data/Character/mon_037/	     1
-mon_037.MOD
+./Data/Character/mon_037/	     0
 END
 
 BEGIN	ANM
-./Data/Character/mon_037/	    11
-Mon_037_Die.ANM
-Mon_037_Down00.ANM
-Mon_037_Down01.ANM
-Mon_037_Down02.ANM
-Mon_037_F_SMG_Fire.ANM
-Mon_037_F_SMG_redy.ANM
-Mon_037_stun.ANM
-Mon_037_ST_Idle00.ANM
-Mon_037_ST_Idle01.ANM
-Mon_037_ST_SMG_Fire.ANM
-Mon_037_ST_SMG_redy.ANM
+./Data/Character/mon_037/	     0
 END
 
 BEGIN	MTL
@@ -183,29 +83,11 @@ BEGIN	MTL
 END
 
 BEGIN	MOD
-./Data/Character/mon_038/	     1
-Mon_038.MOD
+./Data/Character/mon_038/	     0
 END
 
 BEGIN	ANM
-./Data/Character/mon_038/	    17
-Mon_038_Die.ANM
-Mon_038_Down00.ANM
-Mon_038_Down01.ANM
-Mon_038_Down02.ANM
-MON_038_F_bstd_Redy.ANM
-Mon_038_F_Rifl_fire.anm
-MON_038_F_Rifl_Redy.ANM
-MON_038_F_SABR_Redy.ANM
-Mon_038_Stun.ANM
-Mon_038_ST_bstd_Fire.anm
-Mon_038_ST_bstd_redy.anm
-MON_038_St_Idle00.ANM
-MON_038_St_Idle01.ANM
-Mon_038_ST_Rifl_Fire.anm
-Mon_038_ST_Rifl_redy.anm
-MON_038_St_SABR_Fire.ANM
-MON_038_St_SABR_Redy.ANM
+./Data/Character/mon_038/	     0
 END
 
 BEGIN	MTL
@@ -213,34 +95,11 @@ BEGIN	MTL
 END
 
 BEGIN	MOD
-./Data/Character/mon_041/	     1
-MON_041.MOD
+./Data/Character/mon_041/	     0
 END
 
 BEGIN	ANM
-./Data/Character/mon_041/	    22
-MON_041_Die.anm
-MON_041_Down00.anm
-MON_041_Down01.anm
-MON_041_Down02.anm
-MON_041_F_BSTD_Redy.ANM
-MON_041_F_HAND_redy.anm
-MON_041_F_Sabr_redy.anm
-MON_041_F_SMG_Fire.ANM
-MON_041_F_SMG_redy.ANM
-MON_041_idle00.anm
-MON_041_idle01.anm
-MON_041_Stun.anm
-MON_041_St_BSTD_Fire.ANM
-MON_041_St_BSTD_Redy.ANM
-MON_041_St_HAND_Fire.anm
-MON_041_St_HAND_redy.anm
-MON_041_ST_idle00.anm
-MON_041_ST_idle01.anm
-MON_041_St_sabr_Fire.anm
-MON_041_St_sabr_redy.anm
-MON_041_St_SMG_Fire.ANM
-MON_041_St_SMG_redy.ANM
+./Data/Character/mon_041/	     0
 END
 
 BEGIN	MTL
@@ -248,16 +107,11 @@ BEGIN	MTL
 END
 
 BEGIN	MOD
-./Data/Character/npc_010/	     1
-NPC_HAMGUARD02.MOD
+./Data/Character/npc_010/	     0
 END
 
 BEGIN	ANM
-./Data/Character/npc_010/	     4
-NPC_HAMGUARD02_Idle00.ANM
-NPC_HAMGUARD02_Idle01.ANM
-NPC_HAMGUARD02_Stand.ANM
-NPC_HAMGUARD02_Talk.ANM
+./Data/Character/npc_010/	     0
 END
 
 BEGIN	MTL
@@ -265,16 +119,11 @@ BEGIN	MTL
 END
 
 BEGIN	MOD
-./Data/Character/npc_026/	     1
-NPC_026.mod
+./Data/Character/npc_026/	     0
 END
 
 BEGIN	ANM
-./Data/Character/npc_026/	     4
-NPC_026_Idle00.anm
-NPC_026_Idle01.anm
-NPC_026_Stand.anm
-NPC_026_talk.anm
+./Data/Character/npc_026/	     0
 END
 
 BEGIN	MTL
@@ -282,16 +131,11 @@ BEGIN	MTL
 END
 
 BEGIN	MOD
-./Data/Character/npc_028/	     1
-NPC_028_Didalos.MOD
+./Data/Character/npc_028/	     0
 END
 
 BEGIN	ANM
-./Data/Character/npc_028/	     4
-NPC_028_Didalos_Idle00.ANM
-NPC_028_Didalos_Idle01.ANM
-NPC_028_Didalos_Stand.ANM
-NPC_028_Didalos_Talk.ANM
+./Data/Character/npc_028/	     0
 END
 
 BEGIN	MTL
