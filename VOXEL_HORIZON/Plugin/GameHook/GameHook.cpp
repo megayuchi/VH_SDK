@@ -95,6 +95,10 @@ void __stdcall CTestGameHook::OnRun()
 	{
 		m_pWebPage->Process();
 	}
+	if (m_pVoxelEditor)
+	{
+		m_pVoxelEditor->Process();
+	}
 }
 void CTestGameHook::OnDeleteVoxelObject(IVoxelObjectLite* pVoxelObj)
 {

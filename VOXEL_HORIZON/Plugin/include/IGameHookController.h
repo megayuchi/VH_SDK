@@ -36,8 +36,8 @@ interface IVoxelObjectLite
 	virtual		void	__stdcall	GetPositionInGridSpace(INT_VECTOR3* pivOutPos) const = 0;
 
 	virtual		BOOL	__stdcall	GetVoxelPosition(VECTOR3* pv3OutPos, DWORD x, DWORD y, DWORD z) const = 0;
-	virtual		BOOL	__stdcall	GetVoxelPositionInObjSpace(INT_VECTOR3* pivOutPos, VECTOR3* pv3Pos) const = 0;
-	virtual		BOOL	__stdcall	GetVoxelPositionInObjSpaceSpecifyDetail(INT_VECTOR3* pivOutPos, VECTOR3* pv3Pos, UINT WidthDepthHeight, float fVoxelSize) const = 0;
+	virtual		BOOL	__stdcall	GetVoxelPositionInObjSpace(INT_VECTOR3* pivOutPos, const VECTOR3* pv3Pos) const = 0;
+	virtual		BOOL	__stdcall	GetVoxelPositionInObjSpaceSpecifyDetail(INT_VECTOR3* pivOutPos, const VECTOR3* pv3Pos, UINT WidthDepthHeight, float fVoxelSize) const = 0;
 	virtual		BOOL	__stdcall	CalcCenterPoint(VECTOR3* pv3OutPoint, DWORD x, DWORD y, DWORD z) const = 0;
 
 	virtual		void	__stdcall	SetPaletteWithRandom(DWORD dwMaxColorNum) = 0;
@@ -162,6 +162,11 @@ interface IVHController
 	virtual		void			__stdcall	EnableDestroyableAll(BOOL bSwitch) = 0;
 	virtual		void			__stdcall	EnableAutoRestoreAll(BOOL bSwitch) = 0;
 	virtual		void			__stdcall	SetOnDeleteVoxelObjectFunc(ON_DELETE_VOXEL_OBJ_LITE_FUNC pFunc) = 0;
+
+	// 절대좌표계로 복셀을 Set/Remove하는 함수들. 온라인 모드에 적용됨.
+	virtual		BOOL	__stdcall SetVoxelWithFloatCoord(const VECTOR3* pv3Pos, UINT ReqWidthDepthHeight, BYTE bColorIndex, BOOL bRebuildArea) = 0;
+	virtual		BOOL	__stdcall RemoveVoxelWithFloatCoord(const VECTOR3* pv3Pos, UINT ReqWidthDepthHeight, BYTE bColorIndex, BOOL bRebuildArea) = 0;
+	virtual		BOOL	__stdcall GetVoxelColorWithFloatCoord(BYTE* pbOutColorIndex, const VECTOR3* pv3Pos, UINT ReqWidthDepthHeight) = 0;
 
 	virtual		WEB_CLIENT_HANDLE __stdcall BrowseWeb(const char* szURL, DWORD dwWidth, DWORD dwHeight, BOOL bUserSharedMemory) = 0;
 	virtual		void	__stdcall CloseWeb(WEB_CLIENT_HANDLE pHandle) = 0;

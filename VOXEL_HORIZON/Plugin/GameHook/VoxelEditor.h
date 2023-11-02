@@ -7,6 +7,14 @@ interface IVHController;
 interface IVoxelObjectLiteManager;
 interface IVHNetworkLayer;
 
+enum PROCESS_MODE
+{
+	PROCESS_MODE_NONE,
+	PROCESS_MODE_SET,
+	PROCESS_MODE_REMOVE,
+	PROCESS_MODE_GET
+
+};
 class CVoxelEditor
 {
 	// voxel editor
@@ -41,6 +49,19 @@ class CVoxelEditor
 	void	RemoveVoxelRecursive(unsigned long* pBitTable, BYTE* pColorTable, const VECTOR3* pv3ObjPos, int x, int y, int z, BYTE bCmpColorIndex, UINT CursorWidthDepthHeight, INT_VECTOR3* pivOutVoxelPosList, DWORD* pdwInOutVoxelCount, PLANE_AXIS_TYPE planeType);
 	void	ClearPreviewMeshInRecursiveMode();
 	
+	const UINT m_ProcessingWidthDepthHeight = 8;
+	const int PROCESSING_UNIT = 4;
+	VECTOR3	m_v3BeginCreatingPos = {};
+	int		m_iProcessingWidth = 0;
+	int		m_iProcessingDepth = 0;
+	int		m_iProcessingHeight = 0;
+	INT_VECTOR3	m_ivCurProcessingPos = {};
+	PROCESS_MODE	m_ProcessingMode = PROCESS_MODE_NONE;
+	ULONGLONG	m_PrvProcessTick = 0;
+	BOOL	SetCubeVoxelList();
+	BOOL	RemoveCubeVoxelList();
+	BOOL	GetCubeVoxelList();
+
 	void	Cleanup();
 public:
 	BOOL	Initialize(IVHController* pVHController, IVHNetworkLayer* pVHNetworkLayer);
@@ -52,7 +73,7 @@ public:
 	BOOL 	OnMouseMove(int x, int y, UINT nFlags);
 	BOOL 	OnMouseMoveHV(int iMoveX, int iMoveY, BOOL bLButtonPressed, BOOL bRButtonPressed, BOOL bMButtonPressed);
 	BOOL 	OnMouseWheel(int iWheel);
-
+	void	Process();
 	void	OnDeleteVoxelObject(IVoxelObjectLite* pVoxelObj);
 	CVoxelEditor();
 	~CVoxelEditor();

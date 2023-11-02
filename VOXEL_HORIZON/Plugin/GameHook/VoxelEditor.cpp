@@ -662,10 +662,153 @@ void CVoxelEditor::ClearPreviewMeshInRecursiveMode()
 {
 	m_dwPreviewVoxelPosNum = 0;
 }
+BOOL CVoxelEditor::SetCubeVoxelList()
+{
+	BOOL bResult = FALSE;
+
+	VECTOR3 v3PickedPos = {};
+	VECTOR3 v3PickedAxis = {};
+	float fDist = 0.0f;
+	if (m_pVHController->GetPicekdPosition(&v3PickedPos, &v3PickedAxis, &fDist))
+	{
+		m_ProcessingMode = PROCESS_MODE_SET;
+		m_ivCurProcessingPos = {};
+		m_v3BeginCreatingPos = v3PickedPos;
+		m_v3BeginCreatingPos.y += 10.0f;
+		m_iProcessingWidth = PROCESSING_UNIT;
+		m_iProcessingDepth = PROCESSING_UNIT;
+		m_iProcessingHeight = PROCESSING_UNIT;
+		bResult = TRUE;
+	}
+
+	return bResult;
+}
+BOOL CVoxelEditor::GetCubeVoxelList()
+{
+	BOOL bResult = FALSE;
+
+	VECTOR3 v3PickedPos = {};
+	VECTOR3 v3PickedAxis = {};
+	float fDist = 0.0f;
+	if (m_pVHController->GetPicekdPosition(&v3PickedPos, &v3PickedAxis, &fDist))
+	{
+		float fVoxelSize = VOXEL_OBJECT_SIZE / (float)m_ProcessingWidthDepthHeight;
+
+		for (int y = 0; y < PROCESSING_UNIT; y++)
+		{
+			for (int z = 0; z < PROCESSING_UNIT; z++)
+			{
+				for (int x = 0; x < PROCESSING_UNIT; x++)
+				{
+					VECTOR3 v3VoxelPos =
+					{
+						v3PickedPos.x + (float)x * fVoxelSize,
+						v3PickedPos.y + (float)y * fVoxelSize,
+						v3PickedPos.z + (float)z * fVoxelSize
+					};
+					BYTE bColorIndex = 0xff;
+					if (m_pVHController->GetVoxelColorWithFloatCoord(&bColorIndex, &v3VoxelPos, m_ProcessingWidthDepthHeight))
+					{
+						m_pVHController->WriteTextToSystemDlgW(COLOR_VALUE_CYAN, L"[%u]", (DWORD)bColorIndex);
+					}
+					else
+					{
+						m_pVHController->WriteTextToSystemDlgW(COLOR_VALUE_RED, L"[--]");
+					}
+				}
+				m_pVHController->WriteTextToSystemDlgW(COLOR_VALUE_CYAN, L"\n");
+			}
+		}
+		bResult = TRUE;
+	}
+	return bResult;
+}
+BOOL CVoxelEditor::RemoveCubeVoxelList()
+{
+	BOOL bResult = FALSE;
+
+	VECTOR3 v3PickedPos = {};
+	VECTOR3 v3PickedAxis = {};
+	float fDist = 0.0f;
+	if (m_pVHController->GetPicekdPosition(&v3PickedPos, &v3PickedAxis, &fDist))
+	{
+		m_ProcessingMode = PROCESS_MODE_REMOVE;
+		m_ivCurProcessingPos = {};
+		m_v3BeginCreatingPos = v3PickedPos;
+		m_v3BeginCreatingPos.y += 10.0f;
+		m_iProcessingWidth = PROCESSING_UNIT;
+		m_iProcessingDepth = PROCESSING_UNIT;
+		m_iProcessingHeight = PROCESSING_UNIT;
+		bResult = TRUE;
+	}
+
+	return bResult;
+}
+void CVoxelEditor::Process()
+{
+	ULONGLONG CurTick = GetTickCount64();
+	if (CurTick - m_PrvProcessTick < 8)
+		return;
+
+	
+	if (m_ProcessingMode != PROCESS_MODE_NONE)
+	{
+		float fVoxelSize = VOXEL_OBJECT_SIZE / (float)m_ProcessingWidthDepthHeight;
+
+		BYTE bColorIndex = m_pVHController->GetCurrentColorIndex();
+		VECTOR3 v3VoxelPos =
+		{
+			m_v3BeginCreatingPos.x + (float)m_ivCurProcessingPos.x * fVoxelSize,
+			m_v3BeginCreatingPos.y + (float)m_ivCurProcessingPos.y * fVoxelSize,
+			m_v3BeginCreatingPos.z + (float)m_ivCurProcessingPos.z * fVoxelSize
+		};
+
+		switch (m_ProcessingMode)
+		{
+			case PROCESS_MODE_SET:
+				m_pVHController->SetVoxelWithFloatCoord(&v3VoxelPos, m_ProcessingWidthDepthHeight, bColorIndex, FALSE);
+				break;
+			case PROCESS_MODE_REMOVE:
+				m_pVHController->RemoveVoxelWithFloatCoord(&v3VoxelPos, m_ProcessingWidthDepthHeight, bColorIndex, FALSE);
+				break;
+		}
+
+		m_ivCurProcessingPos.x++;
+		if (m_ivCurProcessingPos.x >= m_iProcessingWidth)
+		{
+			m_ivCurProcessingPos.x = 0;
+			m_ivCurProcessingPos.z++;
+		}
+		if (m_ivCurProcessingPos.z >= m_iProcessingDepth)
+		{
+			m_ivCurProcessingPos.z = 0;
+			m_ivCurProcessingPos.y++;
+		}
+		if (m_ivCurProcessingPos.y >= m_iProcessingHeight)
+		{
+			m_ivCurProcessingPos.y = 0;
+			m_ProcessingMode = PROCESS_MODE_NONE;
+		}		
+	}
+	m_PrvProcessTick = CurTick;
+}
 BOOL CVoxelEditor::OnMouseLButtonDown(int x, int y, UINT nFlags)
 {
 	BOOL	bProcessed = FALSE;
 
+	if (nFlags & MK_CONTROL)
+	{
+		bProcessed = RemoveCubeVoxelList();
+	}
+	else if (nFlags & MK_SHIFT)
+	{
+		bProcessed = GetCubeVoxelList();
+	}
+	else
+	{
+		bProcessed = SetCubeVoxelList();
+	}
+	/*
 	VECTOR3	v3CursorObjPos = {};
 	INT_VECTOR3	ivCursorVoxelPos = {};
 	UINT	CursorWidthDepthHeight = 1;
@@ -736,6 +879,7 @@ BOOL CVoxelEditor::OnMouseLButtonDown(int x, int y, UINT nFlags)
 			}
 			break;
 	}
+	*/
 	return bProcessed;
 }
 BOOL CVoxelEditor::OnMouseLButtonUp(int x, int y, UINT nFlags)

@@ -134,3 +134,7 @@ VOXEL_HORIZON/symbols/LocalDBControl_x64_release.pdb
 VOXEL_HORIZON/symbols/CheckLocalDB_x64_release.pdb
 VOXEL_HORIZON/symbols/UpdateLocalDB_x64_release.pdb
 *.MID
+VOXEL_HORIZON/App/Dxc/arm64/dxc.exe
+VOXEL_HORIZON/App/Dxc/x64/dxc.exe
+VOXEL_HORIZON/App/Dxc/x86/dxc.exe
+VOXEL_HORIZON/DLL/CudaBaker_x64_release.dll
