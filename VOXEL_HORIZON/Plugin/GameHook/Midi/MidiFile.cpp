@@ -692,8 +692,14 @@ namespace smf {
 
 	unsigned int MidiFile::GetMidiData(MIDI_MESSAGE* pOutMessageList, unsigned int  dwMaxBufferCount)
 	{
+		mergeTracksAll();
+		//while (getNumTracks() > 1)
+		//{
+		//	mergeTracks(0, 1);
+		//}
+		
 		unsigned int MidiNoteCount = 0;
-
+		
 		int oldTimeState = getTickState();
 		if (oldTimeState == TIME_STATE_ABSOLUTE) 
 		{
@@ -709,11 +715,16 @@ namespace smf {
 		uchar endoftrack[4] = { 0, 0xff, 0x2f, 0x00 };
 		int i, j, k;
 		int size;
-		float tempo = 120.0f;
+
+		
+		
+
+		
 		for (i = 0; i < getNumTracks(); i++)
 		{
+			float tempo = 120.0f;
 			int cur_track = i;
-			int cur_tick = 0;
+			float accum_ms = 0.0f;
 			
 			trackdata.reserve(123456);   // make the track data larger than
 			// expected data input
@@ -756,8 +767,8 @@ namespace smf {
 				BOOL	bMustWrite = FALSE;							
 				
 				MidiMessage msg = (*m_events[i])[j];
-				int msg_tick = (*m_events[i])[j].tick;
-				cur_tick += msg_tick;
+				int delta_tick = (*m_events[i])[j].tick;
+				
 				
 				if (msg.isTempo())
 				{
@@ -769,9 +780,10 @@ namespace smf {
 				float us_per_quarter = tempo;//
 				float us_per_tick = us_per_quarter / ticks_per_quarter;
 				float seconds_per_tick = us_per_tick / 1000000.0f;
-				float seconds = (float)cur_tick * seconds_per_tick;
-				float cur_ms = seconds * 1000.0f;
-			
+				float delta_seconds = (float)delta_tick * seconds_per_tick;
+				float delta_ms = delta_seconds * 1000.0f;
+				accum_ms += delta_ms;
+
 				if (msg.isNoteOn())
 				{
 					// note off
@@ -782,7 +794,7 @@ namespace smf {
 					int key_ = (*m_events[i])[j].getP1();
 					int vel_ = (*m_events[i])[j].getP2();
 					
-					note.SetAsNote((DWORD)ch, TRUE, (DWORD)key, (DWORD)vel, (DWORD)cur_ms);
+					note.SetAsNote((DWORD)ch, TRUE, (DWORD)key, (DWORD)vel, (DWORD)accum_ms);
 					if (note.GetChannel() != (DWORD)ch)
 						__debugbreak();
 					bMustWrite = TRUE;
@@ -797,7 +809,7 @@ namespace smf {
 					int key_ = (*m_events[i])[j].getP1();
 					int vel_ = (*m_events[i])[j].getP2();
 
-					note.SetAsNote((DWORD)ch, FALSE, (DWORD)key, (DWORD)vel, (DWORD)cur_ms);
+					note.SetAsNote((DWORD)ch, FALSE, (DWORD)key, (DWORD)vel, (DWORD)accum_ms);
 					if (note.GetChannel() != (DWORD)ch)
 						__debugbreak();
 					bMustWrite = TRUE;
@@ -812,7 +824,7 @@ namespace smf {
 					int control_ = (*m_events[i])[j].getP1();
 					int control_value_ = (*m_events[i])[j].getP2();
 					
-					note.SetAsControl((DWORD)ch, (DWORD)control, (DWORD)control_value, (DWORD)cur_ms);
+					note.SetAsControl((DWORD)ch, (DWORD)control, (DWORD)control_value, (DWORD)accum_ms);
 					if (note.GetChannel() != (DWORD)ch)
 						__debugbreak();
 					bMustWrite = TRUE;
@@ -824,7 +836,7 @@ namespace smf {
 					int message_type = (*m_events[i])[j].getP0();
 					int program = (*m_events[i])[j].getP1();
 					
-					note.SetAsProgram((DWORD)ch, (DWORD)program, (DWORD)cur_ms);
+					note.SetAsProgram((DWORD)ch, (DWORD)program, (DWORD)accum_ms);
 					if (note.GetChannel() != (DWORD)ch)
 						__debugbreak();
 					bMustWrite = TRUE;
@@ -841,6 +853,7 @@ namespace smf {
 				{
 					int a = 0;
 				}
+				
 
 				if (((*m_events[i])[j].getCommandByte() == 0xf0) || ((*m_events[i])[j].getCommandByte() == 0xf7))
 				{
@@ -884,10 +897,11 @@ namespace smf {
 			// now ready to write to MIDI file.
 		}
 
-		if (oldTimeState == TIME_STATE_ABSOLUTE) {
+		if (oldTimeState == TIME_STATE_ABSOLUTE)
+		{
 			makeAbsoluteTicks();
 		}
-
+		
 		return MidiNoteCount;
 	}
 
@@ -1488,25 +1502,31 @@ namespace smf {
 	//
 
 	void MidiFile::makeDeltaTicks(void) {
-		if (getTickState() == TIME_STATE_DELTA) {
+		if (getTickState() == TIME_STATE_DELTA) 
+		{
 			return;
 		}
 		int i, j;
 		int temp;
 		int length = getNumTracks();
 		int *timedata = new int[length];
-		for (i = 0; i < length; i++) {
+		for (i = 0; i < length; i++)
+		{
 			timedata[i] = 0;
-			if (m_events[i]->size() > 0) {
+			if (m_events[i]->size() > 0) 
+			{
 				timedata[i] = (*m_events[i])[0].tick;
 			}
-			else {
+			else
+			{
 				continue;
 			}
-			for (j = 1; j < (int)m_events[i]->size(); j++) {
+			for (j = 1; j < (int)m_events[i]->size(); j++) 
+			{
 				temp = (*m_events[i])[j].tick;
 				int deltatick = temp - timedata[i];
-				if (deltatick < 0) {
+				if (deltatick < 0) 
+				{
 					std::cerr << "Error: negative delta tick value: " << deltatick << std::endl
 						<< "Timestamps must be sorted first"
 						<< " (use MidiFile::sortTracks() before writing)." << std::endl;
@@ -1539,22 +1559,28 @@ namespace smf {
 	//    event.
 	//
 
-	void MidiFile::makeAbsoluteTicks(void) {
-		if (getTickState() == TIME_STATE_ABSOLUTE) {
+	void MidiFile::makeAbsoluteTicks(void) 
+	{
+		if (getTickState() == TIME_STATE_ABSOLUTE) 
+		{
 			return;
 		}
 		int i, j;
 		int length = getNumTracks();
 		int* timedata = new int[length];
-		for (i = 0; i < length; i++) {
+		for (i = 0; i < length; i++) 
+		{
 			timedata[i] = 0;
-			if (m_events[i]->size() > 0) {
+			if (m_events[i]->size() > 0) 
+			{
 				timedata[i] = (*m_events[i])[0].tick;
 			}
-			else {
+			else 
+			{
 				continue;
 			}
-			for (j = 1; j < (int)m_events[i]->size(); j++) {
+			for (j = 1; j < (int)m_events[i]->size(); j++) 
+			{
 				timedata[i] += (*m_events[i])[j].tick;
 				(*m_events[i])[j].tick = timedata[i];
 			}
@@ -2605,10 +2631,12 @@ namespace smf {
 			makeAbsoluteTicks();
 		}
 		int length = getNumTracks();
-		for (int i = 0; i < (int)m_events[aTrack1]->size(); i++) {
+		for (int i = 0; i < (int)m_events[aTrack1]->size(); i++)
+		{
 			mergedTrack->push_back((*m_events[aTrack1])[i]);
 		}
-		for (int j = 0; j < (int)m_events[aTrack2]->size(); j++) {
+		for (int j = 0; j < (int)m_events[aTrack2]->size(); j++) 
+		{
 			(*m_events[aTrack2])[j].track = aTrack1;
 			mergedTrack->push_back((*m_events[aTrack2])[j]);
 		}
@@ -2619,9 +2647,11 @@ namespace smf {
 
 		m_events[aTrack1] = mergedTrack;
 
-		for (int i = aTrack2; i < length - 1; i++) {
+		for (int i = aTrack2; i < length - 1; i++) 
+		{
 			m_events[i] = m_events[i + 1];
-			for (int j = 0; j < (int)m_events[i]->size(); j++) {
+			for (int j = 0; j < (int)m_events[i]->size(); j++) 
+			{
 				(*m_events[i])[j].track = i;
 			}
 		}
@@ -2633,7 +2663,39 @@ namespace smf {
 			deltaTicks();
 		}
 	}
+	void MidiFile::mergeTracksAll()
+	{
+		MidiEventList* mergedTrack = new MidiEventList;
 
+		int oldTimeState = getTickState();
+		if (oldTimeState == TIME_STATE_DELTA) 
+		{
+			makeAbsoluteTicks();
+		}
+		int length = getNumTracks();
+		for (int track = 0; track < length; track++)
+		{
+			for (int i = 0; i < m_events[track]->size(); i++)
+			{
+				mergedTrack->push_back((*m_events[track])[i]);
+			}
+		}
+
+		mergedTrack->sort();
+
+		for (int track = 0; track < length; track++)
+		{
+			delete m_events[track];
+			m_events[track] = nullptr;
+		}
+		m_events.resize(1);
+		m_events[0] = mergedTrack;
+
+		if (oldTimeState == TIME_STATE_DELTA)
+		{
+			deltaTicks();
+		}
+	}
 
 
 	//////////////////////////////

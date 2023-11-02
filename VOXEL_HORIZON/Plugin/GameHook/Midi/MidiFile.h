@@ -116,6 +116,7 @@ class MidiFile {
 		int              addTracks                 (int count);
 		void             deleteTrack               (int aTrack);
 		void             mergeTracks               (int aTrack1, int aTrack2);
+		void			mergeTracksAll();
 		int              getTrackCountAsType1      (void);
 
 		// ticks-per-quarter related functions:
