@@ -207,6 +207,8 @@ interface IVHController
 	virtual		BOOL	__stdcall MidiNoteOffImmediately(DWORD dwChannel, DWORD dwKey, DWORD dwVelocity) = 0;
 	virtual		BOOL	__stdcall MidiChangeControlImmediately(DWORD dwChannel, DWORD dwController, DWORD dwControlValue) = 0;
 	virtual		BOOL	__stdcall MidiChangeProgramImmediately(DWORD dwChannel, DWORD dwProgram) = 0;
+	virtual		BOOL	__stdcall MidiChangePitchBendImmediately(DWORD dwChannel, DWORD dwFirstValue, DWORD dwSecondValue) = 0;
+	virtual		BOOL	__stdcall MidiSysexMessageImmediately(const BYTE* pSysexMessage, BYTE bLen) = 0;
 	virtual		void	__stdcall DisableBroadcastModeImmediately() = 0;	// Broadcast mode is turned off immediately.
 	
 	// Broadcast mode is turned off after all midi messages have been sent. 
