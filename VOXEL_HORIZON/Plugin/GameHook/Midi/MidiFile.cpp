@@ -773,7 +773,7 @@ namespace smf {
 				if (msg.isTempo())
 				{
 					//tempo = msg.getTempoBPM();
-					tempo = msg.getTempoMicroseconds();
+					tempo = (float)msg.getTempoMicroseconds();
 				}
 				
 				float ticks_per_quarter = (float)tpq; //
@@ -796,7 +796,8 @@ namespace smf {
 					
 					note.SetAsNote((DWORD)ch, TRUE, (DWORD)key, (DWORD)vel, (DWORD)accum_ms);
 					if (note.GetChannel() != (DWORD)ch)
-						__debugbreak();
+						__debugbreak();					
+
 					bMustWrite = TRUE;
 				}
 				if (msg.isNoteOff())
@@ -820,26 +821,50 @@ namespace smf {
 					int ch = (*m_events[i])[j].getChannel();
 					int control = (*m_events[i])[j].getControllerNumber();
 					int control_value = (*m_events[i])[j].getControllerValue();
-
-					int control_ = (*m_events[i])[j].getP1();
-					int control_value_ = (*m_events[i])[j].getP2();
 					
 					note.SetAsControl((DWORD)ch, (DWORD)control, (DWORD)control_value, (DWORD)accum_ms);
 					if (note.GetChannel() != (DWORD)ch)
 						__debugbreak();
 					bMustWrite = TRUE;
 				}
+				
+				if (msg.isPitchbend())
+				{
+					// control event
+					int ch = (*m_events[i])[j].getChannel();
+					int first_value = (*m_events[i])[j].getP1();
+					int second_value = (*m_events[i])[j].getP2();
+					
+					note.SetAsPitchBend((DWORD)ch, (DWORD)first_value, (DWORD)second_value, (DWORD)accum_ms);
+					if (note.GetChannel() != (DWORD)ch)
+						__debugbreak();
+					if (note.GetPitchBendFirstValue() != (DWORD)first_value)
+						__debugbreak();
+
+					if (note.GetPitchBendSecondValue() != (DWORD)second_value)
+						__debugbreak();
+
+					bMustWrite = TRUE;
+
+				}
+
 				if (msg.isPatchChange())
 				{
 					// program change
 					int ch = (*m_events[i])[j].getChannel();
 					int message_type = (*m_events[i])[j].getP0();
 					int program = (*m_events[i])[j].getP1();
-					
+
 					note.SetAsProgram((DWORD)ch, (DWORD)program, (DWORD)accum_ms);
 					if (note.GetChannel() != (DWORD)ch)
 						__debugbreak();
 					bMustWrite = TRUE;
+				}
+				
+			
+				if (msg.isAftertouch())
+				{
+					int a = 0;
 				}
 				if (bMustWrite)
 				{
@@ -853,10 +878,103 @@ namespace smf {
 				{
 					int a = 0;
 				}
-				
 
+				int cmd_byte = (*m_events[i])[j].getCommandByte();
 				if (((*m_events[i])[j].getCommandByte() == 0xf0) || ((*m_events[i])[j].getCommandByte() == 0xf7))
 				{
+					int p1 = msg.getP1();
+					int p2 = msg.getP2();
+					int p3 = msg.getP3();
+
+					// ys3title.mid에서 드럼세트 설정
+					// f0,41,10,42,12,40,00,7f,00,41,f7
+					size_t size = ((int)(*m_events[i])[j].size());
+
+					BYTE	pbSysexMessageValue[256] = {};
+					BYTE*	pbSysexMessageEntry = pbSysexMessageValue;
+					DWORD	dwSysexMessageLen = 0;
+					DWORD	dwAvailableSysexBufferCount = (DWORD)_countof(pbSysexMessageValue);
+					
+					for (k = 0; k < (int)(*m_events[i])[j].size(); k++)
+					{	
+						unsigned char byte_value = (*m_events[i])[j][k];
+						if (byte_value == 0xf0)
+						{
+							memset(pbSysexMessageValue, 0, sizeof(pbSysexMessageValue));
+							pbSysexMessageEntry = pbSysexMessageValue;
+							dwSysexMessageLen = 0;
+							dwAvailableSysexBufferCount = (DWORD)_countof(pbSysexMessageValue);
+							dwSysexMessageLen = 0;
+						}
+						if (dwSysexMessageLen >= 255)
+						{
+							// sysex메시지의 크기는 최대 255 bytes로 제한한다.
+							__debugbreak();
+						}
+						pbSysexMessageValue[dwSysexMessageLen] = byte_value;
+						dwSysexMessageLen++;
+						
+						if (byte_value == 0xf7)
+						{
+							DWORD	dwSysexPartsCount = 0;
+
+							// 수집한 Sysex메시지를 MIDI_MESSAGE구조체에 나눠 남는다.
+							DWORD dwRemainedBytes = dwSysexMessageLen;
+							DWORD dwPushedBytes = note.PushAsSysexMessage(pbSysexMessageEntry, dwRemainedBytes, TRUE, (DWORD)accum_ms);
+							if (!note.IsSysexMessageBegin())
+								__debugbreak();
+
+							pbSysexMessageEntry += dwPushedBytes;
+							dwRemainedBytes -= dwPushedBytes;
+
+							pOutMessageList[MidiNoteCount] = note;
+							MidiNoteCount++;
+							dwSysexPartsCount++;
+
+							while (dwRemainedBytes)
+							{
+								dwPushedBytes = note.PushAsSysexMessage(pbSysexMessageEntry, dwRemainedBytes, FALSE, (DWORD)accum_ms);
+								pbSysexMessageEntry += dwPushedBytes;
+								dwRemainedBytes -= dwPushedBytes;
+
+								pOutMessageList[MidiNoteCount] = note;
+								MidiNoteCount++;
+								dwSysexPartsCount++;
+							}
+							if (!note.IsSysexMessageEnd())
+								__debugbreak();
+
+							// check
+							BYTE	pbSysexMessageValueCheck[256] = {};
+							BYTE*	pbSysexMessageCheckDest = pbSysexMessageValueCheck;
+							DWORD	dwSysexMessageCheckLen = 0;
+							DWORD	dwAvailableSysexCheckBufferCount = (DWORD)_countof(pbSysexMessageValueCheck);
+
+							MIDI_MESSAGE* pSysexMessageSrc = pOutMessageList + (MidiNoteCount - dwSysexPartsCount);
+							if (pSysexMessageSrc->GetSignalType() != MIDI_MESSAGE_TYPE_SYSEX)
+								__debugbreak();
+							if (!pSysexMessageSrc->IsSysexMessageBegin())
+								__debugbreak();
+
+							for (DWORD n = 0; n < dwSysexPartsCount; n++)
+							{
+								BOOL bIsEnd = FALSE;
+								DWORD dwCount = pSysexMessageSrc[n].GetSysexMessage(pbSysexMessageCheckDest, dwAvailableSysexCheckBufferCount, &bIsEnd);
+								pbSysexMessageCheckDest += dwCount;
+								dwSysexMessageCheckLen += dwCount;
+								if (bIsEnd)
+								{
+									int a = 0;
+								}
+							}
+							if (dwSysexMessageLen != dwSysexMessageCheckLen)
+								__debugbreak();
+
+							if (memcmp(pbSysexMessageValue, pbSysexMessageValueCheck, dwSysexMessageLen))
+								__debugbreak();
+							
+						}
+					}
 
 					// 0xf0 == Complete sysex message (0xf0 is part of the raw MIDI).
 					// 0xf7 == Raw byte message (0xf7 not part of the raw MIDI).
@@ -876,7 +994,7 @@ namespace smf {
 				{
 					// non-sysex type of message, so just output the
 					// bytes of the message:
-					int byte_len = (*m_events[i])[j].size();
+					size_t byte_len = (*m_events[i])[j].size();
 					for (k = 0; k < (int)(*m_events[i])[j].size(); k++)
 					{
 						auto t = (*m_events[i])[j][k];
@@ -884,6 +1002,8 @@ namespace smf {
 						trackdata.push_back((*m_events[i])[j][k]);
 					}
 				}
+				
+				
 			}
 			size = (int)trackdata.size();
 			if ((size < 3) || !((trackdata[size - 3] == 0xff)

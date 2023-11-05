@@ -193,6 +193,8 @@ interface IVHController
 	virtual		BOOL	__stdcall MidiPushNoteOff(DWORD dwChannel, DWORD dwKey, DWORD dwVelocity, DWORD dwTickFromBegin) = 0;
 	virtual		BOOL	__stdcall MidiPushChangeControl(DWORD dwChannel, DWORD dwController, DWORD dwControlValue, DWORD dwTickFromBegin) = 0;
 	virtual		BOOL	__stdcall MidiPushChangeProgram(DWORD dwChannel, DWORD dwProgram, DWORD dwTickFromBegin) = 0;
+	virtual		BOOL	__stdcall MidiPushChangePitchBend(DWORD dwChannel, DWORD dwFirstValue, DWORD dwSecondValue, DWORD dwTickFromBegin) = 0;
+	virtual		BOOL	__stdcall MidiPushSysexMessage(const BYTE* pSysexMessage, BYTE bLen, DWORD dwTickFromBegin) = 0;
 	virtual		BOOL	__stdcall MidiEndPushMessage() = 0;
 	
 	virtual		BOOL	__stdcall IsBroadcastMode() const = 0;

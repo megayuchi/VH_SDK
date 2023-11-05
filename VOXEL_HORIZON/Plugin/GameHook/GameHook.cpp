@@ -457,7 +457,7 @@ BOOL __stdcall CTestGameHook::OnMidiEventProcessed(const MIDI_MESSAGE_L* pMessag
 		return FALSE;
 
 	DWORD dwTextColor = COLOR_VALUE_WHITE;
-	WCHAR wchTxt[64];
+	WCHAR wchTxt[64] = {};
 
 	MIDI_MESSAGE_TYPE type = pMessage->GetSignalType();
 	if (MIDI_MESSAGE_TYPE_NOTE == type)
@@ -493,6 +493,21 @@ BOOL __stdcall CTestGameHook::OnMidiEventProcessed(const MIDI_MESSAGE_L* pMessag
 		DWORD	dwProgram = pMessage->GetProgram();
 		dwTextColor = COLOR_VALUE_DARK_ORANGE;
 		swprintf_s(wchTxt, L"[Midi] Change Program, Ch:%u, Program:%u\n", dwChannel, dwProgram);
+	}
+	else if (MIDI_MESSAGE_TYPE_PITCH_BEND == type)
+	{
+		DWORD	dwChannel = pMessage->GetChannel();
+		DWORD	dwFirstValue = pMessage->GetPitchBendFirstValue();
+		DWORD	dwSecondValue = pMessage->GetPitchBendSecondValue();
+		dwTextColor = COLOR_VALUE_CYAN;
+		swprintf_s(wchTxt, L"[Midi] Pitch Bend, Ch:%u, p1:%u p2:%u\n", dwChannel, dwFirstValue, dwSecondValue);
+	}
+	else if (MIDI_MESSAGE_TYPE_SYSEX == type)
+	{
+		//BYTE* pSysexMessage = nullptr;
+		//DWORD dwSysexMsgLen = pMessage->GetSysexMessagePtr(&pSysexMessage);
+		//dwTextColor = COLOR_VALUE_BLUE;
+		//swprintf_s(wchTxt, L"[Midi] Sysex Message(%u), First Message:[%x] p2:%u\n", dwSysexMsgLen, pSysexMessage[1]);
 	}
 	m_pVHController->WriteTextToSystemDlgW(dwTextColor, wchTxt);
 	

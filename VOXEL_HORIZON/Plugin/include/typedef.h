@@ -1088,21 +1088,34 @@ enum MIDI_MESSAGE_TYPE
 	MIDI_MESSAGE_TYPE_NOTE,
 	MIDI_MESSAGE_TYPE_CONTROL,
 	MIDI_MESSAGE_TYPE_PROGRAM,
+	MIDI_MESSAGE_TYPE_PITCH_BEND,
+	MIDI_MESSAGE_TYPE_AFTER_TOUCH,
+	MIDI_MESSAGE_TYPE_SYSEX,
 	MIDI_MESSAGE_TYPE_COUNT
 };
+
 typedef void (__stdcall *ON_MIDI_INPUT_CALLBACK)(MIDI_MESSAGE_TYPE type, unsigned char channel, BOOL bOnOff, unsigned char key, unsigned char Velocity, void* pData);
+
+enum MIDI_SYSEX_MESSAGE_TYPE
+{
+	MIDI_SYSEX_MESSAGE_TYPE_BEGIN = 0b01,
+	MIDI_SYSEX_MESSAGE_TYPE_END = 0b10
+};
 
 struct MIDI_MESSAGE_L
 {
 protected:
-	// | event Type |  Channel   |  Reserved  |  On / Off(1) | Key / Program / Controler | Velocity / ControlValue |
-	// |    (3)     |    (5)     |     (9)    |      (1)     |            (7)            |            (7)          |
-
+	// | event Type |  Channel   |  Reserved  |  On / Off(1) | Key / Program / Controler / PitchBend First | Velocity / ControlValue / PitchBend Second |
+	// |    (3)     |    (5)     |     (9)    |      (1)     |                    (7)				       |                    (7)                     |
+	
 	static const DWORD MESSAGE_TYPE_SET_MASK = 0b111;
 	static const DWORD MESSAGE_TYPE_GET_MASK = (0b111 << 29);
 
 	static const DWORD CHANNEL_SET_MASK = 0b11111;
 	static const DWORD CHANNEL_GET_MASK = (0b11111 << 24);
+
+	static const DWORD SYSEX_HEADER_SET_MASK = 0b1111;
+	static const DWORD SYSEX_HEADER_GET_MASK = (0b1111 << 24);
 
 	static const DWORD ON_OFF_SET_MASK = 0b1;
 	static const DWORD ON_OFF_GET_MASK = (0b1 << 14);
@@ -1112,16 +1125,30 @@ protected:
 
 	static const DWORD CONTROLLER_SET_MASK = KEY_SET_MASK;
 	static const DWORD CONTROLLER_GET_MASK = KEY_GET_MASK;
-
 	static const DWORD PROGRAM_SET_MASK = KEY_SET_MASK;
 	static const DWORD PROGRAM_GET_MASK = KEY_GET_MASK;
+	static const DWORD PITCH_BEND_FIRST_SET_MASK = KEY_SET_MASK;
+	static const DWORD PITCH_BEND_FIRST_GET_MASK = KEY_GET_MASK;
 
 	static const DWORD VELOCITY_SET_MASK = 0b1111111;
 	static const DWORD VELOCITY_GET_MASK = 0b1111111;
 	static const DWORD CONTROL_VALUE_SET_MASK = VELOCITY_SET_MASK;
 	static const DWORD CONTROL_VALUE_GET_MASK = VELOCITY_GET_MASK;
+	static const DWORD PITCH_BEND_SECOND_SET_MASK = VELOCITY_SET_MASK;
+	static const DWORD PITCH_BEND_SECOND_GET_MASK = VELOCITY_GET_MASK;
 
-	DWORD	dwValue;
+	union
+	{
+		struct
+		{
+			DWORD	dwValue;							// offset 0 , 4 Bytes
+		};
+		struct
+		{
+			BYTE	pbSysexValue[3];		// low 3 bytes
+			BYTE	bSysexHeader;			// high 1 bytes
+		};
+	};
 public:
 	MIDI_MESSAGE_TYPE GetSignalType() const
 	{
@@ -1169,6 +1196,20 @@ public:
 	{
 		return (dwValue & CONTROL_VALUE_GET_MASK);
 	}
+	
+	// as Pitch Bend
+	void SetAsPitchBend(DWORD dwChannel, DWORD dwFirstValue, DWORD dwSecondValue)
+	{
+		dwValue = (MIDI_MESSAGE_TYPE_PITCH_BEND << 29) | ((dwChannel & CHANNEL_SET_MASK) << 24) | ((1 & ON_OFF_SET_MASK) << 14) | ((dwFirstValue & PITCH_BEND_FIRST_SET_MASK) << 7) | (dwSecondValue & PITCH_BEND_SECOND_SET_MASK);
+	}
+	DWORD GetPitchBendFirstValue() const
+	{
+		return ((dwValue & PITCH_BEND_FIRST_GET_MASK) >> 7);
+	}
+	DWORD GetPitchBendSecondValue() const
+	{
+		return (dwValue & PITCH_BEND_SECOND_GET_MASK);
+	}
 
 	// as program
 	void SetAsProgram(DWORD dwChannel, DWORD dwProgram)
@@ -1182,6 +1223,76 @@ public:
 	DWORD GetValue() const
 	{
 		return dwValue;
+	}
+
+	// as Sysex Message
+	DWORD PushAsSysexMessage(const unsigned char* pSysexMessage, DWORD dwSysexMessageLen, BOOL bIsBegin)
+	{
+		// normal midi message
+		// | event Type |  Channel   |  Reserved  |  On / Off(1) | Key / Program / Controler / PitchBend First | Velocity / ControlValue / PitchBend Second |
+		// |    (3)     |    (5)     |     (9)    |      (1)     |                    (7)				       |                    (7)                     |
+		
+		// sysex midi message
+		// | event Type |Sysex Header|  Sysex Value[0]  |  Sysex Value[1]  |  Sysex Value[2]  |
+		// |    (3)     |    (5)     |        (8)       |        (8)       |        (8)       |
+		
+		// |                   Sysex Header(5)                 | 
+		// |    Reserved(1)   | Begin/End(2) | Size(0-2)(2)    | 
+
+		DWORD dwSysexHeader = 0;
+		if (bIsBegin)
+		{
+			dwSysexHeader = (MIDI_SYSEX_MESSAGE_TYPE_BEGIN << 2);
+		}
+
+		DWORD dwCpyCount = dwSysexMessageLen;
+		if (dwCpyCount <= (DWORD)_countof(pbSysexValue))
+		{
+			// 요청한 사이즈가 한방에 다 들어가는 경우 , END 처리
+			dwSysexHeader |= (MIDI_SYSEX_MESSAGE_TYPE_END << 2);
+		}
+		else
+		{
+			dwCpyCount = (DWORD)_countof(pbSysexValue);
+		}
+		dwSysexHeader |= (dwCpyCount & 0b11);	// dwCpyCount = 1,2,3 -> 2 Bits
+		dwValue = (MIDI_MESSAGE_TYPE_SYSEX << 29) | ((dwSysexHeader & SYSEX_HEADER_SET_MASK) << 24);
+		memcpy(pbSysexValue, pSysexMessage, dwCpyCount);
+
+		return dwCpyCount;
+	}
+	BOOL IsSysexMessageBegin() const
+	{
+		DWORD dwSysexHeader = (dwValue & SYSEX_HEADER_GET_MASK) >> 24;
+		BOOL bResult = (dwSysexHeader & (MIDI_SYSEX_MESSAGE_TYPE_BEGIN << 2)) != 0;
+		return bResult;
+	}
+	BOOL IsSysexMessageEnd() const
+	{
+		DWORD dwSysexHeader = (dwValue & SYSEX_HEADER_GET_MASK) >> 24;
+		BOOL bResult = (dwSysexHeader & (MIDI_SYSEX_MESSAGE_TYPE_END << 2)) != 0;
+		return bResult;
+	}
+	DWORD GetSysexMessageCount() const
+	{
+		DWORD dwSysexHeader = (dwValue & SYSEX_HEADER_GET_MASK) >> 24;
+		DWORD dwCount = dwSysexHeader & 0b11;
+		return dwCount;
+	}
+	DWORD GetSysexMessage(unsigned char* pbOutBuffer, DWORD dwMaxBufferCount, BOOL* pbOutIsEnd) const
+	{
+		DWORD dwSysexHeader = (dwValue & SYSEX_HEADER_GET_MASK) >> 24;
+		BOOL bIsEnd = (dwSysexHeader & (MIDI_SYSEX_MESSAGE_TYPE_END << 2)) != 0;
+		DWORD dwCount = dwSysexHeader & 0b11;
+		if (dwCount > dwMaxBufferCount)
+		{
+			__debugbreak();
+			goto lb_return;
+		}
+		memcpy(pbOutBuffer, pbSysexValue, dwCount);
+		*pbOutIsEnd = bIsEnd;
+	lb_return:
+		return dwCount;
 	}
 };
 struct MIDI_MESSAGE : public MIDI_MESSAGE_L
@@ -1209,6 +1320,13 @@ public:
 		MIDI_MESSAGE_L::SetAsControl(dwChannel, dwController, dwControlValue);
 		dwTickFromBegin = dwTick;
 	}
+	// as Pitch Bend
+	void SetAsPitchBend(DWORD dwChannel, DWORD dwFirstValue, DWORD dwSecondValue, DWORD dwTick)
+	{
+		MIDI_MESSAGE_L::SetAsPitchBend(dwChannel, dwFirstValue, dwSecondValue);
+		dwTickFromBegin = dwTick;
+	}
+	
 	// as program
 	void SetAsProgram(DWORD dwChannel, DWORD dwProgram, DWORD dwTick)
 	{
@@ -1220,7 +1338,14 @@ public:
 		dwValue = src.GetValue();
 		dwTickFromBegin = dwTick;
 	}
+	// as Sysex Message
+	DWORD PushAsSysexMessage(const unsigned char* pSysexMessage, DWORD dwSysexMessageLen, BOOL bIsBegin, DWORD dwTick)
+	{
+		dwTickFromBegin = dwTick;
+		return MIDI_MESSAGE_L::PushAsSysexMessage(pSysexMessage, dwSysexMessageLen, bIsBegin);
+	}
 };
+
 const DWORD MAX_MESSAGE_NUM_PER_BLOCK = 8;
 
 typedef void* WEB_CLIENT_HANDLE;

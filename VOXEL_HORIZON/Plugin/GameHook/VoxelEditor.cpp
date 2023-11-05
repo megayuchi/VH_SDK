@@ -796,6 +796,31 @@ BOOL CVoxelEditor::OnMouseLButtonDown(int x, int y, UINT nFlags)
 {
 	BOOL	bProcessed = FALSE;
 
+
+	VECTOR3 v3PickedPos = {};
+	VECTOR3 v3PickedAxis = {};
+	float fDist = 0.0f;
+	if (m_pVHController->GetPicekdPosition(&v3PickedPos, &v3PickedAxis, &fDist))
+	{
+		m_ProcessingMode = PROCESS_MODE_SET;
+		m_ivCurProcessingPos = {};
+		m_v3BeginCreatingPos = v3PickedPos;
+		m_v3BeginCreatingPos.y += 10.0f;
+		m_iProcessingWidth = PROCESSING_UNIT;
+		m_iProcessingDepth = PROCESSING_UNIT;
+		m_iProcessingHeight = PROCESSING_UNIT;
+		
+
+		for (int y = 0; y < 128; y++)
+		{
+			for (int x = 0; x < 128; x++)
+			{
+				VECTOR3 v3VoxelPos = v3PickedPos + MAKE_VECTOR3(x * 50.0f, y * 50.0f, 0.0f);
+				m_pVHController->SetVoxelWithFloatCoord(&v3VoxelPos, 8, 15, FALSE);
+			}
+		}
+	}
+	/*
 	if (nFlags & MK_CONTROL)
 	{
 		bProcessed = RemoveCubeVoxelList();
@@ -808,6 +833,7 @@ BOOL CVoxelEditor::OnMouseLButtonDown(int x, int y, UINT nFlags)
 	{
 		bProcessed = SetCubeVoxelList();
 	}
+	*/
 	/*
 	VECTOR3	v3CursorObjPos = {};
 	INT_VECTOR3	ivCursorVoxelPos = {};

@@ -144,6 +144,12 @@ BOOL CMidiPlayer::PlayMidi(const char* szFileName)
 		m_pVHController->EnableBroadcastModeImmediately();
 
 		m_pVHController->MidiBeginPushMessage();
+
+		BOOL	bIsCompositingSysexMessage = FALSE;
+		BYTE	pbSysexMessageValue[256] = {};
+		DWORD	dwSysexMessageLen = 0;
+		DWORD	dwAvailableSysexBufferCount = (DWORD)_countof(pbSysexMessageValue);
+		DWORD	dwTickOnSysex = 0;
 		for (DWORD i = 0; i < dwMessageNum; i++)
 		{
 			MIDI_MESSAGE* pMessage = pMessageList + i;
@@ -165,8 +171,35 @@ BOOL CMidiPlayer::PlayMidi(const char* szFileName)
 				case MIDI_MESSAGE_TYPE_CONTROL:
 					m_pVHController->MidiPushChangeControl(pMessage->GetChannel(), pMessage->GetController(), pMessage->GetControlValue(), pMessage->GetTickFromBegin());
 					break;
+				case MIDI_MESSAGE_TYPE_PITCH_BEND:
+					m_pVHController->MidiPushChangePitchBend(pMessage->GetChannel(), pMessage->GetPitchBendFirstValue(), pMessage->GetPitchBendSecondValue(), pMessage->GetTickFromBegin());
+					break;
 				case MIDI_MESSAGE_TYPE_PROGRAM:
 					m_pVHController->MidiPushChangeProgram(pMessage->GetChannel(), pMessage->GetProgram(), pMessage->GetTickFromBegin());
+					break;
+				case MIDI_MESSAGE_TYPE_SYSEX:
+					{
+						// MIDI_MESSAGE_TYPE_SYSEX의 경우 최대 사이즈가 얼마일지 모르고 일반적으로 10 Bytes를 넘기기 때문에 여러개의 MIDI_MESSAGE구조체에 나눠 담긴다.
+						// MIDI_MESSAGE_TYPE_SYSEX메시지가 발견됐다면 원래의 SYSEX메시지를 모두 얻을 때까지 MIDI_MESSAGE_TYPE_SYSEX타입의 MIDI_MESSAGE구조체가 계속 발견된다.
+						if (!bIsCompositingSysexMessage)
+						{
+							bIsCompositingSysexMessage = TRUE;
+							dwAvailableSysexBufferCount = (DWORD)_countof(pbSysexMessageValue);
+							memset(pbSysexMessageValue, 0, sizeof(pbSysexMessageValue));
+							dwSysexMessageLen = 0;
+							dwTickOnSysex = pMessage->GetTickFromBegin();
+						}
+						BOOL	bIsSysexEnd = FALSE;
+						DWORD	dwValueCount = pMessage->GetSysexMessage(pbSysexMessageValue + dwSysexMessageLen, dwAvailableSysexBufferCount, &bIsSysexEnd);
+						dwSysexMessageLen += dwValueCount;
+						dwAvailableSysexBufferCount -= dwValueCount;
+
+						if (bIsSysexEnd)
+						{
+							m_pVHController->MidiPushSysexMessage(pbSysexMessageValue, (unsigned char)dwSysexMessageLen, dwTickOnSysex);
+							bIsCompositingSysexMessage = FALSE;
+						}
+					}
 					break;
 			}
 		}
