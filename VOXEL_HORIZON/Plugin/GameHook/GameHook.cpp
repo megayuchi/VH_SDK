@@ -6,7 +6,7 @@
 #include "GameHook.h"
 #include "DisplayPanel.h"
 #include "TestGame.h"
-#include "VoxelEditor.h"
+#include "TestVoxelEditor.h"
 #include "WebPage.h"
 #include "MidiPlayer.h"
 #include "./lodepng/lodepng.h"
@@ -81,7 +81,7 @@ void __stdcall CTestGameHook::OnStartScene(IVHController* pVHController, IVHNetw
 
 	wcscpy_s(m_wchPluginPath, wchPluginPath);
 
-	m_pVoxelEditor = new CVoxelEditor;
+	m_pVoxelEditor = new CTestVoxelEditor;
 	m_pVoxelEditor->Initialize(m_pVHController, m_pNetworkLayer);
 }
 

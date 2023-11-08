@@ -90,7 +90,7 @@
     <ClInclude Include="..\util\stdafx.h">
       <Filter>VoxelUtil</Filter>
     </ClInclude>
-    <ClInclude Include="VoxelEditor.h">
+    <ClInclude Include="TestVoxelEditor.h">
       <Filter>Contents\VoxelEditor</Filter>
     </ClInclude>
     <ClInclude Include="WebPage.h">
@@ -126,6 +126,9 @@
     <ClInclude Include="lodepng\lodepng.h">
       <Filter>png</Filter>
     </ClInclude>
+    <ClInclude Include="..\util\WriteDebugString.h">
+      <Filter>Util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -158,7 +161,7 @@
     <ClCompile Include="..\util\VoxelUtil.cpp">
       <Filter>VoxelUtil</Filter>
     </ClCompile>
-    <ClCompile Include="VoxelEditor.cpp">
+    <ClCompile Include="TestVoxelEditor.cpp">
       <Filter>Contents\VoxelEditor</Filter>
     </ClCompile>
     <ClCompile Include="WebPage.cpp">
@@ -190,6 +193,9 @@
     </ClCompile>
     <ClCompile Include="lodepng\lodepng.cpp">
       <Filter>png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\util\WriteDebugString.cpp">
+      <Filter>Util</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

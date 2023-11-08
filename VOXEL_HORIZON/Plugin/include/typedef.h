@@ -719,6 +719,96 @@ inline UINT CalcWidthDepthHeight(DWORD n)
 	return WidthDepthHeight;
 }
 
+enum SINGLE_VOXEL_EDIT_TYPE
+{
+	SINGLE_VOXEL_EDIT_TYPE_REMOVE = 0b0,
+	SINGLE_VOXEL_EDIT_TYPE_SET = 0b1
+};
+enum SINGLE_VOXEL_EDIT_RESULT
+{
+	SINGLE_VOXEL_EDIT_RESULT_OK,
+	SINGLE_VOXEL_EDIT_RESULT_INVALID_POSITION,
+	SINGLE_VOXEL_EDIT_RESULT_BUFFER_NOT_ENOUGH,
+	SINGLE_VOXEL_EDIT_RESULT_NO_VOXEL,
+	SINGLE_VOXEL_EDIT_RESULT_UNKNWON_ERROR
+};
+struct VOXEL_EDIT_DESC_7X
+{
+	static const DWORD MAX_VOXEL_COUNT = 7;	// 최대 7개의 편집 요청을 담는다.
+	// 좌표당 액션 - | EditType(1) | WidthDepthHeight(3) | -> 4 Bits
+	// | Action(4) | Action(4) | Action(4) | Action(4) | Action(4) | Action(4) | Action(4) | Reserved(1) |  개수(3)
+	DWORD	dwBitFlags;
+	VECTOR3	pv3VoxelPosList[MAX_VOXEL_COUNT];
+	BYTE pbColorIndexList[MAX_VOXEL_COUNT];
+	BYTE bPadding;
+
+	DWORD GetCount() const
+	{
+		return (dwBitFlags & 0b111);
+	}
+	void Begin()
+	{
+		dwBitFlags = 0;
+	}
+	BOOL Add(const VECTOR3* pv3VoxelPos, BYTE bColorIndex, UINT WidthDepthHeight, SINGLE_VOXEL_EDIT_TYPE type)
+	{
+		BOOL bResult = FALSE;
+		// Action per Voxel 
+		// | EditType(1) | WidthDepthHeight(3) | -> 4 Bits
+
+		// dwBitFlags
+		// | Action(4) | Action(4) | Action(4) | Action(4) | Action(4) | Action(4) | Action(4) | Reserved(1) |  개수(3)
+
+		DWORD dwCurCount = GetCount();
+		DWORD n = CalcPowN(WidthDepthHeight);
+		DWORD dwVoxelProperty = (type << 3) | n;
+		DWORD shift_count = (dwCurCount * 4) + 4;		// 하위 4 bits 영역 건너뛰고 dwCurCount만큼 또 4 bits 이동.
+
+		if (dwCurCount >= MAX_VOXEL_COUNT)
+		{
+			__debugbreak();
+			goto lb_return;
+		}
+		
+		dwBitFlags |= (dwVoxelProperty << shift_count);
+		pv3VoxelPosList[dwCurCount] = *pv3VoxelPos;
+		pbColorIndexList[dwCurCount] = bColorIndex;
+
+		dwBitFlags++;	// dwCurCount + 1
+		bResult = TRUE;
+	lb_return:
+		return bResult;
+	}
+	BOOL Get(VECTOR3* pv3OutVoxelPos, BYTE* pbOutColorIndex, UINT* puiOutWidthDepthHeight, SINGLE_VOXEL_EDIT_TYPE* pOutType, DWORD dwIndex) const
+	{
+		BOOL bResult = FALSE;
+		
+		DWORD dwCurCount = GetCount();
+		DWORD shift_count = (dwIndex * 4) + 4;	// 하위 4 bits 영역 건너뛰고 dwCurCount만큼 또 4 bits 이동.
+		DWORD get_mask = 0b1111 << shift_count;
+		DWORD dwVoxelProperty = (dwBitFlags & get_mask) >> shift_count;
+		DWORD n = (dwVoxelProperty & 0b111);
+		
+		if (dwIndex >= MAX_VOXEL_COUNT)
+		{
+			__debugbreak();
+			goto lb_return;
+		}
+		
+		if (dwIndex >= dwCurCount)
+		{
+			__debugbreak();
+			goto lb_return;
+		}
+		*puiOutWidthDepthHeight = CalcWidthDepthHeight(n);
+		*pOutType = (SINGLE_VOXEL_EDIT_TYPE)((dwVoxelProperty & 0b1000) >> 3);
+		*pv3OutVoxelPos = pv3VoxelPosList[dwIndex];
+		*pbOutColorIndex = pbColorIndexList[dwIndex];
+		bResult = TRUE;
+	lb_return:
+		return bResult;
+	}
+};
 #pragma pack(push,1)
 struct VOXEL_SHORT_POS
 {

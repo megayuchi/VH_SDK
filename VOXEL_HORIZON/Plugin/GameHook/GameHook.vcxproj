@@ -323,6 +323,7 @@
     <ClInclude Include="..\util\Stack.h" />
     <ClInclude Include="..\util\stdafx.h" />
     <ClInclude Include="..\util\VoxelUtil.h" />
+    <ClInclude Include="..\util\WriteDebugString.h" />
     <ClInclude Include="DisplayPanel.h" />
     <ClInclude Include="FlightObject.h" />
     <ClInclude Include="lodepng\lodepng.h" />
@@ -340,13 +341,14 @@
     <ClInclude Include="Midi\stdafx.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Util.h" />
-    <ClInclude Include="VoxelEditor.h" />
+    <ClInclude Include="TestVoxelEditor.h" />
     <ClInclude Include="WebPage.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\util\QueryPerfCounter .cpp" />
     <ClCompile Include="..\util\Stack.cpp" />
     <ClCompile Include="..\util\VoxelUtil.cpp" />
+    <ClCompile Include="..\util\WriteDebugString.cpp" />
     <ClCompile Include="DisplayPanel.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="FlightObject.cpp" />
@@ -381,7 +383,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|ARM64EC'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Util.cpp" />
-    <ClCompile Include="VoxelEditor.cpp" />
+    <ClCompile Include="TestVoxelEditor.cpp" />
     <ClCompile Include="WebPage.cpp" />
   </ItemGroup>
   <ItemGroup>

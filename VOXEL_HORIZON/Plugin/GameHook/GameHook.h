@@ -4,7 +4,7 @@
 
 class CDisplayPanel;
 class CTestGame;
-class CVoxelEditor;
+class CTestVoxelEditor;
 class CWebPage;
 class CMidiPlayer;
 class CTestGameHook : public IGameHook
@@ -26,7 +26,7 @@ class CTestGameHook : public IGameHook
 	
 	
 	CTestGame*		m_pTestGame = nullptr;
-	CVoxelEditor*	m_pVoxelEditor = nullptr;
+	CTestVoxelEditor*	m_pVoxelEditor = nullptr;
 	CWebPage*		m_pWebPage = nullptr;
 	CMidiPlayer*	m_pMidiPlayer = nullptr;
 	
