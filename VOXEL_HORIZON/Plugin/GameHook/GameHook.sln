@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.7.34031.279
+VisualStudioVersion = 17.7.34221.43
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameHook", "GameHook.vcxproj", "{A9D18A7D-2AE4-4B5E-AEA6-4978AFB92B2B}"
 EndProject
@@ -38,14 +38,16 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {3B5D92DF-5F55-4F84-80FB-E98B9ACEC25A}
+		SolutionGuid = {F5563656-3031-4C6D-B949-1C53C3570E72}
 	EndGlobalSection
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 2
+		SccNumberOfProjects = 1
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://daikon.visualstudio.com/defaultcollection
 		SccProjectUniqueName0 = GameHook.vcxproj
+		SccProjectName0 = .
+		SccAuxPath0 = https://daikon.visualstudio.com/defaultcollection
 		SccLocalPath0 = .
-		SccLocalPath1 = .
+		SccProvider0 = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 	EndGlobalSection
 EndGlobal

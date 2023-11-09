@@ -668,21 +668,19 @@ void CTestVoxelEditor::Process()
 {
 	
 }
-BOOL CTestVoxelEditor::AddVoxelsAsCube(const VECTOR3* pv3VoxelPos, UINT WidthDepthHeight, BYTE bColorIndex, int width, int height, int depth)
+BOOL CTestVoxelEditor::AddVoxelsAsCube(const VECTOR3* pv3VoxelPos, BYTE bColorIndex, int width, int height, int depth)
 {
 	BOOL	bResult = FALSE;
 
-	float fVoxelSize = VOXEL_OBJECT_SIZE / (float)WidthDepthHeight;
-	
 	DWORD dwCouunt = 0;
 
 	// pv3VoxelPos의 -x, +x축으로 width/2개씩 추가 , -z, +z축으로 depth/2개씩 추갸
 	// pv3VoxelPos의 +y축으로 height개씩 추가
 	VECTOR3 v3NegOffset =
 	{
-		(float)(width / 2) * fVoxelSize,
+		(float)(width / 2) * MIN_VOXEL_SIZE,
 		0.0f,
-		(float)(depth / 2) * fVoxelSize
+		(float)(depth / 2) * MIN_VOXEL_SIZE
 	};
 	for (int y = 0; y < height; y++)
 	{
@@ -691,8 +689,8 @@ BOOL CTestVoxelEditor::AddVoxelsAsCube(const VECTOR3* pv3VoxelPos, UINT WidthDep
 			for (int x = 0; x < width; x++)
 			{
 				//bColorIndex = (BYTE)(dwCouunt % 32);	//랜덤 컬러
-				VECTOR3 v3VoxelPos = *pv3VoxelPos - v3NegOffset + MAKE_VECTOR3(x * fVoxelSize, y * fVoxelSize, z * fVoxelSize);
-				SINGLE_VOXEL_EDIT_RESULT result = m_pVHController->SetSingleVoxelWithFloatCoord(&v3VoxelPos, WidthDepthHeight, bColorIndex);
+				VECTOR3 v3VoxelPos = *pv3VoxelPos - v3NegOffset + MAKE_VECTOR3(x * MIN_VOXEL_SIZE, y * MIN_VOXEL_SIZE, z * MIN_VOXEL_SIZE);
+				SINGLE_VOXEL_EDIT_RESULT result = m_pVHController->SetSingleVoxelWithFloatCoord(&v3VoxelPos, bColorIndex);
 				if (SINGLE_VOXEL_EDIT_RESULT_OK != result)
 				{
 					switch (result)
@@ -708,34 +706,31 @@ BOOL CTestVoxelEditor::AddVoxelsAsCube(const VECTOR3* pv3VoxelPos, UINT WidthDep
 							break;
 					}
 				}
-				WriteDebugStringW(DEBUG_OUTPUT_TYPE_DEBUG_CONSOLE, L"(x:%.1f, y:%.1f, z:%.1f), Color:%u, WidthDepthHeight:%u\n", v3VoxelPos.x, v3VoxelPos.y, v3VoxelPos.z, bColorIndex, WidthDepthHeight);
+				WriteDebugStringW(DEBUG_OUTPUT_TYPE_DEBUG_CONSOLE, L"(x:%.1f, y:%.1f, z:%.1f), Color:%u\n", v3VoxelPos.x, v3VoxelPos.y, v3VoxelPos.z, bColorIndex);
 				dwCouunt++;
 			}
 		}
 	}
 	return TRUE;
 }
-BOOL CTestVoxelEditor::RemoveVoxel(const VECTOR3* pv3VoxelPos, UINT WidthDepthHeight)
+BOOL CTestVoxelEditor::RemoveVoxel(const VECTOR3* pv3VoxelPos)
 {
 	BOOL	bResult = FALSE;
 
-	float fVoxelSize = VOXEL_OBJECT_SIZE / (float)WidthDepthHeight;
-	m_pVHController->RemoveSingleVoxelWithFloatCoord(pv3VoxelPos, WidthDepthHeight);
+	m_pVHController->RemoveSingleVoxelWithFloatCoord(pv3VoxelPos);
 	return TRUE;
 }
-BOOL CTestVoxelEditor::RemoveVoxelsAsCube(const VECTOR3* pv3VoxelPos, UINT WidthDepthHeight, int width, int height, int depth)
+BOOL CTestVoxelEditor::RemoveVoxelsAsCube(const VECTOR3* pv3VoxelPos, int width, int height, int depth)
 {
 	BOOL	bResult = FALSE;
-
-	float fVoxelSize = VOXEL_OBJECT_SIZE / (float)WidthDepthHeight;
 	
 	// pv3VoxelPos의 -x, +x축으로 width/2개씩 제거 , -z, +z축으로 depth/2개씩 제거
 	// pv3VoxelPos의 +y축으로 height개씩 제거
 	VECTOR3 v3NegOffset =
 	{
-		(float)(width / 2) * fVoxelSize,
+		(float)(width / 2) * MIN_VOXEL_SIZE,
 		0.0f,
-		(float)(depth / 2) * fVoxelSize
+		(float)(depth / 2) * MIN_VOXEL_SIZE
 	};
 
 	for (int y = 0; y < height; y++)
@@ -744,22 +739,20 @@ BOOL CTestVoxelEditor::RemoveVoxelsAsCube(const VECTOR3* pv3VoxelPos, UINT Width
 		{
 			for (int x = 0; x < width; x++)
 			{
-				VECTOR3 v3VoxelPos = *pv3VoxelPos - v3NegOffset + MAKE_VECTOR3(x * fVoxelSize, y * fVoxelSize, z * fVoxelSize);
-				m_pVHController->RemoveSingleVoxelWithFloatCoord(&v3VoxelPos, WidthDepthHeight);
+				VECTOR3 v3VoxelPos = *pv3VoxelPos - v3NegOffset + MAKE_VECTOR3(x * MIN_VOXEL_SIZE, y * MIN_VOXEL_SIZE, z * MIN_VOXEL_SIZE);
+				m_pVHController->RemoveSingleVoxelWithFloatCoord(&v3VoxelPos);
 			}
 		}
 	}
 	return TRUE;
 }
 
-BOOL CTestVoxelEditor::GetVoxel(const VECTOR3* pv3VoxelPos, UINT WidthDepthHeight)
+BOOL CTestVoxelEditor::GetVoxel(const VECTOR3* pv3VoxelPos)
 {
 	BOOL bResult = FALSE;
 
-	float fVoxelSize = VOXEL_OBJECT_SIZE / (float)WidthDepthHeight;
-		
 	BYTE bColorIndex = 0xff;
-	if (SINGLE_VOXEL_EDIT_RESULT_OK == m_pVHController->GetSingleVoxelColorWithFloatCoord(&bColorIndex, pv3VoxelPos, WidthDepthHeight))
+	if (SINGLE_VOXEL_EDIT_RESULT_OK == m_pVHController->GetSingleVoxelColorWithFloatCoord(&bColorIndex, pv3VoxelPos))
 	{
 		m_pVHController->WriteTextToSystemDlgW(COLOR_VALUE_CYAN, L"[%02u]\n", (DWORD)bColorIndex);
 	}
@@ -770,11 +763,9 @@ BOOL CTestVoxelEditor::GetVoxel(const VECTOR3* pv3VoxelPos, UINT WidthDepthHeigh
 
 	return TRUE;
 }
-BOOL CTestVoxelEditor::GetVoxelsAsCube(const VECTOR3* pv3VoxelPos, UINT WidthDepthHeight, int width, int height, int depth)
+BOOL CTestVoxelEditor::GetVoxelsAsCube(const VECTOR3* pv3VoxelPos, int width, int height, int depth)
 {
 	BOOL bResult = FALSE;
-
-	float fVoxelSize = VOXEL_OBJECT_SIZE / (float)WidthDepthHeight;
 	
 	// pv3VoxelPos 기준으로 x축으로 width, y축으로 height, z축으로 depth개만큼 스캔
 	for (int y = 0; y < height; y++)
@@ -786,9 +777,9 @@ BOOL CTestVoxelEditor::GetVoxelsAsCube(const VECTOR3* pv3VoxelPos, UINT WidthDep
 				if (y == 1 && x == 3 && z == 0)
 					int a = 0;
 
-				VECTOR3 v3VoxelPos = *pv3VoxelPos + MAKE_VECTOR3(x * fVoxelSize, y * fVoxelSize, z * fVoxelSize);
+				VECTOR3 v3VoxelPos = *pv3VoxelPos + MAKE_VECTOR3(x * MIN_VOXEL_SIZE, y * MIN_VOXEL_SIZE, z * MIN_VOXEL_SIZE);
 				BYTE bColorIndex = 0xff;
-				if (SINGLE_VOXEL_EDIT_RESULT_OK == m_pVHController->GetSingleVoxelColorWithFloatCoord(&bColorIndex, &v3VoxelPos, WidthDepthHeight))
+				if (SINGLE_VOXEL_EDIT_RESULT_OK == m_pVHController->GetSingleVoxelColorWithFloatCoord(&bColorIndex, &v3VoxelPos))
 				{
 					m_pVHController->WriteTextToSystemDlgW(COLOR_VALUE_CYAN, L"[%02u]", (DWORD)bColorIndex);
 				}
@@ -840,12 +831,11 @@ BOOL CTestVoxelEditor::OnMouseLButtonDown(int x, int y, UINT nFlags)
 		}
 		else
 		{
-			CursorWidthDepthHeight = m_pVHController->GetLatestursorWidthDepthHeightLatest(&fCursorVoxelSize);
 			bCurColorIndex = m_pVHController->GetSelectedColorIndex();
 		}
-		DWORD TestWidth = min(MAX_TEST_WIDTH, CursorWidthDepthHeight);
-		DWORD TestHeight = min(MAX_TEST_HEIGHT, CursorWidthDepthHeight);
-		DWORD TestDepth = min(MAX_TEST_DEPTH, CursorWidthDepthHeight);
+		DWORD TestWidth = min(MAX_TEST_WIDTH, MAX_VOXELS_PER_AXIS);
+		DWORD TestHeight = min(MAX_TEST_HEIGHT, MAX_VOXELS_PER_AXIS);
+		DWORD TestDepth = min(MAX_TEST_DEPTH, MAX_VOXELS_PER_AXIS);
 
 		//DWORD TestWidth = 64;
 		//DWORD TestHeight = 5;
@@ -860,7 +850,7 @@ BOOL CTestVoxelEditor::OnMouseLButtonDown(int x, int y, UINT nFlags)
 				case VH_EDIT_MODE_ADD_VOXEL:
 				case VH_EDIT_MODE_REMOVE_VOXEL:
 					//bProcessed = GetVoxel(&v3TargetPos, CursorWidthDepthHeight);
-					bProcessed = GetVoxelsAsCube(&v3TargetPos, CursorWidthDepthHeight, TestWidth, TestHeight, TestDepth);
+					bProcessed = GetVoxelsAsCube(&v3TargetPos, TestWidth, TestHeight, TestDepth);
 					break;
 			}
 		}
@@ -870,11 +860,11 @@ BOOL CTestVoxelEditor::OnMouseLButtonDown(int x, int y, UINT nFlags)
 			{
 				case VH_EDIT_MODE_SET_VOXEL_COLOR:
 				case VH_EDIT_MODE_ADD_VOXEL:
-					bProcessed = AddVoxelsAsCube(&v3TargetPos, CursorWidthDepthHeight, bCurColorIndex, TestWidth, TestHeight, TestDepth);
+					bProcessed = AddVoxelsAsCube(&v3TargetPos, bCurColorIndex, TestWidth, TestHeight, TestDepth);
 					break;
 				case VH_EDIT_MODE_REMOVE_VOXEL:
 					//bProcessed = RemoveVoxel(&v3TargetPos, CursorWidthDepthHeight);
-					bProcessed = RemoveVoxelsAsCube(&v3TargetPos, CursorWidthDepthHeight, TestWidth, TestHeight, TestDepth);
+					bProcessed = RemoveVoxelsAsCube(&v3TargetPos, TestWidth, TestHeight, TestDepth);
 					break;
 			}
 		}

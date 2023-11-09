@@ -166,9 +166,9 @@ interface IVHController
 	virtual		void			__stdcall	SetOnDeleteVoxelObjectFunc(ON_DELETE_VOXEL_OBJ_LITE_FUNC pFunc) = 0;
 
 	// 절대좌표계로 복셀을 Set/Remove하는 함수들. 온라인 모드에 적용됨.
-	virtual		SINGLE_VOXEL_EDIT_RESULT __stdcall SetSingleVoxelWithFloatCoord(const VECTOR3* pv3VoxelPos, UINT ReqWidthDepthHeight, BYTE bColorIndex) = 0;
-	virtual		SINGLE_VOXEL_EDIT_RESULT __stdcall RemoveSingleVoxelWithFloatCoord(const VECTOR3* pv3VoxelPos, UINT ReqWidthDepthHeight) = 0;
-	virtual		SINGLE_VOXEL_EDIT_RESULT __stdcall GetSingleVoxelColorWithFloatCoord(BYTE* pbOutColorIndex, const VECTOR3* pv3VoxelPos, UINT ReqWidthDepthHeight) = 0;
+	virtual		SINGLE_VOXEL_EDIT_RESULT __stdcall SetSingleVoxelWithFloatCoord(const VECTOR3* pv3VoxelPos, BYTE bColorIndex) = 0;
+	virtual		SINGLE_VOXEL_EDIT_RESULT __stdcall RemoveSingleVoxelWithFloatCoord(const VECTOR3* pv3VoxelPos) = 0;
+	virtual		SINGLE_VOXEL_EDIT_RESULT __stdcall GetSingleVoxelColorWithFloatCoord(BYTE* pbOutColorIndex, const VECTOR3* pv3VoxelPos) = 0;
 
 	virtual		WEB_CLIENT_HANDLE __stdcall BrowseWeb(const char* szURL, DWORD dwWidth, DWORD dwHeight, BOOL bUserSharedMemory) = 0;
 	virtual		void	__stdcall CloseWeb(WEB_CLIENT_HANDLE pHandle) = 0;

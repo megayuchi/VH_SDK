@@ -49,12 +49,11 @@ class CTestVoxelEditor
 	void	RemoveVoxelRecursive(unsigned long* pBitTable, BYTE* pColorTable, const VECTOR3* pv3ObjPos, int x, int y, int z, BYTE bCmpColorIndex, UINT CursorWidthDepthHeight, INT_VECTOR3* pivOutVoxelPosList, DWORD* pdwInOutVoxelCount, PLANE_AXIS_TYPE planeType);
 	void	ClearPreviewMeshInRecursiveMode();
 
-	BOOL	AddVoxelsAsCube(const VECTOR3* pv3VoxelPos, UINT WidthDepthHeight, BYTE bColorIndex, int width, int height, int depth);
-	
-	BOOL	RemoveVoxel(const VECTOR3* pv3VoxelPos, UINT WidthDepthHeight);
-	BOOL	RemoveVoxelsAsCube(const VECTOR3* pv3VoxelPos, UINT WidthDepthHeight, int width, int height, int depth);
-	BOOL	GetVoxel(const VECTOR3* pv3VoxelPos, UINT WidthDepthHeight);
-	BOOL	GetVoxelsAsCube(const VECTOR3* pv3VoxelPos, UINT WidthDepthHeight, int width, int height, int depth);
+	BOOL	AddVoxelsAsCube(const VECTOR3* pv3VoxelPos, BYTE bColorIndex, int width, int height, int depth);
+	BOOL	RemoveVoxel(const VECTOR3* pv3VoxelPos);
+	BOOL	RemoveVoxelsAsCube(const VECTOR3* pv3VoxelPos, int width, int height, int depth);
+	BOOL	GetVoxel(const VECTOR3* pv3VoxelPos);
+	BOOL	GetVoxelsAsCube(const VECTOR3* pv3VoxelPos, int width, int height, int depth);
 	void	Cleanup();
 public:
 	BOOL	Initialize(IVHController* pVHController, IVHNetworkLayer* pVHNetworkLayer);
