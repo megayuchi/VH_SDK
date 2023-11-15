@@ -706,7 +706,7 @@ BOOL CTestVoxelEditor::AddVoxelsAsCube(const VECTOR3* pv3VoxelPos, BYTE bColorIn
 							break;
 					}
 				}
-				WriteDebugStringW(DEBUG_OUTPUT_TYPE_DEBUG_CONSOLE, L"(x:%.1f, y:%.1f, z:%.1f), Color:%u\n", v3VoxelPos.x, v3VoxelPos.y, v3VoxelPos.z, bColorIndex);
+				//WriteDebugStringW(DEBUG_OUTPUT_TYPE_DEBUG_CONSOLE, L"(x:%.1f, y:%.1f, z:%.1f), Color:%u\n", v3VoxelPos.x, v3VoxelPos.y, v3VoxelPos.z, bColorIndex);
 				dwCouunt++;
 			}
 		}
@@ -833,13 +833,13 @@ BOOL CTestVoxelEditor::OnMouseLButtonDown(int x, int y, UINT nFlags)
 		{
 			bCurColorIndex = m_pVHController->GetSelectedColorIndex();
 		}
-		DWORD TestWidth = min(MAX_TEST_WIDTH, MAX_VOXELS_PER_AXIS);
-		DWORD TestHeight = min(MAX_TEST_HEIGHT, MAX_VOXELS_PER_AXIS);
-		DWORD TestDepth = min(MAX_TEST_DEPTH, MAX_VOXELS_PER_AXIS);
+		//DWORD TestWidth = min(MAX_TEST_WIDTH, MAX_VOXELS_PER_AXIS);
+		//DWORD TestHeight = min(MAX_TEST_HEIGHT, MAX_VOXELS_PER_AXIS);
+		//DWORD TestDepth = min(MAX_TEST_DEPTH, MAX_VOXELS_PER_AXIS);
 
-		//DWORD TestWidth = 64;
-		//DWORD TestHeight = 5;
-		//DWORD TestDepth = 64;
+		DWORD TestWidth = 32;// min(MAX_TEST_WIDTH, MAX_VOXELS_PER_AXIS);
+		DWORD TestHeight = 8;// min(MAX_TEST_HEIGHT, MAX_VOXELS_PER_AXIS);
+		DWORD TestDepth = 32;// min(MAX_TEST_DEPTH, MAX_VOXELS_PER_AXIS);
 
 		VH_EDIT_MODE editMode = m_pVHController->GetCurrentEditMode();
 		if (MK_CONTROL & nFlags)
