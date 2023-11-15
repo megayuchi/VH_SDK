@@ -402,6 +402,7 @@ const DWORD MAX_POINT_LIGHT_NUM_IN_VOXEL_WORLD = 256;
 const DWORD MAX_POINT_LIGHT_NUM_PER_VOXEL_OBJ = 7;
 const DWORD MAX_VOXEL_PALETEED_COLOR_NUM = 256;	// 이 수치가 바뀔 경우 rednerer의 shader도 수정해야한다.
 const DWORD MAX_VOXEL_OBJ_NUM_FOR_RAY_TRACING_BUFFER = 65536 * 4;	// CUDA RayTracing Culling을 사용할 경우 최대 복셀 오브젝트 개수
+const DWORD MAX_SINGLE_VOXEL_EDIT_ACTION_PER_PACKET = 128;	// 패킷 하나에 담을 수 있는 복셀 편집 액션 최대 개수
 
 const int	MAX_VOXEL_OBJ_MOVE_OFFSET = 32;	// m단위
 const int	VOXEL_OBJ_MOVE_OFFSET_UNIT = 4;	// m단위
@@ -719,10 +720,15 @@ inline UINT CalcWidthDepthHeight(DWORD n)
 	return WidthDepthHeight;
 }
 
+struct VOXEL_EDIT_WORKING_CONTEXT
+{
+	unsigned long pBitTable[MAX_VOXELS_PER_AXIS * MAX_VOXELS_PER_AXIS * MAX_VOXELS_PER_AXIS / 32] = {};
+	BYTE	pColorTable[MAX_VOXELS_PER_AXIS * MAX_VOXELS_PER_AXIS * MAX_VOXELS_PER_AXIS];
+};
 enum SINGLE_VOXEL_EDIT_TYPE
 {
-	SINGLE_VOXEL_EDIT_TYPE_REMOVE = 0b0,
-	SINGLE_VOXEL_EDIT_TYPE_SET = 0b1
+	SINGLE_VOXEL_EDIT_TYPE_REMOVE,
+	SINGLE_VOXEL_EDIT_TYPE_SET
 };
 enum SINGLE_VOXEL_EDIT_RESULT
 {
@@ -732,83 +738,7 @@ enum SINGLE_VOXEL_EDIT_RESULT
 	SINGLE_VOXEL_EDIT_RESULT_NO_VOXEL,
 	SINGLE_VOXEL_EDIT_RESULT_UNKNWON_ERROR
 };
-struct VOXEL_EDIT_DESC_7X
-{
-	static const DWORD MAX_VOXEL_COUNT = 7;	// 최대 7개의 편집 요청을 담는다.
-	// 좌표당 액션 - | EditType(1) | WidthDepthHeight(3) | -> 4 Bits
-	// | Action(4) | Action(4) | Action(4) | Action(4) | Action(4) | Action(4) | Action(4) | Reserved(1) |  개수(3)
-	DWORD	dwBitFlags;
-	VECTOR3	pv3VoxelPosList[MAX_VOXEL_COUNT];
-	BYTE pbColorIndexList[MAX_VOXEL_COUNT];
-	BYTE bPadding;
 
-	DWORD GetCount() const
-	{
-		return (dwBitFlags & 0b111);
-	}
-	void Begin()
-	{
-		dwBitFlags = 0;
-	}
-	BOOL Add(const VECTOR3* pv3VoxelPos, BYTE bColorIndex, UINT WidthDepthHeight, SINGLE_VOXEL_EDIT_TYPE type)
-	{
-		BOOL bResult = FALSE;
-		// Action per Voxel 
-		// | EditType(1) | WidthDepthHeight(3) | -> 4 Bits
-
-		// dwBitFlags
-		// | Action(4) | Action(4) | Action(4) | Action(4) | Action(4) | Action(4) | Action(4) | Reserved(1) |  개수(3)
-
-		DWORD dwCurCount = GetCount();
-		DWORD n = CalcPowN(WidthDepthHeight);
-		DWORD dwVoxelProperty = (type << 3) | n;
-		DWORD shift_count = (dwCurCount * 4) + 4;		// 하위 4 bits 영역 건너뛰고 dwCurCount만큼 또 4 bits 이동.
-
-		if (dwCurCount >= MAX_VOXEL_COUNT)
-		{
-			__debugbreak();
-			goto lb_return;
-		}
-		
-		dwBitFlags |= (dwVoxelProperty << shift_count);
-		pv3VoxelPosList[dwCurCount] = *pv3VoxelPos;
-		pbColorIndexList[dwCurCount] = bColorIndex;
-
-		dwBitFlags++;	// dwCurCount + 1
-		bResult = TRUE;
-	lb_return:
-		return bResult;
-	}
-	BOOL Get(VECTOR3* pv3OutVoxelPos, BYTE* pbOutColorIndex, UINT* puiOutWidthDepthHeight, SINGLE_VOXEL_EDIT_TYPE* pOutType, DWORD dwIndex) const
-	{
-		BOOL bResult = FALSE;
-		
-		DWORD dwCurCount = GetCount();
-		DWORD shift_count = (dwIndex * 4) + 4;	// 하위 4 bits 영역 건너뛰고 dwCurCount만큼 또 4 bits 이동.
-		DWORD get_mask = 0b1111 << shift_count;
-		DWORD dwVoxelProperty = (dwBitFlags & get_mask) >> shift_count;
-		DWORD n = (dwVoxelProperty & 0b111);
-		
-		if (dwIndex >= MAX_VOXEL_COUNT)
-		{
-			__debugbreak();
-			goto lb_return;
-		}
-		
-		if (dwIndex >= dwCurCount)
-		{
-			__debugbreak();
-			goto lb_return;
-		}
-		*puiOutWidthDepthHeight = CalcWidthDepthHeight(n);
-		*pOutType = (SINGLE_VOXEL_EDIT_TYPE)((dwVoxelProperty & 0b1000) >> 3);
-		*pv3OutVoxelPos = pv3VoxelPosList[dwIndex];
-		*pbOutColorIndex = pbColorIndexList[dwIndex];
-		bResult = TRUE;
-	lb_return:
-		return bResult;
-	}
-};
 #pragma pack(push,1)
 struct VOXEL_SHORT_POS
 {
@@ -1042,6 +972,17 @@ struct VOXEL_OBJECT_COLOR_TABLE_HEADER
 #pragma pack(pop)
 
 
+struct VOXEL_GLOBAL_POS
+{
+	VOXEL_SHORT_POS	ObjPos;	// 6 Bytes
+	WORD	wVoxelPos;		// 2 Bytes
+};
+struct SINGLE_VOXEL_EDIT_ACTION
+{
+	VOXEL_GLOBAL_POS	Pos;
+	BYTE	bColorIndex;
+	BYTE	bEditType;
+};
 enum CREATE_VOXEL_OBJECT_ERROR
 {
 	CREATE_VOXEL_OBJECT_ERROR_OK = 0,
