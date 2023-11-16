@@ -26,7 +26,27 @@ BOOL CTestVoxelEditor::OnPreConsoleCommand(const WCHAR* wchCmd, DWORD dwCmdLen)
 {
 	return FALSE;
 }
-
+BOOL CTestVoxelEditor::OnKeyDown(UINT nChar)
+{
+	BOOL bProcessed = FALSE;
+	switch (nChar)
+	{
+		case VK_ESCAPE:
+			{
+				DWORD dwCanceledPacketCount = m_pVHController->CancelAllPendingVoxelEditEvent();
+				if (dwCanceledPacketCount)
+				{
+					bProcessed = TRUE;
+				}
+			}
+			break;
+	}
+	return bProcessed;
+}
+BOOL CTestVoxelEditor::OnKeyUp(UINT nChar)
+{
+	return FALSE;
+}
 
 void CTestVoxelEditor::SetVoxelColorRecursive(unsigned long* pBitTable, BYTE* pColorTable, const VECTOR3* pv3ObjPos, int x, int y, int z, BYTE bColorIndex, BYTE bCmpColorIndex, UINT CursorWidthDepthHeight, INT_VECTOR3* pivOutVoxelPosList, DWORD* pdwInOutVoxelCount, PLANE_AXIS_TYPE planeType)
 {

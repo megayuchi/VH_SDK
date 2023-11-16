@@ -58,6 +58,8 @@ class CTestVoxelEditor
 public:
 	BOOL	Initialize(IVHController* pVHController, IVHNetworkLayer* pVHNetworkLayer);
 	BOOL	OnPreConsoleCommand(const WCHAR* wchCmd, DWORD dwCmdLen);
+	BOOL	OnKeyDown(UINT nChar);
+	BOOL	OnKeyUp(UINT nChar);
 	BOOL 	OnMouseLButtonDown(int x, int y, UINT nFlags);
 	BOOL 	OnMouseLButtonUp(int x, int y, UINT nFlags);
 	BOOL 	OnMouseRButtonDown(int x, int y, UINT nFlags);

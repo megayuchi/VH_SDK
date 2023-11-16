@@ -81,8 +81,8 @@ void __stdcall CTestGameHook::OnStartScene(IVHController* pVHController, IVHNetw
 
 	wcscpy_s(m_wchPluginPath, wchPluginPath);
 
-	m_pVoxelEditor = new CTestVoxelEditor;
-	m_pVoxelEditor->Initialize(m_pVHController, m_pNetworkLayer);
+	m_pTestVoxelEditor = new CTestVoxelEditor;
+	m_pTestVoxelEditor->Initialize(m_pVHController, m_pNetworkLayer);
 }
 
 void __stdcall CTestGameHook::OnRun()
@@ -95,9 +95,9 @@ void __stdcall CTestGameHook::OnRun()
 	{
 		m_pWebPage->Process();
 	}
-	if (m_pVoxelEditor)
+	if (m_pTestVoxelEditor)
 	{
-		m_pVoxelEditor->Process();
+		m_pTestVoxelEditor->Process();
 	}
 }
 void CTestGameHook::OnDeleteVoxelObject(IVoxelObjectLite* pVoxelObj)
@@ -106,9 +106,9 @@ void CTestGameHook::OnDeleteVoxelObject(IVoxelObjectLite* pVoxelObj)
 	{
 		m_pTestGame->OnDeleteVoxelObject(pVoxelObj);
 	}
-	if (m_pVoxelEditor)
+	if (m_pTestVoxelEditor)
 	{
-		m_pVoxelEditor->OnDeleteVoxelObject(pVoxelObj);
+		m_pTestVoxelEditor->OnDeleteVoxelObject(pVoxelObj);
 	}
 }
 void __stdcall CTestGameHook::OnDestroyScene()
@@ -121,10 +121,10 @@ void __stdcall CTestGameHook::OnDestroyScene()
 		delete m_pTestGame;
 		m_pTestGame = nullptr;
 	}
-	if (m_pVoxelEditor)
+	if (m_pTestVoxelEditor)
 	{
-		delete m_pVoxelEditor;
-		m_pVoxelEditor = nullptr;
+		delete m_pTestVoxelEditor;
+		m_pTestVoxelEditor = nullptr;
 	}
 	if (m_pWebPage)
 	{
@@ -146,9 +146,9 @@ BOOL __stdcall CTestGameHook::OnMouseLButtonDown(int x, int y, UINT nFlags)
 		if (bProcessed)
 			goto lb_return;
 	}
-	if (m_pVoxelEditor)
+	if (m_pTestVoxelEditor)
 	{
-		bProcessed = m_pVoxelEditor->OnMouseLButtonDown(x, y, nFlags);
+		bProcessed = m_pTestVoxelEditor->OnMouseLButtonDown(x, y, nFlags);
 	}
 lb_return:
 	return bProcessed;
@@ -162,9 +162,9 @@ BOOL __stdcall CTestGameHook::OnMouseLButtonUp(int x, int y, UINT nFlags)
 		if (bProcessed)
 			goto lb_return;
 	}
-	if (m_pVoxelEditor)
+	if (m_pTestVoxelEditor)
 	{
-		bProcessed = m_pVoxelEditor->OnMouseLButtonUp(x, y, nFlags);
+		bProcessed = m_pTestVoxelEditor->OnMouseLButtonUp(x, y, nFlags);
 	}
 lb_return:
 	return bProcessed;
@@ -235,6 +235,10 @@ BOOL __stdcall CTestGameHook::OnKeyDown(UINT nChar)
 	if (m_pMidiPlayer)
 	{
 		bProcessed |= m_pMidiPlayer->OnKeyDown(nChar);
+	}
+	if (m_pTestVoxelEditor)
+	{
+		bProcessed |= m_pTestVoxelEditor->OnKeyDown(nChar);
 	}
 	return bProcessed;
 }
@@ -393,9 +397,9 @@ BOOL __stdcall CTestGameHook::OnPreConsoleCommand(const WCHAR* wchCmd, DWORD dwC
 	{
 		bProcessed |= m_pTestGame->OnPreConsoleCommand(wchCmd, dwCmdLen);
 	}
-	if (m_pVoxelEditor)
+	if (m_pTestVoxelEditor)
 	{
-		bProcessed |= m_pVoxelEditor->OnPreConsoleCommand(wchCmd, dwCmdLen);
+		bProcessed |= m_pTestVoxelEditor->OnPreConsoleCommand(wchCmd, dwCmdLen);
 	}
 	if (m_pWebPage)
 	{

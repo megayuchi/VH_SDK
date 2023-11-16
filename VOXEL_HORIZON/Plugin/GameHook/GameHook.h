@@ -26,7 +26,7 @@ class CTestGameHook : public IGameHook
 	
 	
 	CTestGame*		m_pTestGame = nullptr;
-	CTestVoxelEditor*	m_pVoxelEditor = nullptr;
+	CTestVoxelEditor*	m_pTestVoxelEditor = nullptr;
 	CWebPage*		m_pWebPage = nullptr;
 	CMidiPlayer*	m_pMidiPlayer = nullptr;
 	

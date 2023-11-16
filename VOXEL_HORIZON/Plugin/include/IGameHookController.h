@@ -168,6 +168,8 @@ interface IVHController
 	// 절대좌표계로 복셀을 Set/Remove하는 함수들. 온라인 모드에 적용됨.
 	virtual		SINGLE_VOXEL_EDIT_RESULT __stdcall SetSingleVoxelWithFloatCoord(const VECTOR3* pv3VoxelPos, BYTE bColorIndex) = 0;
 	virtual		SINGLE_VOXEL_EDIT_RESULT __stdcall RemoveSingleVoxelWithFloatCoord(const VECTOR3* pv3VoxelPos) = 0;
+	virtual		DWORD					 __stdcall CancelAllPendingVoxelEditEvent() = 0;
+
 	virtual		SINGLE_VOXEL_EDIT_RESULT __stdcall GetSingleVoxelColorWithFloatCoord(BYTE* pbOutColorIndex, const VECTOR3* pv3VoxelPos) = 0;
 
 	virtual		WEB_CLIENT_HANDLE __stdcall BrowseWeb(const char* szURL, DWORD dwWidth, DWORD dwHeight, BOOL bUserSharedMemory) = 0;
