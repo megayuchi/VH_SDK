@@ -375,8 +375,9 @@ BOOL __stdcall	CTestGameHook::OnKeyDownCtrlFunc(UINT nChar)
 
 
 				//m_pWebPage->Initialize(m_pVHController, "https://www.shadertoy.com/view/XsXXDB", 640, 480);	// shader toy
-				m_pWebPage->Initialize(m_pVHController, "https://youtu.be/bhPXCkqfSkk?si=F9Sc8kPFn7RJNaea", 640, 480);	// bad apple
+				//m_pWebPage->Initialize(m_pVHController, "https://youtu.be/bhPXCkqfSkk?si=F9Sc8kPFn7RJNaea", 640, 480);	// bad apple
 				//m_pWebPage->Initialize(m_pVHController, "https://youtu.be/zjCDJOyHTfw?si=PLcuNDr7_uLPlx3S", 640, 480);	// ultima midi
+				m_pWebPage->Initialize(m_pVHController, "https://megayuchi.com", 640, 480);	// megayuchi.com
 				//m_pWebPage->Initialize(m_pVHController, "https://bing.com", 640, 480);
 				bProcessed = TRUE;
 			}
