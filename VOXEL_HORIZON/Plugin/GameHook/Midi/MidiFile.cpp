@@ -852,7 +852,7 @@ namespace smf {
 				{
 					// program change
 					int ch = (*m_events[i])[j].getChannel();
-					int message_type = (*m_events[i])[j].getP0();
+					int status = (*m_events[i])[j].getP0();
 					int program = (*m_events[i])[j].getP1();
 
 					note.SetAsProgram((DWORD)ch, (DWORD)program, (DWORD)accum_ms);
@@ -864,7 +864,16 @@ namespace smf {
 			
 				if (msg.isAftertouch())
 				{
-					int a = 0;
+					// program change
+					int ch = (*m_events[i])[j].getChannel();
+					int status = (*m_events[i])[j].getP0();
+					int key = (*m_events[i])[j].getP1();
+					int pressure = (*m_events[i])[j].getP2();
+
+					note.SetAsAftertouch((DWORD)ch, (DWORD)key, (DWORD)pressure, (DWORD)accum_ms);
+					if (note.GetChannel() != (DWORD)ch)
+						__debugbreak();
+					bMustWrite = TRUE;
 				}
 				if (bMustWrite)
 				{

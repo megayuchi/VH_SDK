@@ -1160,6 +1160,8 @@ protected:
 	static const DWORD PROGRAM_GET_MASK = KEY_GET_MASK;
 	static const DWORD PITCH_BEND_FIRST_SET_MASK = KEY_SET_MASK;
 	static const DWORD PITCH_BEND_FIRST_GET_MASK = KEY_GET_MASK;
+	static const DWORD AFTERTOUCH_KEY_SET_MASK = KEY_SET_MASK;
+	static const DWORD AFTERTOUCH_KEY_GET_MASK = KEY_GET_MASK;
 
 	static const DWORD VELOCITY_SET_MASK = 0b1111111;
 	static const DWORD VELOCITY_GET_MASK = 0b1111111;
@@ -1167,6 +1169,8 @@ protected:
 	static const DWORD CONTROL_VALUE_GET_MASK = VELOCITY_GET_MASK;
 	static const DWORD PITCH_BEND_SECOND_SET_MASK = VELOCITY_SET_MASK;
 	static const DWORD PITCH_BEND_SECOND_GET_MASK = VELOCITY_GET_MASK;
+	static const DWORD AFTERTOUCH_PRESSURE_SET_MASK = VELOCITY_SET_MASK;
+	static const DWORD AFTERTOUCH_PRESSURE_GET_MASK = VELOCITY_GET_MASK;
 
 	union
 	{
@@ -1240,6 +1244,20 @@ public:
 	DWORD GetPitchBendSecondValue() const
 	{
 		return (dwValue & PITCH_BEND_SECOND_GET_MASK);
+	}
+
+	// as Aftertouch
+	void SetAsAftertouch(DWORD dwChannel, DWORD dwKey, DWORD dwPressure)
+	{
+		dwValue = (MIDI_MESSAGE_TYPE_AFTER_TOUCH << 29) | ((dwChannel & CHANNEL_SET_MASK) << 24) | ((1 & ON_OFF_SET_MASK) << 14) | ((dwKey & AFTERTOUCH_KEY_SET_MASK) << 7) | (dwPressure & AFTERTOUCH_PRESSURE_SET_MASK);
+	}
+	DWORD GetAftertouchKeyValue() const
+	{
+		return ((dwValue & AFTERTOUCH_KEY_GET_MASK) >> 7);
+	}
+	DWORD GetAftertouchPressureValue() const
+	{
+		return (dwValue & AFTERTOUCH_PRESSURE_GET_MASK);
 	}
 
 	// as program
@@ -1363,6 +1381,12 @@ public:
 	{
 		MIDI_MESSAGE_L::SetAsProgram(dwChannel, dwProgram);
 		dwTickFromBegin = dwTick;
+	}
+	// as Aftertouch
+	void SetAsAftertouch(DWORD dwChannel, DWORD dwKey, DWORD dwPressure, DWORD dwTick)
+	{
+		MIDI_MESSAGE_L::SetAsAftertouch(dwChannel, dwKey, dwPressure);
+		dwTickFromBegin = dwTick;;
 	}
 	void Set(MIDI_MESSAGE_L src, DWORD dwTick)
 	{
