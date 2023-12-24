@@ -63,6 +63,11 @@ BOOL CMidiPlayer::OnPreConsoleCommand(const WCHAR* wchCmd, DWORD dwCmdLen)
 				}
 			}
 		}
+		else if (!_wcsicmp(token, L"list_mid"))
+		{
+			ListMidFiles();
+			bProcessed = TRUE;
+		}
 		else if (!_wcsicmp(token, L"enable_keyboard"))
 		{
 			if (next_token)
@@ -416,6 +421,34 @@ BOOL CMidiPlayer::OnKeyUp(UINT nChar)
 		}
 	}
 	return bProcessed;
+}
+
+void CMidiPlayer::ListMidFiles()
+{
+	WCHAR	wchFindPath[_MAX_PATH] = {};
+	swprintf_s(wchFindPath, L"%s\\mid\\*.mid",m_wchPluginPath);
+	
+	DWORD	dwBlobsNum = 0;
+
+	WIN32_FIND_DATA fd;
+	HANDLE hFind = FindFirstFile(wchFindPath, &fd);
+	if (hFind == INVALID_HANDLE_VALUE)
+		goto lb_exit;
+
+	m_pVHController->BeginWriteTextToConsole();
+	do
+	{
+		m_pVHController->WriteTextToConsole(fd.cFileName, (int)wcslen(fd.cFileName), COLOR_VALUE_YELLOW);
+		dwBlobsNum++;
+	} while (FindNextFile(hFind, &fd));
+
+	FindClose(hFind);
+
+lb_exit:
+	WCHAR	wchMsg[32] = {};
+	int	iLen = (int)swprintf_s(wchMsg, L"\n%u items found.\n", dwBlobsNum);
+	m_pVHController->WriteTextToConsole(wchMsg, iLen, 0xffffffff);
+	m_pVHController->EndWriteTextToConsole();
 }
 void CMidiPlayer::Cleanup()
 {

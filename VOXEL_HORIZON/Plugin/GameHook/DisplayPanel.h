@@ -37,6 +37,7 @@ public:
 	void	Clear(BYTE bColorIndex, DWORD dwLayerIndex);
 	void	Set32BitImage(BYTE* pSrcBits, DWORD dwImageWidth, DWORD dwImageHeight);
 	BOOL	DrawPalettedBitmap(int sx, int sy, int iBitmapWidth, int iBitmapHeight, const BYTE* pSrcBits, DWORD dwLayerIndex);
+	BOOL	DrawPalettedBitmapWithTransparency(int sx, int sy, int iBitmapWidth, int iBitmapHeight, const BYTE* pSrcBits, DWORD dwLayerIndex);
 	BOOL	DrawCompressedPalettedImageData(int sx, int sy, const CImageData* pImgData, DWORD dwLayerIndex);
 	void	SetPalettedImage(const BYTE* pSrcBits, DWORD dwImageWidth, DWORD dwImageHeight, DWORD dwLayerIndex);
 	void	UpdateBitmapToVoxelDataWithMultipleLayers(DWORD dwLayerStart, DWORD dwLayerCount);

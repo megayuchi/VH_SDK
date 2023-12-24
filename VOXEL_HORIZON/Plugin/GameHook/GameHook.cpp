@@ -6,6 +6,7 @@
 #include "GameHook.h"
 #include "DisplayPanel.h"
 #include "TestGame.h"
+#include "Tetris.h"
 #include "TestVoxelEditor.h"
 #include "WebPage.h"
 #include "MidiPlayer.h"
@@ -81,12 +82,14 @@ void __stdcall CTestGameHook::OnStartScene(IVHController* pVHController, IVHNetw
 
 	wcscpy_s(m_wchPluginPath, wchPluginPath);
 
-	m_pTestVoxelEditor = new CTestVoxelEditor;
-	m_pTestVoxelEditor->Initialize(m_pVHController, m_pNetworkLayer);
 }
 
 void __stdcall CTestGameHook::OnRun()
 {
+	if (m_pTetris)
+	{
+		m_pTetris->Process();
+	}
 	if (m_pTestGame)
 	{
 		m_pTestGame->Process();
@@ -102,6 +105,10 @@ void __stdcall CTestGameHook::OnRun()
 }
 void CTestGameHook::OnDeleteVoxelObject(IVoxelObjectLite* pVoxelObj)
 {
+	if (m_pTetris)
+	{
+		m_pTetris->OnDeleteVoxelObject(pVoxelObj);
+	}
 	if (m_pTestGame)
 	{
 		m_pTestGame->OnDeleteVoxelObject(pVoxelObj);
@@ -116,6 +123,11 @@ void __stdcall CTestGameHook::OnDestroyScene()
 	//
 	// 이 플러그인에서 할당한 IVoxelObjectLite가 있다면 여기서 해제한다. 이 함수가 리턴한 이후로는 해제해서는 안된다.
 	//
+	if (m_pTetris)
+	{
+		delete m_pTetris;
+		m_pTetris = nullptr;
+	}
 	if (m_pTestGame)
 	{
 		delete m_pTestGame;
@@ -218,12 +230,15 @@ BOOL __stdcall CTestGameHook::OnKeyDown(UINT nChar)
 
 		case VK_RETURN:
 			{
-				StartGame();
-				bProcessed = TRUE;
+
 			}
 			break;
 	}
 	
+	if (m_pTetris)
+	{
+		bProcessed |= m_pTetris->OnKeyDown(nChar);
+	}
 	if (m_pTestGame)
 	{
 		bProcessed |= m_pTestGame->OnKeyDown(nChar);
@@ -246,6 +261,10 @@ BOOL __stdcall CTestGameHook::OnKeyUp(UINT nChar)
 {
 	BOOL	bProcessed = FALSE;
 	
+	if (m_pTetris)
+	{
+		bProcessed |= m_pTetris->OnKeyUp(nChar);
+	}
 	if (m_pTestGame)
 	{
 		bProcessed |= m_pTestGame->OnKeyUp(nChar);
@@ -353,15 +372,45 @@ BOOL __stdcall	CTestGameHook::OnKeyDownCtrlFunc(UINT nChar)
 	BOOL	bProcessed = FALSE;
 	switch (nChar)
 	{
+		case VK_F7:
+			{
+				if (!m_pTetris)
+				{
+					m_pTetris = new CTetris;
+					m_pTetris->Initialize(m_pVHController, m_wchPluginPath);
+					bProcessed = TRUE;
+				}
+			}
+			break;
+		case VK_F8:
+			{
+				if (!m_pTestGame)
+				{
+					m_pTestGame = new CTestGame;
+					m_pTestGame->Initialize(m_pVHController, m_wchPluginPath);
+					bProcessed = TRUE;
+				}
+			}
+			break;
+		case VK_F9:
+			{
+				if (!m_pTestVoxelEditor)
+				{
+					m_pTestVoxelEditor = new CTestVoxelEditor;
+					m_pTestVoxelEditor->Initialize(m_pVHController, m_pNetworkLayer);
+					bProcessed = TRUE;
+				}
+			}
+			break;
 		case VK_F10:
 			{
-				if (m_pMidiPlayer)
+				if (!m_pMidiPlayer)
 				{
-					delete m_pMidiPlayer;
-					m_pMidiPlayer = nullptr;
+
+					m_pMidiPlayer = new CMidiPlayer;
+					m_pMidiPlayer->Initialize(m_pVHController, m_wchPluginPath);
+					bProcessed = TRUE;
 				}
-				m_pMidiPlayer = new CMidiPlayer;
-				m_pMidiPlayer->Initialize(m_pVHController, m_wchPluginPath);
 			}
 			break;
 		case VK_F11:
@@ -372,7 +421,6 @@ BOOL __stdcall	CTestGameHook::OnKeyDownCtrlFunc(UINT nChar)
 					m_pWebPage = nullptr;
 				}
 				m_pWebPage = new CWebPage;
-
 
 				//m_pWebPage->Initialize(m_pVHController, "https://www.shadertoy.com/view/XsXXDB", 640, 480);	// shader toy
 				//m_pWebPage->Initialize(m_pVHController, "https://youtu.be/bhPXCkqfSkk?si=F9Sc8kPFn7RJNaea", 640, 480);	// bad apple
@@ -394,6 +442,10 @@ BOOL __stdcall CTestGameHook::OnPreConsoleCommand(const WCHAR* wchCmd, DWORD dwC
 	// 게임 레이어에서 더 이상 처리하지 않기를 원한다면 TRUE를 리턴
 	// 게임 레이어에서 계속 처리하기를 원한다면 FALSE를 리턴
 
+	if (m_pTetris)
+	{
+		bProcessed |= m_pTetris->OnPreConsoleCommand(wchCmd, dwCmdLen);
+	}
 	if (m_pTestGame)
 	{
 		bProcessed |= m_pTestGame->OnPreConsoleCommand(wchCmd, dwCmdLen);
@@ -528,41 +580,6 @@ IVoxelObjectLite* CSceneBattleField::CreateVoxelObject(VECTOR3* pv3Pos, UINT Wid
 	return pVoxelObj;
 }
 */
-void CTestGameHook::StartGame()
-{
-	if (m_pTestGame)
-	{
-		delete m_pTestGame;
-		m_pTestGame = nullptr;
-	}
-	m_pTestGame = new CTestGame;
-	m_pTestGame->Initialize(m_pVHController, m_wchPluginPath);
-	/*
-	WCHAR	wchOldPath[_MAX_PATH] = {};
-	GetCurrentDirectory(_MAX_PATH, wchOldPath);
-
-	SetCurrentDirectory(m_wchPluginPath);
-
-
-	DWORD	dwImageWidth = 0;
-	DWORD	dwImageHeight = 0;
-	//const char* szImageFileName = "videogirl.png";
-	const char* szImageFileName = "madoka.png";
-	if (LoadPngImageAsPalettedImage(&m_pBackImage, &dwImageWidth, &dwImageHeight, szImageFileName))
-	{
-		m_ivBackImageSize.x = dwImageWidth;
-		m_ivBackImageSize.y = dwImageHeight;
-
-		//m_pDisplayPanel->SetPalettedImage(m_pBackImage, dwImageWidth, dwImageHeight);
-
-		m_pDisplayPanel->DrawPalettedBitmap(m_ivBackImagePos.x, m_ivBackImagePos.y, m_ivBackImageSize.x, m_ivBackImageSize.y, m_pBackImage);
-
-		m_pDisplayPanel->UpdateBitmapToVoxelData(0);
-		//m_pDisplayPanel->UpdateBitmapToVoxelData(7);
-	}
-	SetCurrentDirectory(wchOldPath);
-	*/
-}
 
 CTestGameHook::~CTestGameHook()
 {

@@ -117,5 +117,3 @@ public:
 	CTestGame();
 	~CTestGame();
 };
-
-extern CTestGame* g_pGame;

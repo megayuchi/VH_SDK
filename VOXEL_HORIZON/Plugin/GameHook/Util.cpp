@@ -68,6 +68,28 @@ BOOL IsCollisionRectVsRect(const INT_VECTOR2* pv3MinA, const INT_VECTOR2* pv3Max
 	}
 	return TRUE;
 }
+void CalcRect(INT_RECT2* pOutRect, const BYTE* pSrcData, int iWidth, int iHeight, int iPitch)
+{
+	INT_VECTOR2 ivMin = { INT_MAX, INT_MAX };
+	INT_VECTOR2 ivMax = { INT_MIN, INT_MIN };
+	
+	for (int y = 0; y < iHeight; y++)
+	{
+		for (int x = 0; x < iWidth; x++)
+		{
+			BYTE bValue = pSrcData[x + y * iPitch];
+			if (bValue != 0xff)
+			{
+				ivMin.x = min(ivMin.x, x);
+				ivMin.y = min(ivMin.y, y);
+				ivMax.x = max(ivMax.x, x);
+				ivMax.y = max(ivMax.y, y);
+			}
+		}
+	}
+	pOutRect->min = ivMin;
+	pOutRect->max = ivMax;
+}
 BOOL LoadPngImage(BYTE** ppOutBits, DWORD* pdwOutWidth, DWORD* pdwOutHeight, DWORD* pdwOutColorKey, const char* szFileName)
 {
 	BOOL	bResult = FALSE;

@@ -12,8 +12,6 @@
 #include "FlightObject.h"
 #include "TestGame.h"
 
-CTestGame* g_pGame = nullptr;
-
 CTestGame::CTestGame()
 {
 	m_dwCurFPS = 0;

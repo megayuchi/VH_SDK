@@ -340,6 +340,7 @@
     <ClInclude Include="Midi\MidiMessage.h" />
     <ClInclude Include="Midi\stdafx.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="Tetris.h" />
     <ClInclude Include="Util.h" />
     <ClInclude Include="TestVoxelEditor.h" />
     <ClInclude Include="WebPage.h" />
@@ -382,6 +383,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|ARM64EC'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Tetris.cpp" />
     <ClCompile Include="Util.cpp" />
     <ClCompile Include="TestVoxelEditor.cpp" />
     <ClCompile Include="WebPage.cpp" />

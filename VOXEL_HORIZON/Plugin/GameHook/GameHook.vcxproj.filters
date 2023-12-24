@@ -37,9 +37,6 @@
     <Filter Include="GameHook">
       <UniqueIdentifier>{f0fd3ac1-9833-4212-8316-4ed7de5d34f0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Contents\Game">
-      <UniqueIdentifier>{563857a9-bcaf-4550-9e36-ff9d81acf983}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Contents\WebPage">
       <UniqueIdentifier>{2734b035-bf11-412e-add0-56844b6d52ef}</UniqueIdentifier>
     </Filter>
@@ -48,6 +45,12 @@
     </Filter>
     <Filter Include="Contents\MidiPlayer">
       <UniqueIdentifier>{3d5fbe56-ea39-46aa-9348-0d7d76a012f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Contents\ShootingGame">
+      <UniqueIdentifier>{563857a9-bcaf-4550-9e36-ff9d81acf983}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Contents\Tetris">
+      <UniqueIdentifier>{3ab91a8e-633c-4824-aa52-c001db749eb8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -70,19 +73,19 @@
       <Filter>Util</Filter>
     </ClInclude>
     <ClInclude Include="FlightObject.h">
-      <Filter>Contents\Game</Filter>
+      <Filter>Contents\ShootingGame</Filter>
     </ClInclude>
     <ClInclude Include="TestGame.h">
-      <Filter>Contents\Game</Filter>
+      <Filter>Contents\ShootingGame</Filter>
     </ClInclude>
     <ClInclude Include="game_typedef.h">
-      <Filter>Contents\Game</Filter>
+      <Filter>Contents\ShootingGame</Filter>
     </ClInclude>
     <ClInclude Include="GameObject.h">
-      <Filter>Contents\Game</Filter>
+      <Filter>Contents\ShootingGame</Filter>
     </ClInclude>
     <ClInclude Include="ImageData.h">
-      <Filter>Contents\Game</Filter>
+      <Filter>Contents\ShootingGame</Filter>
     </ClInclude>
     <ClInclude Include="..\util\VoxelUtil.h">
       <Filter>VoxelUtil</Filter>
@@ -129,6 +132,9 @@
     <ClInclude Include="..\util\WriteDebugString.h">
       <Filter>Util</Filter>
     </ClInclude>
+    <ClInclude Include="Tetris.h">
+      <Filter>Contents\Tetris</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -147,16 +153,16 @@
       <Filter>Util</Filter>
     </ClCompile>
     <ClCompile Include="FlightObject.cpp">
-      <Filter>Contents\Game</Filter>
+      <Filter>Contents\ShootingGame</Filter>
     </ClCompile>
     <ClCompile Include="TestGame.cpp">
-      <Filter>Contents\Game</Filter>
+      <Filter>Contents\ShootingGame</Filter>
     </ClCompile>
     <ClCompile Include="GameObject.cpp">
-      <Filter>Contents\Game</Filter>
+      <Filter>Contents\ShootingGame</Filter>
     </ClCompile>
     <ClCompile Include="ImageData.cpp">
-      <Filter>Contents\Game</Filter>
+      <Filter>Contents\ShootingGame</Filter>
     </ClCompile>
     <ClCompile Include="..\util\VoxelUtil.cpp">
       <Filter>VoxelUtil</Filter>
@@ -196,6 +202,9 @@
     </ClCompile>
     <ClCompile Include="..\util\WriteDebugString.cpp">
       <Filter>Util</Filter>
+    </ClCompile>
+    <ClCompile Include="Tetris.cpp">
+      <Filter>Contents\Tetris</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

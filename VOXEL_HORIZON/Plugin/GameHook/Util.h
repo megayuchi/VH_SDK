@@ -28,9 +28,16 @@ class CImageData;
 #define COLOR_VALUE_PURPLE						0xFF800080
 #define COLOR_vALUE_INDIGO						0xFF4B0082
 
+struct INT_RECT2
+{
+	INT_VECTOR2	min;
+	INT_VECTOR2	max;
+};
+
 size_t GetFileSize(FILE* fp);
 BOOL CalcClipArea(INT_VECTOR2* pivOutSrcStart, INT_VECTOR2* pivOutDestStart, INT_VECTOR2* pivOutDestSize, const INT_VECTOR2* pivPos, const INT_VECTOR2* pivImageSize, const INT_VECTOR2* pivBufferSize);
 BOOL IsCollisionRectVsRect(const INT_VECTOR2* pv3MinA, const INT_VECTOR2* pv3MaxA, const INT_VECTOR2* pv3MinB, const INT_VECTOR2* pv3MaxB);
+void CalcRect(INT_RECT2* pOutRect, const BYTE* pSrcData, int iWidth, int iHeight, int iPitch);
 BOOL LoadPngImage(BYTE** ppOutBits, DWORD* pdwOutWidth, DWORD* pdwOutHeight, DWORD* pdwOutColorKey, const char* szFileName);
 void FreePngImage(BYTE* pBits);
 BOOL LoadPngImageAsPalettedImage(BYTE** ppOutBits, DWORD* pdwOutWidth, DWORD* pdwOutHeight, DWORD* pdwOutColorKey, const char* szFileName, CDisplayPanel* pDisplayPanel);

@@ -11,11 +11,3 @@ const DWORD SCORE_PER_ONE_KILL = 50;
 const int DEFAULT_AMMO_SPEED = 10;
 const int DEFAULT_PLAYER_SPEED = 8;
 const int DEFAULT_ENEMY_SPEED = 5;
-
-
-struct INT_RECT2
-{
-	INT_VECTOR2	min;
-	INT_VECTOR2	max;
-};
-

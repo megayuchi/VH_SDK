@@ -6,6 +6,8 @@ class CMidiPlayer
 	WCHAR	m_wchPluginPath[_MAX_PATH] = {};
 
 	BOOL	m_bUseKeyboardAsMidiKeyboard = FALSE;
+
+	void	ListMidFiles();
 	void	OnPianoKeyDown(DWORD dwKeyIndex);
 	void	OnPianoKeyUp(DWORD dwKeyIndex);
 	void	Cleanup();

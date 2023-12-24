@@ -332,6 +332,44 @@ BOOL CDisplayPanel::DrawPalettedBitmap(int sx, int sy, int iBitmapWidth, int iBi
 lb_return:
 	return bResult;
 }
+BOOL CDisplayPanel::DrawPalettedBitmapWithTransparency(int sx, int sy, int iBitmapWidth, int iBitmapHeight, const BYTE* pSrcBits, DWORD dwLayerIndex)
+{
+	BOOL	bResult = FALSE;
+
+	INT_VECTOR2	ivSrcStart = {};
+	INT_VECTOR2	ivDestStart = {};
+
+	INT_VECTOR2	ivPos = { sx, sy };
+	INT_VECTOR2	ivImageSize = { iBitmapWidth, iBitmapHeight };
+	INT_VECTOR2 ivDestSize = {};
+
+	if (!CalcClipArea(&ivSrcStart, &ivDestStart, &ivDestSize, &ivPos, &ivImageSize))
+		goto lb_return;
+
+	const BYTE* pSrc = pSrcBits + ivSrcStart.x + (ivSrcStart.y * iBitmapWidth);
+	BYTE* pDest = m_ppBits[dwLayerIndex] + ivDestStart.x + (ivDestStart.y * m_Width);
+
+	for (int y = 0; y < ivDestSize.y; y++)
+	{
+		for (int x = 0; x < ivDestSize.x; x++)
+		{
+			if (0xff != *pSrc)
+			{
+				*pDest = *pSrc;
+			}
+			pSrc++;
+			pDest++;
+		}
+		pSrc -= ivDestSize.x;
+		pSrc += iBitmapWidth;
+		pDest -= ivDestSize.x;
+		pDest += m_Width;
+	}
+	//
+	bResult = TRUE;
+lb_return:
+	return bResult;
+}
 
 BOOL CDisplayPanel::DrawCompressedPalettedImageData(int sx, int sy, const CImageData* pImgData, DWORD dwLayerIndex)
 {
@@ -446,14 +484,19 @@ void CDisplayPanel::UpdateBitmapToVoxelDataWithMultipleLayers(DWORD dwLayerStart
 				int pixel_y = obj_y * (int)WIDTH_DEPTH_HEIGHT + voxel_y;
 				int r_pixel_y = (int)m_Height - pixel_y - 1;
 				if (r_pixel_y < 0)
-					__debugbreak();
+					continue;
 
 				if (r_pixel_y >= (int)m_Height)
-					__debugbreak();
+					continue;
 
 				for (int voxel_x = 0; voxel_x < (int)WIDTH_DEPTH_HEIGHT; voxel_x++)
 				{
 					int pixel_x = obj_x * (int)WIDTH_DEPTH_HEIGHT + voxel_x;
+					if (pixel_x < 0)
+						continue;
+
+					if (pixel_x >= (int)m_Width)
+						continue;
 
 					for (int voxel_z = (int)dwLayerStart; voxel_z < (int)(dwLayerStart + dwLayerCount); voxel_z++)
 					{
@@ -511,15 +554,20 @@ void CDisplayPanel::UpdateBitmapToVoxelDataWithSingleLayer(int voxel_z, DWORD dw
 				int pixel_y = obj_y * (int)WIDTH_DEPTH_HEIGHT + voxel_y;
 				int r_pixel_y = (int)m_Height - pixel_y - 1;
 				if (r_pixel_y < 0)
-					__debugbreak();
+					continue;
 
 				if (r_pixel_y >= (int)m_Height)
-					__debugbreak();
+					continue;
 
 				for (int voxel_x = 0; voxel_x < (int)WIDTH_DEPTH_HEIGHT; voxel_x++)
 				{
 					int pixel_x = obj_x * (int)WIDTH_DEPTH_HEIGHT + voxel_x;
+					if (pixel_x < 0)
+						continue;
 
+					if (pixel_x >= (int)m_Width)
+						continue;
+					
 					DWORD 	dwVoxelIndex = (DWORD)voxel_x + (DWORD)voxel_z * WIDTH_DEPTH_HEIGHT + (DWORD)voxel_y * WIDTH_DEPTH_HEIGHT * WIDTH_DEPTH_HEIGHT;
 					DWORD 	dwPixelIndex = (DWORD)pixel_x + (DWORD)r_pixel_y * m_Width;
 					BYTE*	pBits = m_ppBits[dwLayerIndex];

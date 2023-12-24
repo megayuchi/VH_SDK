@@ -3,6 +3,7 @@
 #include "../include/IGameHookController.h"
 
 class CDisplayPanel;
+class CTetris;
 class CTestGame;
 class CTestVoxelEditor;
 class CWebPage;
@@ -24,14 +25,11 @@ class CTestGameHook : public IGameHook
 
 	
 	
-	
+	CTetris*		m_pTetris = nullptr;
 	CTestGame*		m_pTestGame = nullptr;
 	CTestVoxelEditor*	m_pTestVoxelEditor = nullptr;
 	CWebPage*		m_pWebPage = nullptr;
 	CMidiPlayer*	m_pMidiPlayer = nullptr;
-	
-	void	StartGame();
-	
 	
 	
 public:
