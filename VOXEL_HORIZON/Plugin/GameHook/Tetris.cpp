@@ -59,23 +59,23 @@ const BYTE g_pBlockData_3[4] =
 const BYTE g_pBlockData_4[4][8] =
 {
 	{
+		0xff, 0xff,
 		15,   15,
-		15, 0xff,
-		15, 0xff,
-		15, 0xff
+		15,   0xff,
+		15,   0xff
 	},
 	{
-		15, 0xff, 0xff, 0xff,
-		15,   15,   15,   15
+		0xff, 15, 0xff, 0xff,
+		0xff, 15,   15,   15
 	},
 	{
-		0xff, 15,
+		0xff, 0xff,
 		0xff, 15,
 		0xff, 15,
 		  15, 15
 	},
 	{
-		  15,   15,   15, 15,
+		0xff,   15,   15, 15,
 		0xff, 0xff, 0xff, 15,
 	}
 };

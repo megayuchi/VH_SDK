@@ -67,8 +67,14 @@ VS_OUTPUT_VX vsDefault(VS_INPUT_VX input)
     float4 PosWorld = mul(InputPos, g_matWorldVoxel); // 월드공간에서의 버텍스 좌표
 
     uint AxisIndex = 0;
-    float3 TangentWorld;
-    float3 NormalWorld = GetNormalAndTangent(TangentWorld, AxisIndex, input.PackedData);
+    float3 TangentLocal;
+    float3 NormalLocal = GetNormalAndTangent(TangentLocal, AxisIndex, input.PackedData);
+    float3 NormalWorld = mul(NormalLocal, (float3x3)g_matWorldVoxel);
+    float3 TangentWorld = mul(TangentLocal, (float3x3)g_matWorldVoxel);
+    
+    NormalWorld = normalize(NormalWorld);
+    TangentWorld = normalize(TangentWorld);
+    
 	//output.Pos = mul(InputPos, mul(g_matWorldVoxel, matViewProjArray[ArrayIndex]));	// 프로젝션된 좌표. 위에서 월드좌표(PosWorld)를 구해놨으니 mul(g_matWorldVoxel, matViewProjArray[ArrayIndex])는 필요없다.
     output.Pos = mul(PosWorld, g_Camera.matViewProjArray[ArrayIndex]); // 프로젝션된 좌표.
     output.Clip = dot(PosWorld, ClipPlane);

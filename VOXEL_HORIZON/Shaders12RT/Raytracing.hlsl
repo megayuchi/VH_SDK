@@ -169,6 +169,9 @@ RadiancePayload TraceRadianceRay(in Ray ray, in uint CurRayRecursionDepth, in ui
 	{
 		rayFlags |= RAY_FLAG_CULL_BACK_FACING_TRIANGLES;
 	}
+	// TraceRay(Scene, rayFlags, ~0, 1, 2, 1, rayDesc, shadowPayload); // shadow
+	// TraceRay(Scene, rayFlags, ~0, 0, 2, 0, rayDesc, rayPayload); // radiance
+		
 	//	TraceRay(Scene, RAY_FLAG_CULL_BACK_FACING_TRIANGLES, ~0, 0, 1, 0, ray, payload);
 	//	TraceRay(g_scene, rayFlags, TraceRayParameters::InstanceMask, TraceRayParameters::HitGroup::Offset[PathtracerRayType::Shadow], TraceRayParameters::HitGroup::GeometryStride, TraceRayParameters::MissShader::Offset[PathtracerRayType::Shadow], rayDesc, shadowPayload);
 	TraceRay(Scene, rayFlags, ~0, 0, 2, 0, rayDesc, rayPayload);
@@ -289,6 +292,9 @@ bool TraceShadowRayAndReportIfHitC(out float tHit, in Ray ray, in uint CurRayRec
 	}
 	rayFlags = 0;// RAY_FLAG_CULL_BACK_FACING_TRIANGLES;
 
+	// TraceRay(Scene, rayFlags, ~0, 1, 2, 1, rayDesc, shadowPayload); // shadow
+	// TraceRay(Scene, rayFlags, ~0, 0, 2, 0, rayDesc, rayPayload); // radiance
+		
 	TraceRay(Scene,
 			 rayFlags,
 			 ~0,
