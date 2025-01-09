@@ -232,10 +232,10 @@ CWebPage::~CWebPage()
 		free(m_pBits8);
 		m_pBits8 = nullptr;
 	}
-	if (m_pBits32Resized)
+	if (m_pBits32)
 	{
-		free(m_pBits32Resized);
-		m_pBits32Resized = nullptr;
+		free(m_pBits32);
+		m_pBits32 = nullptr;
 	}
 	if (m_pBits32Resized)
 	{
